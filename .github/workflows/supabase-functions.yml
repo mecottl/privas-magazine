@@ -1,0 +1,25 @@
+name: Deploy Edge Functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/functions/**'
+      - 'supabase/config.toml'
+  workflow_dispatch:
+
+jobs:
+  deploy-functions:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: xiqqhjdpmqdnzsvpjhwq
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_REF"
+      # Los secretos (SERVICE_ROLE_KEY, SFTP_*, RESEND_API_KEY, UPLOAD_TARGET,
+      # GITHUB_DISPATCH_TOKEN) se configuran una vez desde el dashboard o con
+      # `supabase secrets set`.

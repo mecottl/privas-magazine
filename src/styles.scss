@@ -1,0 +1,45 @@
+/* Estilos globales. Mobile-first (CLAUDE.md § Decisiones de frontend).
+   Líneas limpias, foco en fotografía. Añadir tokens de tema aquí. */
+
+:root {
+  --color-fondo: #ffffff;
+  --color-texto: #1a1a1a;
+  --color-acento: #b08d57;
+  --ancho-max: 1200px;
+  --fuente-titulos: Georgia, 'Times New Roman', serif;
+  --fuente-texto: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-texto);
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulos);
+  line-height: 1.2;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+}

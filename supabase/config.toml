@@ -1,0 +1,20 @@
+# Configuración local de Supabase CLI.
+# El proyecto REAL (ref xiqqhjdpmqdnzsvpjhwq) se administra desde el dashboard
+# (Auth, Storage, extensiones, RLS) — ver CLAUDE.md.
+project_id = "privas-magazine"
+
+[functions.subir-archivo]
+verify_jwt = true
+
+[functions.programar-publicacion]
+# Invocada por pg_cron cada 15 min con la service key — no requiere JWT de usuario.
+verify_jwt = false
+
+[functions.invitar-admin]
+verify_jwt = true
+
+[functions.confirmar-suscripcion]
+verify_jwt = false
+
+[functions.cancelar-suscripcion]
+verify_jwt = false

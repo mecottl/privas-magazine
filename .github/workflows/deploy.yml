@@ -1,0 +1,33 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [rebuild-sitio] # disparado por la Edge Function programar-publicacion
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build Angular (estático)
+        run: npm run build -- --configuration production
+        env:
+          # Inyectadas en el bundle (claves PÚBLICAS únicamente).
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      # TODO: reemplazar '__SUPABASE_ANON_KEY__' en dist/ con el secreto,
+      # o migrar a un environment provider en build. Placeholder por ahora.
+
+      - name: Deploy
+        run: echo "TODO: deploy dist/ — staging (Cloudflare Pages / Vercel) hasta que exista Hostinger; luego SFTP a public_html."
