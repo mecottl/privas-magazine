@@ -33,19 +33,26 @@ jobs:
           grep -rl '__SUPABASE_ANON_KEY__' dist/privas-magazine/browser --include='*.js' \
             | xargs -r sed -i "s|__SUPABASE_ANON_KEY__|${SUPABASE_ANON_KEY}|g"
 
+      - name: Preparar salida prebuilt para Vercel
+        run: |
+          # 'outputPath' no está en angular.json → default dist/<project>/browser
+          # (builder @angular/build:application). Copiamos ese contenido a la
+          # estructura que espera 'vercel deploy --prebuilt'.
+          mkdir -p .vercel/output/static
+          cp -r dist/privas-magazine/browser/* .vercel/output/static/
+          echo '{"version":3}' > .vercel/output/config.json
+
       - name: Instalar Vercel CLI
         run: npm i -g vercel@latest
 
-      - name: Deploy a Vercel (sube el build ya hecho, sin recompilar)
+      - name: Deploy a Vercel (usa .vercel/output ya compilado, sin recompilar)
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          # 'outputPath' no está en angular.json → default dist/<project>/browser
-          # (builder @angular/build:application). NO usamos 'vercel build': el
-          # build de Angular ya corrió arriba; que Vercel compile de nuevo
-          # duplicaría el proceso. Aquí solo se suben los archivos listos.
-          vercel deploy dist/privas-magazine/browser \
+          # --prebuilt: Vercel sube tal cual .vercel/output/static, NO corre
+          # 'vercel build' ni 'ng build'. El build de Angular ya corrió arriba.
+          vercel deploy --prebuilt \
             --prod \
             --token="${{ secrets.VERCEL_TOKEN }}" \
             --yes
