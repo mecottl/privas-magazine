@@ -1,24 +1,11 @@
 /**
- * confirmar-suscripcion (CLAUDE.md § 5)
- * Doble opt-in: activa `activo = true` cuando el visitante hace clic en el
- * link de confirmación (?token=...). Público (sin JWT).
+ * confirmar-suscripcion (CLAUDE.md § 5 · brief § 4)
+ *
+ * Pública. Doble opt-in: pone `activo = true` en la fila cuyo
+ * `token_confirmacion` coincide. Respuesta genérica siempre (no revela si un
+ * email está suscrito). El mensaje visible lo pinta Angular en la ruta
+ * pública /newsletter/confirmar.
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
-import { adminClient } from '../_shared/clients.ts';
+import { actualizarEstadoSuscripcion } from '../_shared/suscripcion.ts';
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-
-  const token = new URL(req.url).searchParams.get('token');
-  if (!token) return json({ error: 'Falta "token"' }, 400);
-
-  const { data, error } = await adminClient()
-    .from('suscriptores_newsletter')
-    .update({ activo: true })
-    .eq('token_confirmacion', token)
-    .select('email')
-    .maybeSingle();
-
-  if (error || !data) return json({ error: 'Token inválido' }, 400);
-  return json({ ok: true });
-});
+Deno.serve((req) => actualizarEstadoSuscripcion(req, true));

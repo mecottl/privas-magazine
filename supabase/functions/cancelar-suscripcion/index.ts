@@ -1,23 +1,10 @@
 /**
- * cancelar-suscripcion (CLAUDE.md § 5)
- * Baja individual por token (link "darse de baja" en cada correo). Público.
+ * cancelar-suscripcion (CLAUDE.md § 5 · brief § 5)
+ *
+ * Pública. Baja individual: pone `activo = false` (NO borra la fila — así se
+ * respeta la baja aunque reintenten confirmar con un token viejo, y no se le
+ * vuelve a escribir sin que se resuscriba). Respuesta genérica siempre.
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
-import { adminClient } from '../_shared/clients.ts';
+import { actualizarEstadoSuscripcion } from '../_shared/suscripcion.ts';
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-
-  const token = new URL(req.url).searchParams.get('token');
-  if (!token) return json({ error: 'Falta "token"' }, 400);
-
-  const { data, error } = await adminClient()
-    .from('suscriptores_newsletter')
-    .update({ activo: false })
-    .eq('token_confirmacion', token)
-    .select('email')
-    .maybeSingle();
-
-  if (error || !data) return json({ error: 'Token inválido' }, 400);
-  return json({ ok: true });
-});
+Deno.serve((req) => actualizarEstadoSuscripcion(req, false));

@@ -1,52 +1,89 @@
 /**
- * invitar-admin (CLAUDE.md § 4)
+ * invitar-admin (CLAUDE.md § 4 · brief "lógica real")
  *
- * ÚNICA vía autorizada para crear cuentas de admin. Usa el service_role key
- * (nunca expuesto al frontend):
- *   1. auth.admin.createUser()  → cuenta en auth.users
- *   2. insert en perfiles_admin con el nivel_permiso indicado
+ * Quién la llama: un admin ya logueado, desde el panel.
+ * ÚNICA vía autorizada para crear cuentas de admin.
  *
- * Quien llama debe ser admin. No exponer ningún otro flujo de alta de admins.
+ * 1. Valida que quien llama es admin activo (requireAdmin).
+ * 2. Body: { email, nombre_visible, nivel_permiso }.
+ * 3. Valida nivel_permiso contra los valores del CHECK (hoy solo 'admin_total').
+ * 4. Con service_role:
+ *      - auth.admin.inviteUserByEmail(email) → crea el usuario y envía el
+ *        correo de invitación de Supabase (plantilla en inglés por ahora).
+ *      - insert en perfiles_admin { id, nombre_visible, nivel_permiso, activo: true }.
+ * 5. Si el insert falla tras crear el usuario → rollback con auth.admin.deleteUser().
+ * 6. 200 con los datos del nuevo admin (sin nada sensible).
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
+/** Valores admitidos por el CHECK de perfiles_admin.nivel_permiso (CLAUDE.md). */
+const NIVELES_PERMITIDOS = ['admin_total'] as const;
+type NivelPermiso = (typeof NIVELES_PERMITIDOS)[number];
+
 interface Payload {
-  email: string;
-  nombre?: string;
-  nivel_permiso?: string; // hoy solo 'admin_total' (CHECK en la tabla)
+  email?: string;
+  nombre_visible?: string;
+  nivel_permiso?: string;
 }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
   try {
     await requireAdmin(req);
-    const { email, nombre, nivel_permiso = 'admin_total' } =
-      (await req.json()) as Payload;
-    if (!email) return json({ error: 'Falta "email"' }, 400);
+
+    const { email, nombre_visible, nivel_permiso } = (await req
+      .json()
+      .catch(() => ({}))) as Payload;
+
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return json({ error: 'Email inválido' }, 400);
+    }
+    if (!nivel_permiso || !NIVELES_PERMITIDOS.includes(nivel_permiso as NivelPermiso)) {
+      return json(
+        {
+          error: `nivel_permiso inválido. Valores permitidos: ${NIVELES_PERMITIDOS.join(', ')}`,
+        },
+        400,
+      );
+    }
 
     const admin = adminClient();
-    const { data: created, error: createErr } = await admin.auth.admin.createUser({
-      email,
-      email_confirm: true,
-    });
-    if (createErr || !created.user) {
-      return json({ error: createErr?.message ?? 'No se pudo crear el usuario' }, 400);
+
+    const { data: invited, error: inviteErr } =
+      await admin.auth.admin.inviteUserByEmail(email);
+    if (inviteErr || !invited.user) {
+      return json(
+        { error: inviteErr?.message ?? 'No se pudo invitar al usuario' },
+        400,
+      );
     }
 
     const { error: perfilErr } = await admin.from('perfiles_admin').insert({
-      id: created.user.id,
-      nombre: nombre ?? null,
+      id: invited.user.id,
+      nombre_visible: nombre_visible ?? null,
       nivel_permiso,
+      activo: true,
     });
+
     if (perfilErr) {
-      await admin.auth.admin.deleteUser(created.user.id); // rollback
-      return json({ error: perfilErr.message }, 400);
+      // Rollback: no dejar una cuenta de Auth huérfana sin perfil.
+      await admin.auth.admin.deleteUser(invited.user.id);
+      return json({ error: `No se pudo crear el perfil: ${perfilErr.message}` }, 400);
     }
 
-    // TODO: enviar invitación / magic link al correo (Supabase Auth o Resend)
-    return json({ ok: true, user_id: created.user.id });
+    return json({
+      ok: true,
+      admin: {
+        id: invited.user.id,
+        email: invited.user.email,
+        nombre_visible: nombre_visible ?? null,
+        nivel_permiso,
+        activo: true,
+      },
+    });
   } catch (e) {
     if (e instanceof Response) return e;
     return json({ error: String(e) }, 500);
