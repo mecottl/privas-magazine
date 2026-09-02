@@ -47,8 +47,10 @@ export class AuthService {
   private async cargarPerfil(): Promise<void> {
     const { data } = await this.supabase.client
       .from('perfiles_admin')
-      .select('id, nombre, nivel_permiso')
+      .select('id, nombre_visible, nivel_permiso, activo')
       .maybeSingle();
-    this.perfil.set((data as PerfilAdmin) ?? null);
+    const perfil = (data as PerfilAdmin) ?? null;
+    // Solo cuenta como admin si el perfil está activo.
+    this.perfil.set(perfil?.activo ? perfil : null);
   }
 }

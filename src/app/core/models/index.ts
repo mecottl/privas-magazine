@@ -52,6 +52,7 @@ export type NivelPermiso = 'admin_total';
 
 export interface PerfilAdmin {
   id: string;
-  nombre: string | null;
+  nombre_visible: string | null;
   nivel_permiso: NivelPermiso;
+  activo: boolean;
 }
