@@ -22,12 +22,30 @@ jobs:
 
       - name: Build Angular (estático)
         run: npm run build -- --configuration production
+
+      - name: Inyectar SUPABASE_ANON_KEY en el bundle
         env:
-          # Inyectadas en el bundle (claves PÚBLICAS únicamente).
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          # environment.ts se compila con el placeholder '__SUPABASE_ANON_KEY__'
+          # (clave PÚBLICA). Lo reemplazamos por el valor real del secreto en
+          # los .js ya generados, sin recompilar.
+          grep -rl '__SUPABASE_ANON_KEY__' dist/privas-magazine/browser --include='*.js' \
+            | xargs -r sed -i "s|__SUPABASE_ANON_KEY__|${SUPABASE_ANON_KEY}|g"
 
-      # TODO: reemplazar '__SUPABASE_ANON_KEY__' en dist/ con el secreto,
-      # o migrar a un environment provider en build. Placeholder por ahora.
+      - name: Instalar Vercel CLI
+        run: npm i -g vercel@latest
 
-      - name: Deploy
-        run: echo "TODO: deploy dist/ — staging (Cloudflare Pages / Vercel) hasta que exista Hostinger; luego SFTP a public_html."
+      - name: Deploy a Vercel (sube el build ya hecho, sin recompilar)
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          # 'outputPath' no está en angular.json → default dist/<project>/browser
+          # (builder @angular/build:application). NO usamos 'vercel build': el
+          # build de Angular ya corrió arriba; que Vercel compile de nuevo
+          # duplicaría el proceso. Aquí solo se suben los archivos listos.
+          vercel deploy dist/privas-magazine/browser \
+            --prod \
+            --token="${{ secrets.VERCEL_TOKEN }}" \
+            --yes
