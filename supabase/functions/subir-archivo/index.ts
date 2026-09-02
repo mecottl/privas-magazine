@@ -48,11 +48,24 @@ const REGLAS: Record<TipoArchivo, ReglaTipo> = {
     carpeta: 'revistas',
   },
   'revista-pdf': {
+    // Tope absoluto (rama SFTP). Con UPLOAD_TARGET=supabase se recorta a 45 MB
+    // porque Supabase Storage tiene un límite real de ~50 MB por archivo.
     maxBytes: 60 * MB,
     mimes: ['application/pdf'],
     carpeta: 'revistas',
   },
 };
+
+/** Límite de PDF de revista cuando el destino es Supabase Storage. */
+const REVISTA_PDF_MAX_SUPABASE = 45 * MB;
+
+/** Tamaño máximo efectivo según el tipo y el destino de subida. */
+function maxBytesPara(tipo: TipoArchivo, target: string): number {
+  if (tipo === 'revista-pdf' && target !== 'sftp') {
+    return REVISTA_PDF_MAX_SUPABASE;
+  }
+  return REGLAS[tipo].maxBytes;
+}
 
 const EXT_POR_MIME: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -144,10 +157,13 @@ Deno.serve(async (req) => {
         415,
       );
     }
-    if (archivo.size > regla.maxBytes) {
+
+    const target = Deno.env.get('UPLOAD_TARGET') ?? 'supabase';
+    const maxBytes = maxBytesPara(tipo, target);
+    if (archivo.size > maxBytes) {
       return json(
         {
-          error: `El archivo pesa ${(archivo.size / MB).toFixed(1)} MB; el máximo para ${tipo} es ${regla.maxBytes / MB} MB`,
+          error: `El archivo pesa ${(archivo.size / MB).toFixed(1)} MB; el máximo para ${tipo} (destino ${target}) es ${maxBytes / MB} MB`,
         },
         413,
       );
@@ -161,7 +177,6 @@ Deno.serve(async (req) => {
     const ruta = `${regla.carpeta}/${nombre}`;
 
     const bytes = new Uint8Array(await archivo.arrayBuffer());
-    const target = Deno.env.get('UPLOAD_TARGET') ?? 'supabase';
 
     let url: string;
     if (target === 'sftp') {
