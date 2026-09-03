@@ -9,27 +9,31 @@ import type { Articulo } from '../../../../core/models';
   standalone: true,
   imports: [DatePipe, RouterLink],
   template: `
-    <section class="page">
-      <p><a routerLink="/articulos">← Artículos</a></p>
-      @if (error()) { <p class="error">{{ error() }}</p> }
-      @if (articulo(); as a) {
-        <article>
-          <span class="meta">
+    <div class="page">
+      <a routerLink="/articulos" class="articulo-volver">← Artículos</a>
+    </div>
+    @if (error()) { <p class="page error">{{ error() }}</p> }
+    @if (articulo(); as a) {
+      <article class="articulo">
+        <span class="meta">
+          <span class="categoria-tag">
             {{ a.categorias?.nombre || 'Sin categoría' }}
-            · {{ a.fecha_publicacion | date: 'longDate' }}
-            · {{ a.autor_tipo === 'libre' ? a.autor_texto : 'Redacción' }}
           </span>
-          <h1>{{ a.titulo }}</h1>
-          @if (a.imagen_portada_url) { <img [src]="a.imagen_portada_url" [alt]="a.titulo" /> }
-          <!-- MVP: cada bloque como texto plano, sin formato final -->
+          · {{ a.fecha_publicacion | date: 'longDate' }}
+          · {{ a.autor_tipo === 'libre' ? a.autor_texto : 'Redacción' }}
+        </span>
+        <h1>{{ a.titulo }}</h1>
+        @if (a.imagen_portada_url) { <img [src]="a.imagen_portada_url" [alt]="a.titulo" /> }
+        <!-- MVP: cada bloque como texto plano, sin formato final -->
+        <div class="articulo-cuerpo">
           @for (bloque of a.contenido_json; track $index) {
             <p>{{ bloque.contenido }}</p>
           }
-        </article>
-      } @else if (!error()) {
-        <p>Cargando…</p>
-      }
-    </section>
+        </div>
+      </article>
+    } @else if (!error()) {
+      <p class="page">Cargando…</p>
+    }
   `,
 })
 export class ArticuloDetalle implements OnInit {

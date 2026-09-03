@@ -7,7 +7,9 @@ import type { Marca } from '../../../../core/models';
   standalone: true,
   template: `
     <section class="page">
-      <h1>Nuestras Marcas</h1>
+      <div class="inicio-encabezado">
+        <h1>Nuestras Marcas</h1>
+      </div>
       @if (error()) { <p class="error">{{ error() }}</p> }
       <ul class="marcas">
         @for (m of marcas(); track m.id) {
@@ -18,7 +20,7 @@ import type { Marca } from '../../../../core/models';
             </a>
           </li>
         } @empty {
-          <li>Próximamente.</li>
+          <li class="indice-vacio">Próximamente.</li>
         }
       </ul>
     </section>

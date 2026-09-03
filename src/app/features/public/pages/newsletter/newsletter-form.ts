@@ -7,13 +7,24 @@ import { NewsletterService } from '../../../../core/services/newsletter.service'
   standalone: true,
   imports: [FormsModule],
   template: `
-    <form class="newsletter" (ngSubmit)="enviar()">
-      <label>Suscríbete al newsletter
-        <input type="email" name="email" [(ngModel)]="email" placeholder="tu@correo.com" required />
-      </label>
-      <button type="submit" [disabled]="enviando()">Suscribirme</button>
-      @if (msg()) { <p [class.error]="!ok()">{{ msg() }}</p> }
-    </form>
+    <div class="newsletter">
+      <div class="newsletter-copy">
+        <strong>Recibe lo nuevo</strong>
+        <span>Un aviso cuando publicamos un artículo o sale una nueva edición.</span>
+      </div>
+      <form (ngSubmit)="enviar()">
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="tu@correo.com"
+          aria-label="Correo electrónico"
+          required
+        />
+        <button type="submit" [disabled]="enviando()">Suscribirme</button>
+        @if (msg()) { <p [class.error]="!ok()" [class.ok]="ok()">{{ msg() }}</p> }
+      </form>
+    </div>
   `,
 })
 export class NewsletterForm {

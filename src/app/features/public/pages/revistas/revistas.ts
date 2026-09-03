@@ -2,23 +2,37 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import type { EdicionRevista } from '../../../../core/models';
 
+const NOMBRE_TEMPORADA: Record<string, string> = {
+  'primavera-verano': 'Primavera-Verano',
+  'otono-invierno': 'Otoño-Invierno',
+};
+
 @Component({
   selector: 'app-revistas',
   standalone: true,
   template: `
     <section class="page">
-      <h1>Ediciones de la revista</h1>
+      <div class="inicio-encabezado">
+        <h1>Ediciones de la revista</h1>
+        <p>La biblioteca completa de PRIVAS Magazine, dos ediciones al año.</p>
+      </div>
+
       @if (error()) { <p class="error">{{ error() }}</p> }
+
       <ul class="revistas">
         @for (ed of ediciones(); track ed.id) {
           <li>
             <a [href]="ed.pdf_url" target="_blank" rel="noopener">
-              <img [src]="ed.portada_url" [alt]="ed.titulo" />
-              <span>{{ ed.titulo }} — {{ ed.temporada }} {{ ed.anio }}</span>
+              <figure>
+                <img [src]="ed.portada_url" [alt]="ed.titulo" />
+                <figcaption>Abrir PDF</figcaption>
+              </figure>
+              <span class="titulo-edicion">{{ ed.titulo }}</span>
+              <span class="temporada">{{ nombreTemporada(ed.temporada) }} {{ ed.anio }}</span>
             </a>
           </li>
         } @empty {
-          <li>Todavía no hay ediciones publicadas.</li>
+          <li class="indice-vacio">Todavía no hay ediciones publicadas.</li>
         }
       </ul>
     </section>
@@ -28,6 +42,10 @@ export class Revistas implements OnInit {
   private readonly srv = inject(EdicionesService);
   readonly ediciones = signal<EdicionRevista[]>([]);
   readonly error = signal('');
+
+  nombreTemporada(t: string): string {
+    return NOMBRE_TEMPORADA[t] ?? t;
+  }
 
   async ngOnInit() {
     try {

@@ -1,13 +1,28 @@
-/* Estilos globales. Mobile-first (CLAUDE.md § Decisiones de frontend).
-   Líneas limpias, foco en fotografía. Añadir tokens de tema aquí. */
+/* =============================================================================
+   PRIVAS Magazine — sistema de diseño del sitio público
+   Dirección: minimalista, seria, empresarial. Paleta casi monocroma, un solo
+   acento usado con moderación, tipografía de prensa seria, sin decoración.
+   ========================================================================= */
 
 :root {
+  /* Color base — casi monocromo, un único acento */
   --color-fondo: #ffffff;
-  --color-texto: #1a1a1a;
-  --color-acento: #b08d57;
-  --ancho-max: 1200px;
-  --fuente-titulos: Georgia, 'Times New Roman', serif;
-  --fuente-texto: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --color-fondo-alt: #f5f5f3; /* franjas neutras, ej. barra de newsletter */
+  --color-blanco: #ffffff;
+  --color-texto: #17181c; /* tinta, nunca negro puro */
+  --color-texto-suave: rgba(23, 24, 28, 0.6);
+  --color-acento: #1f5b67; /* teal profundo — único acento, uso deliberado */
+  --color-acento-oscuro: #163f48;
+  --color-linea: #e1e0da; /* línea fina, neutra */
+
+  /* Tipografía */
+  --fuente-titulos: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
+  --fuente-texto: 'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Medidas */
+  --ancho-max: 1160px;
+  --ancho-lectura: 680px;
+  --radius: 1px;
 }
 
 * {
@@ -24,14 +39,21 @@ body {
   background: var(--color-fondo);
   color: var(--color-texto);
   font-family: var(--fuente-texto);
-  line-height: 1.6;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
 h3 {
   font-family: var(--fuente-titulos);
-  line-height: 1.2;
+  line-height: 1.16;
+  font-weight: 400;
+  margin: 0 0 0.4em;
+}
+
+p {
+  margin: 0 0 1em;
 }
 
 img {
@@ -42,11 +64,26 @@ img {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
-/* ---------------------------------------------------------------------------
-   MVP funcional — estilos mínimos "feo pero usable" (el diseño final va aparte)
-   --------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* -----------------------------------------------------------------------
+   MVP funcional — estilos mínimos "feo pero usable" (panel de admin)
+   No es el foco de esta pasada de diseño; solo hereda los tokens de arriba.
+   ----------------------------------------------------------------------- */
 
 .page {
   max-width: var(--ancho-max);
@@ -65,7 +102,6 @@ a {
   opacity: 0.7;
 }
 
-/* Formularios */
 form label,
 fieldset label {
   display: block;
@@ -77,12 +113,27 @@ textarea {
   font: inherit;
   padding: 0.4rem;
   max-width: 100%;
+  border: 1px solid var(--color-linea);
+  background: var(--color-blanco);
+  border-radius: var(--radius);
 }
 button {
   font: inherit;
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem;
   margin: 0.15rem 0.15rem 0.15rem 0;
   cursor: pointer;
+  background: var(--color-texto);
+  color: var(--color-blanco);
+  border: none;
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
+}
+button:hover:not(:disabled) {
+  background: var(--color-acento);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 .row {
   display: flex;
@@ -95,7 +146,6 @@ fieldset {
   margin: 1rem 0;
 }
 
-/* Tablas del panel */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -113,32 +163,6 @@ td {
   white-space: nowrap;
 }
 
-/* Layout público */
-.site-header,
-.site-footer {
-  max-width: var(--ancho-max);
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.site-header .brand {
-  font-family: var(--fuente-titulos);
-  font-size: 1.3rem;
-  font-weight: bold;
-}
-.site-header nav {
-  display: flex;
-  gap: 1rem;
-}
-.site-footer {
-  border-top: 1px solid #ddd;
-  margin-top: 3rem;
-}
-
-/* Layout admin */
 app-admin-layout {
   display: flex;
   min-height: 100vh;
@@ -159,48 +183,503 @@ app-admin-layout {
   flex: 1;
 }
 
-/* Listados de artículos / revistas / marcas */
-.articulos {
-  list-style: none;
-  padding: 0;
-}
-.articulos li {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #eee;
-}
-.articulos img {
-  width: 160px;
-  object-fit: cover;
-}
-.meta {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  opacity: 0.7;
-}
-.revistas,
-.marcas {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-.revistas img,
-.marcas img {
-  width: 180px;
-}
-
 .auth-box {
   max-width: 320px;
   margin: 4rem auto;
   padding: 1.5rem;
   border: 1px solid #ddd;
 }
+
+/* =============================================================================
+   SITIO PÚBLICO — masthead, hero, índice editorial, artículo, revistas, marcas
+   ========================================================================= */
+
+/* ---------- Masthead / navegación ---------- */
+
+.masthead {
+  background: var(--color-acento);
+}
+
+.masthead-bar {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 1.3rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+}
+
+.masthead-identidad {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.brand {
+  font-family: var(--fuente-titulos);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+  line-height: 1.05;
+  letter-spacing: 0.005em;
+  color: var(--color-blanco);
+}
+
+/* Kicker: línea de categorías bajo el wordmark, tratadas como enlaces */
+.masthead-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.55rem;
+  margin: 0;
+  font-family: var(--fuente-texto);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+.masthead-kicker a {
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.15s ease;
+}
+.masthead-kicker a:hover,
+.masthead-kicker a:focus-visible {
+  color: var(--color-blanco);
+}
+.masthead-kicker a + a::before {
+  content: '·';
+  margin-right: 0.55rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  color: var(--color-blanco);
+  border: 1px solid var(--color-blanco);
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.nav-toggle:hover {
+  background: var(--color-blanco);
+  color: var(--color-acento);
+}
+
+.masthead nav {
+  display: flex;
+  gap: 1.6rem;
+  padding-top: 0.35rem;
+}
+.masthead nav a {
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.72);
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.masthead nav a:hover {
+  color: var(--color-blanco);
+}
+.masthead nav a.active {
+  border-bottom-color: var(--color-blanco);
+  color: var(--color-blanco);
+}
+
+/* Dentro del masthead el acento ES el fondo: el foco necesita contraste blanco */
+.masthead :focus-visible {
+  outline-color: var(--color-blanco);
+}
+
+@media (max-width: 640px) {
+  .nav-toggle {
+    display: inline-block;
+  }
+  .masthead nav {
+    flex-direction: column;
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+    flex-basis: 100%;
+    padding-top: 0;
+  }
+  .masthead nav.abierto {
+    max-height: 220px;
+  }
+  .masthead nav a {
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  .masthead-bar {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------- Categoría: etiqueta neutra con borde ---------- */
+
+.categoria-tag {
+  display: inline-block;
+  border: 1px solid var(--color-texto-suave);
+  color: var(--color-texto-suave);
+  padding: 0.08em 0.55em;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius);
+}
+
+.filtro-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.4rem;
+  margin: 0.4rem 0 2.2rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--color-linea);
+}
+.filtro-categorias button {
+  background: none;
+  color: var(--color-texto-suave);
+  border: none;
+  padding: 0.2rem 0;
+  margin: 0;
+  font-family: var(--fuente-texto);
+  font-size: 0.9rem;
+  border-bottom: 2px solid transparent;
+}
+.filtro-categorias button:hover {
+  color: var(--color-texto);
+}
+.filtro-categorias button.activa {
+  color: var(--color-texto);
+  border-bottom-color: var(--color-texto);
+  font-weight: 600;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.82rem;
+  color: var(--color-texto-suave);
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Inicio: nota principal + índice ---------- */
+
+.inicio-encabezado {
+  padding: 2.6rem 0 0.6rem;
+}
+.inicio-encabezado h1 {
+  font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.3rem);
+}
+.inicio-encabezado p {
+  max-width: 46ch;
+  color: var(--color-texto-suave);
+  font-size: 1rem;
+}
+
+.nota-principal {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2.75rem;
+  align-items: center;
+  padding: 1.8rem 0 2.8rem;
+  border-bottom: 1px solid var(--color-linea);
+}
+.nota-principal img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+.nota-principal .titulo {
+  font-size: clamp(1.55rem, 1.15rem + 1.7vw, 2.3rem);
+  font-weight: 400;
+}
+.nota-principal .extracto {
+  font-size: 1.03rem;
+  color: var(--color-texto-suave);
+  max-width: 52ch;
+}
+.nota-principal .leer {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  border-bottom: 1px solid var(--color-texto);
+}
+
+@media (max-width: 760px) {
+  .nota-principal {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+}
+
+.indice {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.indice li {
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--color-linea);
+}
+.indice li:last-child {
+  border-bottom: 1px solid var(--color-linea);
+}
+.indice h2 {
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+.indice .extracto {
+  color: var(--color-texto-suave);
+  font-size: 0.94rem;
+  margin-top: 0.3rem;
+  max-width: 62ch;
+}
+.indice a:hover h2 {
+  color: var(--color-acento);
+}
+
+.indice-vacio {
+  padding: 2.5rem 0;
+  color: var(--color-texto-suave);
+  border-top: 1px solid var(--color-linea);
+}
+
+/* ---------- Listado /articulos (con miniatura) ---------- */
+
+.articulos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.articulos > li {
+  display: grid;
+  grid-template-columns: 148px 1fr;
+  gap: 1.4rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--color-linea);
+}
+.articulos > li:last-child {
+  border-bottom: 1px solid var(--color-linea);
+}
+.articulos > li.indice-vacio {
+  display: block;
+  border-top: 1px solid var(--color-linea);
+}
+.articulos img {
+  width: 148px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  filter: grayscale(0.15);
+}
+.articulos h2 {
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+.articulos a:hover h2 {
+  color: var(--color-acento);
+}
+.articulos p {
+  color: var(--color-texto-suave);
+  font-size: 0.92rem;
+  margin: 0.3rem 0 0;
+}
+
+@media (max-width: 560px) {
+  .articulos > li {
+    grid-template-columns: 96px 1fr;
+    gap: 0.9rem;
+  }
+  .articulos img {
+    width: 96px;
+    height: 96px;
+  }
+}
+
+/* ---------- Detalle de artículo ---------- */
+
+.articulo-volver {
+  display: inline-block;
+  margin: 1.6rem 0 1rem;
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+}
+.articulo-volver:hover {
+  color: var(--color-texto);
+}
+
+.articulo {
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+.articulo h1 {
+  font-size: clamp(1.7rem, 1.3rem + 1.7vw, 2.4rem);
+  margin-top: 0.5rem;
+}
+.articulo > img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin: 1.6rem 0;
+}
+.articulo-cuerpo {
+  font-size: 1.05rem;
+  color: #2b2c31;
+}
+.articulo-cuerpo p {
+  margin: 0 0 1.3em;
+}
+
+/* ---------- Revistas: muro de portadas ---------- */
+
+.revistas {
+  list-style: none;
+  padding: 2rem 0 3.5rem;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 2.2rem 1.6rem;
+}
+.revistas a {
+  display: block;
+}
+.revistas figure {
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-linea);
+}
+.revistas img {
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+.revistas figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 0.65rem 0.75rem 0.55rem;
+  background: rgba(23, 24, 28, 0.86);
+  color: var(--color-blanco);
+  font-size: 0.78rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.revistas a:hover figcaption,
+.revistas a:focus-visible figcaption {
+  opacity: 1;
+}
+.revistas .titulo-edicion {
+  display: block;
+  margin-top: 0.6rem;
+  font-family: var(--fuente-titulos);
+  font-size: 0.98rem;
+}
+.revistas .temporada {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+}
+
+/* ---------- Marcas ---------- */
+
+.marcas {
+  list-style: none;
+  padding: 2rem 0 3.5rem;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem 3rem;
+  align-items: center;
+}
+.marcas a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  color: var(--color-texto-suave);
+  transition: color 0.15s ease;
+}
+.marcas a:hover {
+  color: var(--color-texto);
+}
+.marcas img {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.85;
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+.marcas a:hover img {
+  filter: grayscale(0);
+  opacity: 1;
+}
+.marcas span {
+  font-size: 0.86rem;
+}
+
+/* ---------- Newsletter ---------- */
+
 .newsletter {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+  margin: 3rem 0 0;
+  padding: 1.7rem 1.6rem;
+  background: var(--color-fondo-alt);
+  border-radius: var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.6rem;
+}
+.newsletter-copy strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+  font-weight: 400;
+  display: block;
+}
+.newsletter-copy span {
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+}
+.newsletter form {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.newsletter label {
+  margin: 0;
+}
+.newsletter input {
+  min-width: 220px;
+}
+.newsletter p {
+  width: 100%;
+  margin: 0.5rem 0 0;
+  font-size: 0.86rem;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  max-width: var(--ancho-max);
+  margin: 3rem auto 0;
+  padding: 1.6rem 1.25rem 2.4rem;
+  display: flex;
+  gap: 1rem 2rem;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--color-linea);
+  font-size: 0.84rem;
+  color: var(--color-texto-suave);
+}
+.site-footer a:hover {
+  color: var(--color-texto);
 }
