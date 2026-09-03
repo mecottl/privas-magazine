@@ -10,7 +10,7 @@ export const PUBLIC_ROUTES: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./pages/inicio/inicio').then((m) => m.Inicio),
+          import('./pages/landing/landing').then((m) => m.Landing),
       },
       {
         path: 'articulos',

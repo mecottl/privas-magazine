@@ -10,16 +10,19 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { CategoriasService } from '../../../../core/services/categorias.service';
+import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import type { Articulo, Categoria } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulos',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, RevealDirective],
   template: `
     <section class="page">
-      <div class="inicio-encabezado">
+      <div class="inicio-encabezado" reveal>
+        <p class="eyebrow">El archivo completo</p>
         <h1>Artículos</h1>
+        <p>Todo lo que hemos publicado, filtrable por sección.</p>
       </div>
 
       <nav class="filtro-categorias" aria-label="Filtrar por categoría">
