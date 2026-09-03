@@ -20,80 +20,128 @@ import {
   standalone: true,
   imports: [FormsModule, RouterLink],
   template: `
-    <section class="page">
-      <p><a routerLink="..">← Artículos</a></p>
-      <h1>{{ id ? 'Editar artículo' : 'Nuevo artículo' }}</h1>
+    <div class="admin-page-head">
+      <div>
+        <p style="margin:0 0 .35rem"><a routerLink="..">← Volver a artículos</a></p>
+        <h1>{{ id ? 'Editar artículo' : 'Nuevo artículo' }}</h1>
+      </div>
+    </div>
 
-      @if (error()) { <p class="error">{{ error() }}</p> }
-      @if (ok()) { <p class="ok">{{ ok() }}</p> }
+    @if (error()) { <p class="error">{{ error() }}</p> }
+    @if (ok()) { <p class="ok">{{ ok() }}</p> }
 
-      <form (ngSubmit)="guardar()">
-        <label>Título
-          <input name="titulo" [(ngModel)]="m.titulo" (ngModelChange)="tituloCambio($event)" required />
-        </label>
-        <label>Slug
-          <input name="slug" [(ngModel)]="m.slug" required />
-        </label>
-
-        <label>Autor — tipo
-          <select name="autor_tipo" [(ngModel)]="m.autor_tipo">
-            <option value="libre">libre</option>
-            <option value="usuario">usuario</option>
-          </select>
-        </label>
-        @if (m.autor_tipo === 'libre') {
-          <label>Autor (texto)
-            <input name="autor_texto" [(ngModel)]="m.autor_texto" />
+    <form (ngSubmit)="guardar()">
+      <div class="editor-grid">
+        <fieldset class="panel">
+          <legend>Contenido</legend>
+          <label>Título
+            <input name="titulo" [(ngModel)]="m.titulo" (ngModelChange)="tituloCambio($event)" required />
           </label>
-        } @else {
-          <label>Autor (usuario admin)
-            <select name="autor_uid" [(ngModel)]="m.autor_uid">
-              <option [ngValue]="null">—</option>
-              @for (u of admins(); track u.id) {
-                <option [ngValue]="u.id">{{ u.nombre_visible || u.id }}</option>
-              }
-            </select>
+          <label>Slug
+            <input name="slug" [(ngModel)]="m.slug" required />
           </label>
-        }
+          <label>Contenido — JSON de bloques (MVP)
+            <textarea name="contenido" rows="12" [(ngModel)]="contenidoTexto"></textarea>
+          </label>
+          <span class="hint">Formato: [{{ '{' }} "tipo": "texto", "contenido": "…" {{ '}' }}]. El extracto se genera solo.</span>
+        </fieldset>
 
-        <label>Categoría
-          <select name="categoria_id" [(ngModel)]="m.categoria_id">
-            <option [ngValue]="null">—</option>
-            @for (c of categorias(); track c.id) {
-              <option [ngValue]="c.id">{{ c.nombre }}</option>
+        <div class="editor-lado">
+          <fieldset class="panel">
+            <legend>Publicación</legend>
+            <label>Estado
+              <select name="estado" [(ngModel)]="m.estado">
+                @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+              </select>
+            </label>
+            @if (m.estado === 'programado' || m.estado === 'publicado') {
+              <label>Fecha de publicación
+                <input type="datetime-local" name="fecha" [(ngModel)]="fechaLocal" />
+              </label>
             }
-          </select>
-        </label>
+            <label>Categoría
+              <select name="categoria_id" [(ngModel)]="m.categoria_id">
+                <option [ngValue]="null">Sin categoría</option>
+                @for (c of categorias(); track c.id) {
+                  <option [ngValue]="c.id">{{ c.nombre }}</option>
+                }
+              </select>
+            </label>
+          </fieldset>
 
-        <label>Imagen de portada
-          <input type="file" accept="image/*" (change)="subirPortada($event)" />
-        </label>
-        @if (subiendo()) { <p>Subiendo imagen…</p> }
-        @if (m.imagen_portada_url) {
-          <img [src]="m.imagen_portada_url" alt="portada" style="max-height:120px" />
-        }
+          <fieldset class="panel">
+            <legend>Autoría</legend>
+            <label>Tipo de autor
+              <select name="autor_tipo" [(ngModel)]="m.autor_tipo">
+                <option value="libre">Texto libre</option>
+                <option value="usuario">Usuario admin</option>
+              </select>
+            </label>
+            @if (m.autor_tipo === 'libre') {
+              <label>Autor
+                <input name="autor_texto" [(ngModel)]="m.autor_texto" />
+              </label>
+            } @else {
+              <label>Autor
+                <select name="autor_uid" [(ngModel)]="m.autor_uid">
+                  <option [ngValue]="null">—</option>
+                  @for (u of admins(); track u.id) {
+                    <option [ngValue]="u.id">{{ u.nombre_visible || u.id }}</option>
+                  }
+                </select>
+              </label>
+            }
+          </fieldset>
 
-        <label>Contenido (JSON de bloques — MVP)
-          <textarea name="contenido" rows="8" [(ngModel)]="contenidoTexto"></textarea>
-        </label>
-        <span class="hint">Formato: [{{ '{' }} "tipo": "texto", "contenido": "..." {{ '}' }}]</span>
+          <fieldset class="panel">
+            <legend>Portada</legend>
+            <label>Imagen
+              <input type="file" accept="image/*" (change)="subirPortada($event)" />
+            </label>
+            @if (subiendo()) { <p class="hint">Subiendo imagen…</p> }
+            @if (m.imagen_portada_url) {
+              <img [src]="m.imagen_portada_url" alt="Portada del artículo" class="portada-preview" />
+            }
+          </fieldset>
+        </div>
+      </div>
 
-        <label>Estado
-          <select name="estado" [(ngModel)]="m.estado">
-            @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
-          </select>
-        </label>
-        @if (m.estado === 'programado' || m.estado === 'publicado') {
-          <label>Fecha de publicación
-            <input type="datetime-local" name="fecha" [(ngModel)]="fechaLocal" />
-          </label>
-        }
-
+      <div class="editor-barra">
         <button type="submit" [disabled]="guardando()">
-          {{ guardando() ? 'Guardando…' : 'Guardar' }}
+          {{ guardando() ? 'Guardando…' : 'Guardar artículo' }}
         </button>
-      </form>
-    </section>
+      </div>
+    </form>
+  `,
+  styles: `
+    .editor-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+    .editor-lado {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+    .portada-preview {
+      margin-top: 0.5rem;
+      max-height: 160px;
+      border: 1px solid var(--color-linea);
+      border-radius: var(--radius);
+    }
+    .editor-barra {
+      position: sticky;
+      bottom: 0;
+      margin-top: var(--space-lg);
+      padding: var(--space-md) 0;
+      background: var(--color-fondo-alt);
+      border-top: 1px solid var(--color-linea);
+    }
+    @media (max-width: 860px) {
+      .editor-grid { grid-template-columns: 1fr; }
+    }
   `,
 })
 export class ArticuloEditar implements OnInit {

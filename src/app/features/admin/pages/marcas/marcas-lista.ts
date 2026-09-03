@@ -8,42 +8,47 @@ import type { Marca } from '../../../../core/models';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <section class="page">
-      <h1>Marcas</h1>
-      <p class="hint">
-        La sección pública "Nuestras Marcas" lee de esta tabla (CLAUDE.md).
-        Pendiente de confirmar con la clienta si se deja fija o administrable.
-      </p>
-      @if (error()) { <p class="error">{{ error() }}</p> }
+    <div class="admin-page-head">
+      <div>
+        <h1>Marcas</h1>
+        <p>Alimenta la sección pública "Nuestras Marcas". El orden controla cómo se listan.</p>
+      </div>
+    </div>
 
+    @if (error()) { <p class="error">{{ error() }}</p> }
+
+    <fieldset class="panel">
+      <legend>Nueva marca</legend>
       <form class="row" (ngSubmit)="crear()">
         <input [(ngModel)]="nueva.nombre" name="nombre" placeholder="Nombre" required />
         <input [(ngModel)]="nueva.red_social_url" name="url" placeholder="URL red social" required />
         <input [(ngModel)]="nueva.logo_url" name="logo" placeholder="URL logo (opcional)" />
-        <input [(ngModel)]="nueva.orden" name="orden" type="number" placeholder="orden" />
+        <input [(ngModel)]="nueva.orden" name="orden" type="number" placeholder="orden" style="width:5rem" />
         <button type="submit">Agregar</button>
       </form>
+    </fieldset>
 
+    <div class="tabla-wrap">
       <table>
-        <thead><tr><th>Orden</th><th>Nombre</th><th>URL</th><th>Logo</th><th></th></tr></thead>
+        <thead><tr><th style="width:5rem">Orden</th><th>Nombre</th><th>URL</th><th>Logo</th><th></th></tr></thead>
         <tbody>
           @for (m of marcas(); track m.id) {
             <tr>
-              <td><input type="number" [(ngModel)]="m.orden" style="width:4rem" /></td>
-              <td><input [(ngModel)]="m.nombre" /></td>
-              <td><input [(ngModel)]="m.red_social_url" /></td>
-              <td><input [(ngModel)]="m.logo_url" /></td>
-              <td>
-                <button (click)="guardar(m)">Guardar</button>
-                <button (click)="eliminar(m)">Eliminar</button>
+              <td><input type="number" [(ngModel)]="m.orden" aria-label="Orden" /></td>
+              <td><input [(ngModel)]="m.nombre" aria-label="Nombre" /></td>
+              <td><input [(ngModel)]="m.red_social_url" aria-label="URL" /></td>
+              <td><input [(ngModel)]="m.logo_url" aria-label="Logo" /></td>
+              <td class="acciones">
+                <button class="secundario" (click)="guardar(m)">Guardar</button>
+                <button class="secundario peligro" (click)="eliminar(m)">Eliminar</button>
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="5">Sin marcas.</td></tr>
+            <tr><td colspan="5"><div class="admin-empty">Sin marcas todavía.</div></td></tr>
           }
         </tbody>
       </table>
-    </section>
+    </div>
   `,
 })
 export class MarcasLista implements OnInit {

@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { AdminsService } from '../../../../core/services/admins.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import {
@@ -11,17 +12,18 @@ import {
 @Component({
   selector: 'app-admin-administradores-lista',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, DatePipe],
   template: `
-    <section class="page">
-      <h1>Administradores</h1>
+    <div class="admin-page-head">
+      <div>
+        <h1>Administradores</h1>
+        <p>{{ admins().length }} cuentas. El alta pasa por la Edge Function <code>invitar-admin</code>.</p>
+      </div>
+    </div>
 
-      <fieldset>
-        <legend>Invitar administrador</legend>
-        <p class="hint">
-          Llama a la Edge Function <code>invitar-admin</code>: crea el usuario en
-          Auth, le envía el correo de invitación de Supabase e inserta su perfil.
-        </p>
+    <fieldset class="panel">
+      <legend>Invitar administrador</legend>
+      <div class="campos-grid">
         <label>Correo <input type="email" [(ngModel)]="email" name="email" /></label>
         <label>Nombre visible <input [(ngModel)]="nombre" name="nombre" /></label>
         <label>Nivel de permiso
@@ -29,40 +31,55 @@ import {
             @for (n of niveles; track n) { <option [value]="n">{{ n }}</option> }
           </select>
         </label>
+      </div>
+      <div class="row" style="margin-bottom:0">
         <button (click)="invitar()" [disabled]="enviando()">
           {{ enviando() ? 'Enviando…' : 'Enviar invitación' }}
         </button>
-        @if (msg()) { <p [class.error]="!exito()" [class.ok]="exito()">{{ msg() }}</p> }
-      </fieldset>
+      </div>
+      @if (msg()) { <p [class.error]="!exito()" [class.ok]="exito()">{{ msg() }}</p> }
+    </fieldset>
 
+    <div class="tabla-wrap">
       <table>
-        <thead><tr><th>Nombre</th><th>Nivel</th><th>Activo</th><th>Alta</th><th></th></tr></thead>
+        <thead><tr><th>Nombre</th><th>Nivel</th><th>Estado</th><th>Alta</th><th></th></tr></thead>
         <tbody>
           @for (a of admins(); track a.id) {
             <tr>
               <td>
                 {{ a.nombre_visible || a.id }}
-                @if (a.id === miId()) { <strong>(tú)</strong> }
+                @if (a.id === miId()) { <strong>· tú</strong> }
               </td>
               <td>{{ a.nivel_permiso }}</td>
-              <td>{{ a.activo ? 'sí' : 'no' }}</td>
-              <td>{{ a.created_at }}</td>
               <td>
+                <span class="badge" [class.badge--publicado]="a.activo" [class.badge--despublicado]="!a.activo">
+                  {{ a.activo ? 'activo' : 'inactivo' }}
+                </span>
+              </td>
+              <td>{{ a.created_at | date: 'dd MMM y' }}</td>
+              <td class="acciones">
                 @if (a.id === miId()) {
                   <span class="hint">tu propia cuenta</span>
                 } @else {
-                  <button (click)="toggle(a)">
+                  <button class="secundario" [class.peligro]="a.activo" (click)="toggle(a)">
                     {{ a.activo ? 'Desactivar' : 'Activar' }}
                   </button>
                 }
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="5">Sin administradores.</td></tr>
+            <tr><td colspan="5"><div class="admin-empty">Sin administradores.</div></td></tr>
           }
         </tbody>
       </table>
-    </section>
+    </div>
+  `,
+  styles: `
+    .campos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0 var(--space-lg);
+    }
   `,
 })
 export class AdministradoresLista implements OnInit {

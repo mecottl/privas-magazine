@@ -14,12 +14,23 @@ import {
   standalone: true,
   imports: [FormsModule],
   template: `
-    <section class="page">
-      <h1>Ediciones de revista</h1>
-      @if (error()) { <p class="error">{{ error() }}</p> }
+    <div class="admin-page-head">
+      <div>
+        <h1>Ediciones de revista</h1>
+        <p>{{ ediciones().length }} ediciones · PDF + portada obligatorios para guardar</p>
+      </div>
+      @if (edit.id) {
+        <div class="admin-page-head__acciones">
+          <button class="secundario" (click)="nuevo()">Cancelar edición</button>
+        </div>
+      }
+    </div>
 
-      <fieldset>
-        <legend>{{ edit.id ? 'Editar edición' : 'Nueva edición' }}</legend>
+    @if (error()) { <p class="error">{{ error() }}</p> }
+
+    <fieldset class="panel">
+      <legend>{{ edit.id ? 'Editar edición' : 'Nueva edición' }}</legend>
+      <div class="campos-grid">
         <label>Título <input [(ngModel)]="edit.titulo" /></label>
         <label>Temporada
           <select [(ngModel)]="edit.temporada">
@@ -27,54 +38,70 @@ import {
           </select>
         </label>
         <label>Año <input type="number" [(ngModel)]="edit.anio" /></label>
-        <label>PDF
-          <input type="file" accept="application/pdf" (change)="subir($event, 'revista-pdf')" />
-        </label>
-        <span class="hint">{{ edit.pdf_url ? 'PDF ✓' : 'sin PDF' }}</span>
-        <label>Portada
-          <input type="file" accept="image/*" (change)="subir($event, 'revista-portada')" />
-        </label>
-        <span class="hint">{{ edit.portada_url ? 'portada ✓' : 'sin portada' }}</span>
         <label>Estado
           <select [(ngModel)]="edit.estado">
             @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
           </select>
         </label>
+        <label>PDF de la edición
+          <input type="file" accept="application/pdf" (change)="subir($event, 'revista-pdf')" />
+          <span class="hint">{{ edit.pdf_url ? 'PDF cargado' : 'sin PDF' }}</span>
+        </label>
+        <label>Portada
+          <input type="file" accept="image/*" (change)="subir($event, 'revista-portada')" />
+          <span class="hint">{{ edit.portada_url ? 'portada cargada' : 'sin portada' }}</span>
+        </label>
         @if (edit.estado === 'programado' || edit.estado === 'publicado') {
-          <label>Fecha pub. <input type="datetime-local" [(ngModel)]="fechaLocal" /></label>
+          <label>Fecha de publicación
+            <input type="datetime-local" [(ngModel)]="fechaLocal" />
+          </label>
         }
-        @if (subiendo()) { <p>Subiendo…</p> }
-        <button (click)="guardar()" [disabled]="guardando()">Guardar</button>
-        @if (edit.id) { <button (click)="nuevo()">Cancelar</button> }
-      </fieldset>
+      </div>
+      @if (subiendo()) { <p class="hint">Subiendo archivo…</p> }
+      <div class="row" style="margin-bottom:0">
+        <button (click)="guardar()" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : 'Guardar edición' }}
+        </button>
+      </div>
+    </fieldset>
 
+    <div class="tabla-wrap">
       <table>
-        <thead><tr><th>Título</th><th>Temp.</th><th>Año</th><th>Estado</th><th></th></tr></thead>
+        <thead><tr><th>Título</th><th>Temporada</th><th>Año</th><th>Estado</th><th></th></tr></thead>
         <tbody>
           @for (ed of ediciones(); track ed.id) {
             <tr>
               <td>{{ ed.titulo }}</td>
               <td>{{ ed.temporada }}</td>
               <td>{{ ed.anio }}</td>
-              <td>{{ ed.estado }}</td>
+              <td><span class="badge badge--{{ ed.estado }}">{{ ed.estado }}</span></td>
               <td class="acciones">
-                <button (click)="cargarEnForm(ed)">Editar</button>
-                @if (ed.pdf_url) { <a [href]="ed.pdf_url" target="_blank">PDF</a> }
+                <button class="secundario" (click)="cargarEnForm(ed)">Editar</button>
+                @if (ed.pdf_url) {
+                  <a [href]="ed.pdf_url" target="_blank" rel="noopener"><button class="secundario">Ver PDF</button></a>
+                }
                 @if (ed.estado !== 'publicado') {
-                  <button (click)="estado(ed, 'publicado')">Publicar</button>
+                  <button class="secundario" (click)="estado(ed, 'publicado')">Publicar</button>
                 }
                 @if (ed.estado === 'publicado') {
-                  <button (click)="estado(ed, 'despublicado')">Despublicar</button>
+                  <button class="secundario" (click)="estado(ed, 'despublicado')">Despublicar</button>
                 }
-                <button (click)="eliminar(ed)">Eliminar</button>
+                <button class="secundario peligro" (click)="eliminar(ed)">Eliminar</button>
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="5">Sin ediciones.</td></tr>
+            <tr><td colspan="5"><div class="admin-empty">Sin ediciones todavía.</div></td></tr>
           }
         </tbody>
       </table>
-    </section>
+    </div>
+  `,
+  styles: `
+    .campos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0 var(--space-lg);
+    }
   `,
 })
 export class EdicionesLista implements OnInit {

@@ -9,35 +9,43 @@ import type { Categoria } from '../../../../core/models';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <section class="page">
-      <h1>Categorías</h1>
+    <div class="admin-page-head">
+      <div>
+        <h1>Categorías</h1>
+        <p>{{ categorias().length }} categorías · usadas para clasificar y filtrar artículos</p>
+      </div>
+    </div>
 
+    <fieldset class="panel">
+      <legend>Nueva categoría</legend>
       <form class="row" (ngSubmit)="crear()">
         <input name="nombre" [(ngModel)]="nuevoNombre" placeholder="Nombre" required />
         <span class="hint">slug: {{ nuevoNombre ? slug(nuevoNombre) : '—' }}</span>
         <button type="submit" [disabled]="!nuevoNombre.trim()">Crear</button>
       </form>
+    </fieldset>
 
-      @if (error()) { <p class="error">{{ error() }}</p> }
+    @if (error()) { <p class="error">{{ error() }}</p> }
 
+    <div class="tabla-wrap">
       <table>
         <thead><tr><th>Nombre</th><th>Slug</th><th></th></tr></thead>
         <tbody>
           @for (c of categorias(); track c.id) {
             <tr>
-              <td><input [(ngModel)]="c.nombre" /></td>
-              <td><input [(ngModel)]="c.slug" /></td>
-              <td>
-                <button (click)="guardar(c)">Guardar</button>
-                <button (click)="eliminar(c)">Eliminar</button>
+              <td><input [(ngModel)]="c.nombre" aria-label="Nombre" /></td>
+              <td><input [(ngModel)]="c.slug" aria-label="Slug" /></td>
+              <td class="acciones">
+                <button class="secundario" (click)="guardar(c)">Guardar</button>
+                <button class="secundario peligro" (click)="eliminar(c)">Eliminar</button>
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="3">Sin categorías.</td></tr>
+            <tr><td colspan="3"><div class="admin-empty">Sin categorías todavía.</div></td></tr>
           }
         </tbody>
       </table>
-    </section>
+    </div>
   `,
 })
 export class CategoriasLista implements OnInit {

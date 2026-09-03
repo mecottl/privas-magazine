@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core/models';
 
@@ -10,21 +10,29 @@ import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core
   standalone: true,
   imports: [FormsModule, RouterLink, DatePipe],
   template: `
-    <section class="page">
-      <h1>Artículos</h1>
-      <div class="row">
-        <a routerLink="nuevo"><button>Nuevo artículo</button></a>
-        <label>
-          Estado:
-          <select [(ngModel)]="filtro" (ngModelChange)="cargar()">
-            <option value="">todos</option>
-            @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
-          </select>
-        </label>
+    <div class="admin-page-head">
+      <div>
+        <h1>Artículos</h1>
+        <p>{{ articulos().length }} en la vista actual</p>
       </div>
+      <div class="admin-page-head__acciones">
+        <a routerLink="nuevo"><button>Nuevo artículo</button></a>
+      </div>
+    </div>
 
-      @if (error()) { <p class="error">{{ error() }}</p> }
+    <div class="row">
+      <label>
+        Estado
+        <select [(ngModel)]="filtro" (ngModelChange)="cargar()">
+          <option value="">Todos</option>
+          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </label>
+    </div>
 
+    @if (error()) { <p class="error">{{ error() }}</p> }
+
+    <div class="tabla-wrap">
       <table>
         <thead>
           <tr><th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha pub.</th><th></th></tr>
@@ -32,39 +40,44 @@ import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core
         <tbody>
           @for (a of articulos(); track a.id) {
             <tr>
-              <td>{{ a.titulo }}</td>
+              <td><a [routerLink]="[a.id]">{{ a.titulo }}</a></td>
               <td>{{ a.categorias?.nombre || '—' }}</td>
-              <td>{{ a.estado }}</td>
-              <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'short') : '—' }}</td>
+              <td><span class="badge badge--{{ a.estado }}">{{ a.estado }}</span></td>
+              <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'dd MMM y') : '—' }}</td>
               <td class="acciones">
-                <a [routerLink]="[a.id]"><button>Editar</button></a>
+                <a [routerLink]="[a.id]"><button class="secundario">Editar</button></a>
                 @if (a.estado !== 'publicado') {
-                  <button (click)="estado(a, 'publicado')">Publicar</button>
+                  <button class="secundario" (click)="estado(a, 'publicado')">Publicar</button>
                 }
                 @if (a.estado === 'publicado') {
-                  <button (click)="estado(a, 'despublicado')">Despublicar</button>
+                  <button class="secundario" (click)="estado(a, 'despublicado')">Despublicar</button>
                 }
                 @if (a.estado !== 'borrador') {
-                  <button (click)="estado(a, 'borrador')">A borrador</button>
+                  <button class="secundario" (click)="estado(a, 'borrador')">A borrador</button>
                 }
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="5">Sin artículos.</td></tr>
+            <tr><td colspan="5"><div class="admin-empty">Sin artículos en este filtro.</div></td></tr>
           }
         </tbody>
       </table>
-    </section>
+    </div>
   `,
 })
 export class ArticulosLista implements OnInit {
   private readonly srv = inject(ArticulosService);
+  private readonly route = inject(ActivatedRoute);
   readonly articulos = signal<Articulo[]>([]);
   readonly error = signal('');
   readonly estados = ESTADOS;
   filtro: EstadoPublicacion | '' = '';
 
   ngOnInit() {
+    const q = this.route.snapshot.queryParamMap.get('estado');
+    if (q && (ESTADOS as string[]).includes(q)) {
+      this.filtro = q as EstadoPublicacion;
+    }
     this.cargar();
   }
 
