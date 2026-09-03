@@ -3,75 +3,84 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
+import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
+import { ConfirmService } from '../../../../shared/components/confirm-dialog';
+import { mensajeError } from '../../../../core/services/errores';
 import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core/models';
+
+type Accion = 'publicado' | 'despublicado' | 'borrador' | 'eliminar';
 
 @Component({
   selector: 'app-admin-articulos-lista',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe],
+  imports: [FormsModule, RouterLink, DatePipe, CategoriasNombrePipe],
   template: `
-    <div class="admin-page-head">
-      <div>
+    <div class="admin-page">
+      <div class="admin-page-head">
         <h1>Artículos</h1>
-        <p>{{ articulos().length }} en la vista actual</p>
+        <div class="admin-page-head__acciones">
+          <a routerLink="nuevo"><button>Nuevo artículo</button></a>
+        </div>
       </div>
-      <div class="admin-page-head__acciones">
-        <a routerLink="nuevo"><button>Nuevo artículo</button></a>
+
+      <div class="admin-page__fill">
+        <div class="row" style="margin:0">
+          <label style="margin:0">
+            <select [(ngModel)]="filtro" (ngModelChange)="cargar()" aria-label="Filtrar por estado">
+              <option value="">Todos los estados</option>
+              @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+            </select>
+          </label>
+        </div>
+
+        @if (error()) { <p class="error">{{ error() }}</p> }
+
+        <div class="tabla-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha pub.</th>
+                <th class="col-acciones">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (cargando()) {
+                <tr><td colspan="5"><div class="admin-cargando">Cargando…</div></td></tr>
+              } @else {
+                @for (a of articulos(); track a.id) {
+                  <tr>
+                    <td><a [routerLink]="[a.id]">{{ a.titulo }}</a></td>
+                    <td>{{ a.categorias | categoriasNombre: '—' }}</td>
+                    <td><span class="badge badge--{{ a.estado }}">{{ a.estado }}</span></td>
+                    <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'dd MMM y') : '—' }}</td>
+                    <td class="col-acciones">
+                      <div class="acciones">
+                        <a [routerLink]="[a.id]"><button class="secundario">Editar</button></a>
+                        <select #sel aria-label="Más acciones" (change)="ejecutar(a, sel.value); sel.value = ''">
+                          <option value="" selected>Acciones…</option>
+                          @if (a.estado !== 'publicado') { <option value="publicado">Publicar</option> }
+                          @if (a.estado === 'publicado') { <option value="despublicado">Despublicar</option> }
+                          @if (a.estado !== 'borrador') { <option value="borrador">Pasar a borrador</option> }
+                          <option value="eliminar">Eliminar</option>
+                        </select>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="5"><div class="admin-empty">Sin artículos.</div></td></tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-
-    <div class="row">
-      <label>
-        Estado
-        <select [(ngModel)]="filtro" (ngModelChange)="cargar()">
-          <option value="">Todos</option>
-          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
-        </select>
-      </label>
-    </div>
-
-    @if (error()) { <p class="error">{{ error() }}</p> }
-
-    <div class="tabla-wrap">
-      <table>
-        <thead>
-          <tr><th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha pub.</th><th></th></tr>
-        </thead>
-        <tbody>
-          @if (cargando()) {
-            <tr><td colspan="5"><div class="admin-cargando">Cargando artículos…</div></td></tr>
-          } @else {
-          @for (a of articulos(); track a.id) {
-            <tr>
-              <td><a [routerLink]="[a.id]">{{ a.titulo }}</a></td>
-              <td>{{ a.categorias?.nombre || '—' }}</td>
-              <td><span class="badge badge--{{ a.estado }}">{{ a.estado }}</span></td>
-              <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'dd MMM y') : '—' }}</td>
-              <td class="acciones">
-                <a [routerLink]="[a.id]"><button class="secundario">Editar</button></a>
-                @if (a.estado !== 'publicado') {
-                  <button class="secundario" (click)="estado(a, 'publicado')">Publicar</button>
-                }
-                @if (a.estado === 'publicado') {
-                  <button class="secundario" (click)="estado(a, 'despublicado')">Despublicar</button>
-                }
-                @if (a.estado !== 'borrador') {
-                  <button class="secundario" (click)="estado(a, 'borrador')">A borrador</button>
-                }
-              </td>
-            </tr>
-          } @empty {
-            <tr><td colspan="5"><div class="admin-empty">Sin artículos en este filtro.</div></td></tr>
-          }
-          }
-        </tbody>
-      </table>
     </div>
   `,
 })
 export class ArticulosLista implements OnInit {
   private readonly srv = inject(ArticulosService);
   private readonly route = inject(ActivatedRoute);
+  private readonly confirmar = inject(ConfirmService);
   readonly articulos = signal<Articulo[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
@@ -88,21 +97,36 @@ export class ArticulosLista implements OnInit {
 
   async cargar() {
     this.error.set('');
+    this.cargando.set(true);
     try {
       this.articulos.set(await this.srv.listarAdmin(this.filtro));
     } catch (e) {
-      this.error.set(String(e));
+      this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
     }
   }
 
-  async estado(a: Articulo, e: EstadoPublicacion) {
+  async ejecutar(a: Articulo, valor: string) {
+    const accion = valor as Accion | '';
+    if (!accion) return;
+    this.error.set('');
     try {
-      await this.srv.cambiarEstado(a.id, e);
+      if (accion === 'eliminar') {
+        const ok = await this.confirmar.confirm({
+          titulo: '¿Eliminar el artículo?',
+          mensaje: `«${a.titulo}» se borrará de forma permanente.`,
+          cta: 'Eliminar',
+          peligro: true,
+        });
+        if (!ok) return;
+        await this.srv.eliminar(a.id);
+      } else {
+        await this.srv.cambiarEstado(a.id, accion as EstadoPublicacion);
+      }
       await this.cargar();
-    } catch (err) {
-      this.error.set(String(err));
+    } catch (e) {
+      this.error.set(mensajeError(e));
     }
   }
 }

@@ -25,6 +25,9 @@ export interface Categoria {
   created_at?: string;
 }
 
+/** Categoría embebida en un artículo (join M2M `articulos_categorias`). */
+export type CategoriaRef = Pick<Categoria, 'id' | 'nombre' | 'slug'>;
+
 /**
  * Un bloque de contenido de artículo.
  *
@@ -51,7 +54,6 @@ export interface Articulo {
   extracto: string | null;
   contenido_json: BloqueContenido[];
   imagen_portada_url: string | null;
-  categoria_id: string | null;
   estado: EstadoPublicacion;
   autor_tipo: AutorTipo;
   autor_texto: string | null;
@@ -59,8 +61,8 @@ export interface Articulo {
   fecha_publicacion: string | null;
   created_at?: string;
   updated_at?: string;
-  /** Join opcional. */
-  categorias?: Pick<Categoria, 'id' | 'nombre' | 'slug'> | null;
+  /** Categorías del artículo (join M2M). Un artículo puede tener varias. */
+  categorias?: CategoriaRef[];
 }
 
 export interface EdicionRevista {

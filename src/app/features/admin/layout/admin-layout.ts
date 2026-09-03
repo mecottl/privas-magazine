@@ -6,12 +6,13 @@ import {
 } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ConfirmDialog } from '../../../shared/components/confirm-dialog';
 
 /** Shell del panel de administración: sidebar (marca + navegación + sesión) + contenido. */
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ConfirmDialog],
   template: `
     <aside class="admin-sidebar">
       <div class="admin-sidebar__brand">
@@ -55,6 +56,8 @@ import { AuthService } from '../../../core/auth/auth.service';
     <main class="admin-main" id="contenido" tabindex="-1" #main>
       <router-outlet (activate)="alActivarRuta()" />
     </main>
+
+    <app-confirm-dialog />
   `,
 })
 export class AdminLayout {

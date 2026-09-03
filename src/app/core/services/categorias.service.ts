@@ -27,7 +27,10 @@ export class CategoriasService {
   }
 
   async actualizar(id: string, cambios: Partial<Categoria>): Promise<void> {
-    const { error } = await this.sb.from('categorias').update(cambios).eq('id', id);
+    const patch = { ...cambios };
+    // El slug siempre se deriva del nombre.
+    if (patch.nombre) patch.slug = slugify(patch.nombre);
+    const { error } = await this.sb.from('categorias').update(patch).eq('id', id);
     if (error) throw error;
   }
 

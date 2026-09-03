@@ -13,18 +13,23 @@
 
 ---
 
-## Overrides del proyecto (decididos con el desarrollador — tienen prioridad)
+## Overrides del proyecto (rediseño 2026-09-03 — tienen prioridad)
 
-- **Acento = teal `#1F5B67`** (marca ya establecida: masthead, links), NO el rosa
-  `#EC4899` del catálogo. Se adopta del skill la escala de neutros editoriales
-  y la estructura Swiss Modernism / Editorial Grid, no la paleta literal.
-- **Tipografía = Libre Caslon Text (títulos) + Libre Franklin (texto)** — ya
-  cargadas y en producción; mismo propósito editorial que Bodoni/Public Sans.
-- **Sin GSAP** (build estático de Angular, sin dependencias nuevas): las
-  revelaciones al hacer scroll usan una directiva propia con IntersectionObserver
-  y se desactivan por completo con `prefers-reduced-motion`.
-- **Patrón del landing**: "Newsletter / Content First" + editorial-grid, no
-  "Scroll-Triggered Storytelling" (demasiado pesado para la portada de una revista).
+- **Acento = teal `#1F5B67`**, único color de marca. Todo lo demás son neutros
+  cálidos: papel `#fcfbf8`, tinta `#1c1b19`, grises. Nada de franjas de color.
+- **Tipografía = Libre Bodoni (titulares, wordmark, citas) + Public Sans
+  (texto, UI, navegación)** — pareja "Magazine Style" del skill. Bodoni solo
+  en h1/h2/wordmark/pull-quote; todo lo <= h3 y la UI en Public Sans.
+- **Masthead = cabecera de periódico**: fecha + wordmark Bodoni centrado +
+  lema temático + doble filete + barra de navegación pegajosa (subrayado teal
+  en el activo). Sin franja teal.
+- **Movimiento mínimo**: revista seria, no se revela bloque por bloque. La
+  directiva `[reveal]` queda inerte; único gesto = fade de 240ms al cambiar
+  de ruta. `prefers-reduced-motion` respetado.
+- **Locale `es`** registrado (`LOCALE_ID: 'es'`) — fechas en español.
+- **Sin GSAP** (build estático). Editor de artículos = Editor.js.
+- Los tokens viven en `src/styles.scss` (`--paper`, `--ink*`, `--teal*`,
+  `--serif`, `--sans`, `--fs-*`, `--space-*`).
 
 ---
 

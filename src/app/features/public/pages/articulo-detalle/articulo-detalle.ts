@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
+import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, BloqueContenido } from '../../../../core/models';
 
 @Component({
@@ -34,11 +35,15 @@ import type { Articulo, BloqueContenido } from '../../../../core/models';
       <article class="articulo">
         <header class="articulo-cabecera">
           <span class="meta">
-            <span class="categoria-tag">{{ a.categorias?.nombre || 'Sin categoría' }}</span>
+            @for (c of a.categorias ?? []; track c.id) {
+              <a class="categoria-tag" [routerLink]="['/articulos']" [queryParams]="{ categoria: c.slug }">{{ c.nombre }}</a>
+            } @empty {
+              <span class="categoria-tag">Sin categoría</span>
+            }
           </span>
           <h1>{{ a.titulo }}</h1>
           <p class="articulo-firma">
-            <span>{{ a.autor_tipo === 'libre' ? (a.autor_texto || 'Redacción') : 'Redacción' }}</span>
+            <span>{{ a.autor_texto || 'Redacción' }}</span>
             <span aria-hidden="true">·</span>
             <time [attr.datetime]="a.fecha_publicacion">{{ a.fecha_publicacion | date: 'longDate' }}</time>
           </p>
@@ -100,70 +105,6 @@ import type { Articulo, BloqueContenido } from '../../../../core/models';
       </article>
     }
   `,
-  styles: `
-    .articulo-cabecera {
-      margin-bottom: 1.4rem;
-    }
-    .articulo-firma {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      font-size: 0.9rem;
-      color: var(--color-texto-suave);
-      margin: 0.6rem 0 0;
-    }
-    .articulo-pie {
-      margin-top: 2.5rem;
-      padding-top: 1.2rem;
-      border-top: 1px solid var(--color-linea);
-    }
-    .articulo-pie .leer {
-      font-weight: 600;
-      color: var(--color-acento);
-    }
-    /* Bloques del cuerpo — heredan la tipografía de src/styles.scss */
-    .articulo-cuerpo h2 {
-      font-size: clamp(1.35rem, 1.1rem + 1vw, 1.7rem);
-      margin: 2rem 0 0.6rem;
-    }
-    .articulo-cuerpo h3 {
-      font-size: 1.25rem;
-      margin: 1.7rem 0 0.5rem;
-    }
-    .articulo-cuerpo h4 {
-      font-size: 1.08rem;
-      margin: 1.5rem 0 0.4rem;
-    }
-    .articulo-cuerpo ul,
-    .articulo-cuerpo ol {
-      margin: 0 0 1.3em;
-      padding-left: 1.4em;
-    }
-    .articulo-cuerpo li {
-      margin-bottom: 0.4em;
-    }
-    .articulo-cuerpo figure {
-      margin: 1.8em 0;
-    }
-    .articulo-cuerpo figure img {
-      width: 100%;
-      border-radius: var(--radius);
-    }
-    .articulo-cuerpo figcaption {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      color: var(--color-texto-suave);
-      text-align: center;
-    }
-    .articulo-cuerpo blockquote cite {
-      display: block;
-      margin-top: 0.5rem;
-      font-family: var(--fuente-texto);
-      font-size: 0.85rem;
-      font-style: normal;
-      color: var(--color-texto-suave);
-    }
-  `,
 })
 export class ArticuloDetalle implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -208,7 +149,13 @@ export class ArticuloDetalle implements OnInit {
   }
   items(b: BloqueContenido): string[] {
     const it = this.data(b)['items'];
-    return Array.isArray(it) ? it.map((x) => String(x)) : [];
+    if (!Array.isArray(it)) return [];
+    // list v1 → string[]; list v2 → [{ content, items }]
+    return it.map((x) =>
+      x && typeof x === 'object'
+        ? String((x as { content?: string }).content ?? '')
+        : String(x),
+    );
   }
   esOrdenada(b: BloqueContenido): boolean {
     return this.data(b)['style'] === 'ordered';
@@ -231,7 +178,7 @@ export class ArticuloDetalle implements OnInit {
         this.title.setTitle(`${a.titulo} · PRIVAS Magazine`);
       }
     } catch (e) {
-      this.error.set(String(e));
+      this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
     }

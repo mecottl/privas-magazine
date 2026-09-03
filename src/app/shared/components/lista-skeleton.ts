@@ -33,7 +33,7 @@ import { Component, input } from '@angular/core';
       grid-template-columns: 148px 1fr;
       gap: 1.4rem;
       padding: 1.5rem 0;
-      border-top: 1px solid var(--color-linea);
+      border-top: 1px solid var(--line);
     }
     .sk-lista li:has(.sk-lista__texto:only-child) {
       grid-template-columns: 1fr;

@@ -28,8 +28,8 @@ import { RouterLink } from '@angular/router';
       margin-bottom: var(--space-md);
     }
     .no-encontrado__texto {
-      color: var(--color-texto-medio);
-      font-size: var(--fs-lead);
+      color: var(--ink-80);
+      font-size: var(--fs-md);
       margin-bottom: var(--space-xl);
     }
     .no-encontrado__acciones {
@@ -38,7 +38,7 @@ import { RouterLink } from '@angular/router';
       gap: 0.75rem;
     }
     .no-encontrado .btn--fantasma:hover {
-      color: var(--color-blanco);
+      color: var(--white);
     }
   `,
 })

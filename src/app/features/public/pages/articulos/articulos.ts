@@ -12,12 +12,14 @@ import { ArticulosService } from '../../../../core/services/articulos.service';
 import { CategoriasService } from '../../../../core/services/categorias.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ListaSkeleton } from '../../../../shared/components/lista-skeleton';
+import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
+import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, Categoria } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulos',
   standalone: true,
-  imports: [RouterLink, DatePipe, RevealDirective, ListaSkeleton],
+  imports: [RouterLink, DatePipe, RevealDirective, ListaSkeleton, CategoriasNombrePipe],
   template: `
     <section class="page">
       <div class="inicio-encabezado" reveal>
@@ -47,12 +49,14 @@ import type { Articulo, Categoria } from '../../../../core/models';
       <ul class="articulos">
         @for (a of articulos(); track a.id) {
           <li>
-            @if (a.imagen_portada_url) { <img [src]="a.imagen_portada_url" [alt]="a.titulo" loading="lazy" decoding="async" /> }
+            @if (a.imagen_portada_url) {
+              <img [src]="a.imagen_portada_url" [alt]="a.titulo" loading="lazy" decoding="async" />
+            } @else {
+              <span class="articulos-sinimg" aria-hidden="true"></span>
+            }
             <div>
               <span class="meta">
-                <span class="categoria-tag">
-                  {{ a.categorias?.nombre || 'Sin categoría' }}
-                </span>
+                <span class="categoria-tag">{{ a.categorias | categoriasNombre }}</span>
                 · {{ a.fecha_publicacion | date: 'longDate' }}
               </span>
               <a [routerLink]="['/articulos', a.slug]"><h2>{{ a.titulo }}</h2></a>
@@ -81,7 +85,7 @@ import type { Articulo, Categoria } from '../../../../core/models';
       margin-left: 0.5rem;
       font: inherit;
       font-weight: 600;
-      color: var(--color-acento);
+      color: var(--teal);
       cursor: pointer;
       border-bottom: 1px solid currentColor;
     }
@@ -130,7 +134,7 @@ export class Articulos implements OnInit {
         await this.srv.listarPublicos(this.categoria() || undefined),
       );
     } catch (e) {
-      this.error.set(String(e));
+      this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
     }

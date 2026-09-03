@@ -6,6 +6,8 @@ import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { NewsletterForm } from '../newsletter/newsletter-form';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ListaSkeleton } from '../../../../shared/components/lista-skeleton';
+import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
+import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, EdicionRevista } from '../../../../core/models';
 
 interface Tema {
@@ -28,7 +30,14 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, DatePipe, NewsletterForm, RevealDirective, ListaSkeleton],
+  imports: [
+    RouterLink,
+    DatePipe,
+    NewsletterForm,
+    RevealDirective,
+    ListaSkeleton,
+    CategoriasNombrePipe,
+  ],
   template: `
     <div class="landing">
       <!-- HERO -->
@@ -105,7 +114,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
             }
             <div>
               <span class="meta">
-                <span class="categoria-tag">{{ p.categorias?.nombre || 'Sin categoría' }}</span>
+                <span class="categoria-tag">{{ p.categorias | categoriasNombre }}</span>
                 · {{ p.fecha_publicacion | date: 'longDate' }}
               </span>
               <h3 class="titulo">{{ p.titulo }}</h3>
@@ -120,7 +129,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
             <li reveal>
               <a [routerLink]="['/articulos', a.slug]">
                 <span class="meta">
-                  <span class="categoria-tag">{{ a.categorias?.nombre || 'Sin categoría' }}</span>
+                  <span class="categoria-tag">{{ a.categorias | categoriasNombre }}</span>
                   · {{ a.fecha_publicacion | date: 'longDate' }}
                 </span>
                 <h3>{{ a.titulo }}</h3>
@@ -220,7 +229,7 @@ export class Landing implements OnInit {
     try {
       this.articulos.set(await this.artSrv.listarPublicos());
     } catch (e) {
-      this.error.set(String(e));
+      this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
     }

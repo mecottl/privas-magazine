@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MarcasService } from '../../../../core/services/marcas.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { mensajeError } from '../../../../core/services/errores';
 import type { Marca } from '../../../../core/models';
 
 @Component({
@@ -52,7 +53,7 @@ export class Marcas implements OnInit {
     try {
       this.marcas.set(await this.srv.listar());
     } catch (e) {
-      this.error.set(String(e));
+      this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
     }

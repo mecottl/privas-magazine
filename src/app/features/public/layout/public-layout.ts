@@ -1,91 +1,99 @@
 import {
   Component,
   ElementRef,
-  OnInit,
   inject,
   signal,
   viewChild,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { CategoriasService } from '../../../core/services/categorias.service';
-import type { Categoria } from '../../../core/models';
 
 /**
- * Shell del sitio público: masthead + contenido + footer.
- * El footer DEBE incluir el link visible a "Aviso de Privacidad"
- * (obligatorio: se recolectan correos para el newsletter — ver CLAUDE.md).
- * NO incluye ningún link al panel de administración.
- *
- * El "kicker" (línea de categorías bajo el wordmark) se arma con las categorías
- * REALES (mismo `CategoriasService` que usan inicio/articulos): si la clienta
- * agrega una categoría desde el panel, aparece sola aquí. Cada una enlaza a
- * `/articulos?categoria=<slug>`.
+ * Shell del sitio público: masthead de portada + barra de navegación pegajosa
+ * + contenido + pie. Sin ningún enlace al panel de administración.
  */
 @Component({
   selector: 'app-public-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, DatePipe],
   template: `
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
     <header class="masthead">
-      <div class="masthead-bar">
-        <div class="masthead-identidad">
-          <a routerLink="/" class="brand">PRIVAS Magazine</a>
-          @if (categorias().length) {
-            <p class="masthead-kicker">
-              @for (c of categorias(); track c.id) {
-                <a
-                  routerLink="/articulos"
-                  [queryParams]="{ categoria: c.slug }"
-                  (click)="navAbierto.set(false)"
-                  >{{ c.nombre }}</a
-                >
-              }
-            </p>
-          }
-        </div>
+      <div class="masthead__top">
+        <span>{{ hoy | date: 'fullDate' }}</span>
+        <span>Península de Yucatán</span>
+      </div>
+      <a routerLink="/" class="masthead__wordmark">PRIVAS MAGAZINE</a>
+      <p class="masthead__lema">
+        Turismo · Gastronomía · Arte · Cultura · Entretenimiento
+      </p>
+    </header>
+
+    <nav class="navbar" [class.navbar--abierto]="navAbierto()" aria-label="Principal">
+      <div class="navbar__inner">
+        <a routerLink="/" class="navbar__marca" (click)="cerrar()">PRIVAS</a>
 
         <button
           type="button"
-          class="nav-toggle"
+          class="navbar__toggle"
           (click)="navAbierto.set(!navAbierto())"
           [attr.aria-expanded]="navAbierto()"
         >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            @if (navAbierto()) {
+              <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+            } @else {
+              <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+            }
+          </svg>
           {{ navAbierto() ? 'Cerrar' : 'Menú' }}
         </button>
 
-        <nav [class.abierto]="navAbierto()">
-          <a routerLink="/articulos" routerLinkActive="active" (click)="navAbierto.set(false)">Artículos</a>
-          <a routerLink="/revistas" routerLinkActive="active" (click)="navAbierto.set(false)">Revistas</a>
-          <a routerLink="/marcas" routerLinkActive="active" (click)="navAbierto.set(false)">Nuestras Marcas</a>
-        </nav>
+        <ul class="navbar__links">
+          <li>
+            <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="cerrar()">Inicio</a>
+          </li>
+          <li><a routerLink="/articulos" routerLinkActive="is-active" (click)="cerrar()">Artículos</a></li>
+          <li><a routerLink="/revistas" routerLinkActive="is-active" (click)="cerrar()">Revistas</a></li>
+          <li><a routerLink="/marcas" routerLinkActive="is-active" (click)="cerrar()">Nuestras Marcas</a></li>
+        </ul>
       </div>
-    </header>
+    </nav>
 
     <main class="site-main" id="contenido" tabindex="-1" #main>
       <router-outlet (activate)="alActivarRuta()" />
     </main>
 
     <footer class="site-footer">
-      <span>© {{ anio }} PRIVAS Magazine</span>
-      <a routerLink="/aviso-de-privacidad">Aviso de Privacidad</a>
+      <div class="site-footer__marca">
+        <p class="site-footer__wordmark">PRIVAS MAGAZINE</p>
+        <p>Revista digital de la península de Yucatán.</p>
+      </div>
+      <nav class="site-footer__nav" aria-label="Pie">
+        <a routerLink="/articulos">Artículos</a>
+        <a routerLink="/revistas">Revistas</a>
+        <a routerLink="/marcas">Nuestras Marcas</a>
+        <a routerLink="/aviso-de-privacidad">Aviso de Privacidad</a>
+      </nav>
+      <p class="site-footer__legal">
+        © {{ anio }} PRIVAS Magazine. Todos los derechos reservados.
+      </p>
     </footer>
   `,
 })
-export class PublicLayout implements OnInit {
-  private readonly catSrv = inject(CategoriasService);
+export class PublicLayout {
   private readonly main = viewChild<ElementRef<HTMLElement>>('main');
-  readonly anio = new Date().getFullYear();
+  readonly hoy = new Date();
+  readonly anio = this.hoy.getFullYear();
   readonly navAbierto = signal(false);
-  readonly categorias = signal<Categoria[]>([]);
   private primeraCarga = true;
 
-  async ngOnInit() {
-    this.categorias.set(await this.catSrv.listar().catch(() => []));
+  cerrar() {
+    this.navAbierto.set(false);
   }
 
-  /** Tras navegar: fade-in del contenido y foco al main (lectores de pantalla). */
+  /** Tras navegar: aparición del contenido y foco al <main> (lectores de pantalla). */
   alActivarRuta() {
     if (this.primeraCarga) {
       this.primeraCarga = false;
@@ -94,7 +102,7 @@ export class PublicLayout implements OnInit {
     const el = this.main()?.nativeElement;
     if (!el) return;
     el.classList.remove('ruta-entrando');
-    void el.offsetWidth; // reinicia la animación
+    void el.offsetWidth;
     el.classList.add('ruta-entrando');
     el.focus({ preventScroll: true });
   }

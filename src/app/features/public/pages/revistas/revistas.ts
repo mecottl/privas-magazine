@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { mensajeError } from '../../../../core/services/errores';
 import type { EdicionRevista } from '../../../../core/models';
 
 const NOMBRE_TEMPORADA: Record<string, string> = {
@@ -67,7 +68,7 @@ export class Revistas implements OnInit {
     try {
       this.ediciones.set(await this.srv.listarPublicas());
     } catch (e) {
-      this.error.set(String(e));
+      this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
     }

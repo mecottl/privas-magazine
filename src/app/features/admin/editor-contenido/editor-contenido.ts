@@ -30,22 +30,25 @@ import type { BloqueContenido } from '../../../core/models';
 @Component({
   selector: 'app-editor-contenido',
   standalone: true,
+  host: { class: 'editorjs-host' },
   template: `<div class="editorjs-holder" #holder></div>`,
   styles: `
+    :host {
+      display: block;
+      height: 100%;
+      overflow-y: auto;
+      background: var(--white);
+    }
     .editorjs-holder {
-      border: 1px solid var(--color-linea);
-      border-radius: var(--radius);
-      background: var(--color-fondo);
-      padding: 0.75rem 1rem;
-      min-height: 260px;
+      background: var(--white);
+      padding: 0.9rem 1.25rem 3rem 2.75rem;
+      min-height: 100%;
     }
-    .editorjs-holder:focus-within {
-      border-color: var(--color-acento);
-      box-shadow: 0 0 0 3px var(--color-acento-tenue);
-    }
+    .editorjs-holder .ce-toolbar__plus { left: -2rem; }
+    .editorjs-holder .ce-toolbar__settings-btn { right: 0; }
     /* Editor.js inyecta su markup aquí; alineamos con el sistema de diseño */
     .editorjs-holder :is(h2, h3, h4) {
-      font-family: var(--fuente-titulos);
+      font-family: var(--serif);
     }
     .editorjs-holder .ce-block__content,
     .editorjs-holder .ce-toolbar__content {
@@ -53,11 +56,28 @@ import type { BloqueContenido } from '../../../core/models';
     }
     .editorjs-holder .cdx-quote,
     .editorjs-holder .ce-header {
-      font-family: var(--fuente-titulos);
+      font-family: var(--serif);
     }
     .editorjs-holder ::selection {
-      background: var(--color-acento);
-      color: var(--color-blanco);
+      background: var(--teal);
+      color: var(--white);
+    }
+
+    /* Imágenes: contenerlas para que no dominen el editor */
+    .editorjs-holder .image-tool__image,
+    .editorjs-holder .image-tool__image-picture,
+    .editorjs-holder .cdx-block img {
+      max-height: 320px;
+      max-width: 100%;
+      width: auto;
+      object-fit: contain;
+      margin-inline: auto;
+    }
+    .editorjs-holder .image-tool--withBackground .image-tool__image-picture {
+      max-width: 100%;
+    }
+    .editorjs-holder .image-tool__caption:empty::before {
+      color: var(--ink-35);
     }
   `,
 })

@@ -11,13 +11,12 @@ import type { Articulo } from '../../../../core/models';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <div class="admin-page-head">
-      <div>
+    <div class="admin-page">
+      <div class="admin-page-head">
         <h1>Panel</h1>
-        <p>Hola, {{ auth.perfil()?.nombre_visible || auth.user()?.email }}</p>
       </div>
-    </div>
 
+      <div class="admin-page__scroll">
     <div class="dash-tiles">
       <a routerLink="../articulos" class="dash-tile">
         <span class="dash-tile__n">{{ publicados() }}</span>
@@ -41,13 +40,15 @@ import type { Articulo } from '../../../../core/models';
       </a>
     </div>
 
-    <div class="panel">
-      <h2>Accesos rápidos</h2>
-      <div class="dash-links">
-        <a routerLink="../articulos/nuevo">Nuevo artículo →</a>
-        <a routerLink="../ediciones">Subir una edición →</a>
-        <a routerLink="../categorias">Gestionar categorías →</a>
-        <a routerLink="../administradores">Invitar administrador →</a>
+        <div class="panel">
+          <h2>Accesos rápidos</h2>
+          <div class="dash-links">
+            <a routerLink="../articulos/nuevo">Nuevo artículo →</a>
+            <a routerLink="../ediciones">Subir una edición →</a>
+            <a routerLink="../categorias">Gestionar categorías →</a>
+            <a routerLink="../administradores">Invitar administrador →</a>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -56,29 +57,29 @@ import type { Articulo } from '../../../../core/models';
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 1px;
-      background: var(--color-linea);
-      border: 1px solid var(--color-linea);
+      background: var(--line);
+      border: 1px solid var(--line);
       margin-bottom: var(--space-lg);
     }
     .dash-tile {
-      background: var(--color-blanco);
+      background: var(--white);
       padding: var(--space-lg) var(--space-md);
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
-      transition: background var(--transicion);
+      transition: background var(--t);
     }
     .dash-tile:hover {
-      background: var(--color-acento-tenue);
+      background: var(--teal-wash);
     }
     .dash-tile__n {
-      font-family: var(--fuente-titulos);
+      font-family: var(--serif);
       font-size: 2rem;
       line-height: 1;
     }
     .dash-tile__k {
       font-size: var(--fs-sm);
-      color: var(--color-texto-suave);
+      color: var(--ink-55);
     }
     .dash-links {
       display: flex;
@@ -88,11 +89,11 @@ import type { Articulo } from '../../../../core/models';
     .dash-links a {
       font-size: 0.9rem;
       font-weight: 600;
-      border-bottom: 1px solid var(--color-acento);
+      border-bottom: 1px solid var(--teal);
       padding-bottom: 2px;
     }
     .dash-links a:hover {
-      color: var(--color-acento);
+      color: var(--teal);
     }
   `,
 })
