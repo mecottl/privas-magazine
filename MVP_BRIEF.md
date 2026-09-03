@@ -66,3 +66,18 @@ Lee `CLAUDE.md` y `EDGE_FUNCTIONS_BRIEF.md` antes de empezar.
       visitar `/newsletter/confirmar?token=...`.
 - [ ] Repetir con `/newsletter/cancelar?token=...` y confirmar que `activo`
       vuelve a `false`.
+
+### Regresión — bug de "desactivar administrador" (commit ed4581a)
+
+- [ ] Loguearse como **Gerardo Dev** y anotar los dos `id` de `perfiles_admin`
+      (SQL: `select id, nombre_visible, activo from perfiles_admin;`).
+- [ ] En la pantalla de Administradores, pulsar **Desactivar** en la fila de
+      **"prueba invitacion"** (la cuenta DISTINTA a la logueada). El botón no
+      debe aparecer en la fila propia (dice "tu propia cuenta").
+- [ ] Confirmar en la BD que cambió **esa** fila y no la propia:
+      `prueba invitacion → activo=false`, `Gerardo Dev → activo=true`.
+- [ ] La sesión de Gerardo Dev sigue activa (no rebota al login) aun con el
+      segundo admin ya existiendo.
+- [ ] Volver a **Activar** "prueba invitacion" y confirmar `activo=true`.
+- [ ] Intentar desactivar la única cuenta activa / la propia → la función
+      responde 400 con mensaje, sin cambios en la BD.
