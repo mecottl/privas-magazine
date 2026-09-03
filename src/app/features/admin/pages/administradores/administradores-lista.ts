@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminsService } from '../../../../core/services/admins.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 import {
   NIVELES_PERMISO,
   type NivelPermiso,
@@ -39,14 +40,21 @@ import {
         <tbody>
           @for (a of admins(); track a.id) {
             <tr>
-              <td>{{ a.nombre_visible || a.id }}</td>
+              <td>
+                {{ a.nombre_visible || a.id }}
+                @if (a.id === miId()) { <strong>(tú)</strong> }
+              </td>
               <td>{{ a.nivel_permiso }}</td>
               <td>{{ a.activo ? 'sí' : 'no' }}</td>
               <td>{{ a.created_at }}</td>
               <td>
-                <button (click)="toggle(a)">
-                  {{ a.activo ? 'Desactivar' : 'Activar' }}
-                </button>
+                @if (a.id === miId()) {
+                  <span class="hint">tu propia cuenta</span>
+                } @else {
+                  <button (click)="toggle(a)">
+                    {{ a.activo ? 'Desactivar' : 'Activar' }}
+                  </button>
+                }
               </td>
             </tr>
           } @empty {
@@ -59,6 +67,8 @@ import {
 })
 export class AdministradoresLista implements OnInit {
   private readonly srv = inject(AdminsService);
+  private readonly auth = inject(AuthService);
+  readonly miId = () => this.auth.user()?.id ?? null;
   readonly admins = signal<PerfilAdmin[]>([]);
   readonly enviando = signal(false);
   readonly msg = signal('');
@@ -101,12 +111,18 @@ export class AdministradoresLista implements OnInit {
   }
 
   async toggle(a: PerfilAdmin) {
+    if (a.id === this.miId()) return; // candado extra en el cliente
+    const accion = a.activo ? 'desactivar' : 'activar';
+    if (!confirm(`¿${accion} a "${a.nombre_visible || a.id}"?`)) return;
+    this.msg.set('');
     try {
       await this.srv.cambiarActivo(a.id, !a.activo);
+      this.exito.set(true);
+      this.msg.set(`Cuenta ${a.activo ? 'desactivada' : 'activada'}.`);
       await this.cargar();
     } catch (e) {
-      this.msg.set(String(e));
       this.exito.set(false);
+      this.msg.set(e instanceof Error ? e.message : String(e));
     }
   }
 }

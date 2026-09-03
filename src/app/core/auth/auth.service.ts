@@ -42,7 +42,10 @@ export class AuthService {
       email,
       password,
     });
-    if (!res.error) await this.cargarPerfil();
+    if (!res.error) {
+      this.session.set(res.data.session);
+      await this.cargarPerfil();
+    }
     return res;
   }
 
@@ -52,9 +55,18 @@ export class AuthService {
   }
 
   private async cargarPerfil(): Promise<void> {
+    // El id del usuario autenticado. SIN este filtro, como la policy de SELECT
+    // deja a un admin ver TODOS los perfiles, `.maybeSingle()` falla en cuanto
+    // existe más de un admin y el propio usuario aparece como "no admin".
+    const uid = this.session()?.user?.id;
+    if (!uid) {
+      this.perfil.set(null);
+      return;
+    }
     const { data } = await this.supabase.client
       .from('perfiles_admin')
       .select('id, nombre_visible, nivel_permiso, activo')
+      .eq('id', uid)
       .maybeSingle();
     const perfil = (data as PerfilAdmin) ?? null;
     // Solo cuenta como admin si el perfil está activo.

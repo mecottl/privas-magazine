@@ -85,6 +85,22 @@ Pública, vía el link del correo de confirmación.
 Igual que la 4, pero `activo = false`. NO borra la fila (respeta la baja aunque
 reintenten confirmar con un token viejo).
 
+## 6. `set-admin-activo`
+
+Quién la llama: un admin logueado, desde la pantalla de Administradores.
+
+Existe porque la RLS de `perfiles_admin` para UPDATE es `id = auth.uid()` (un
+admin solo puede editar su propia fila), así que activar/desactivar a OTRO admin
+es imposible desde el cliente. Se hace aquí con `service_role`.
+
+1. `requireAdmin` (admin activo).
+2. Body: `{ id: uuid, activo: boolean }`.
+3. Candado: `id === quienLlama.id && activo === false` → 400 (no puedes
+   desactivarte a ti mismo y dejarte fuera).
+4. Candado: si `activo === false` y solo queda 1 admin activo → 400.
+5. `update perfiles_admin set activo = <activo> where id = <id>` con
+   `service_role`; devuelve la fila afectada.
+
 ## Nota general sobre pruebas
 
 - `invitar-admin`: probar con una segunda cuenta real, no la del dev.

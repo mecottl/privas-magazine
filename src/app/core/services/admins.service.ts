@@ -37,11 +37,19 @@ export class AdminsService {
     return data ?? { ok: false, error: 'Sin respuesta' };
   }
 
+  /**
+   * Activa/desactiva OTRO admin vía la Edge Function `set-admin-activo`.
+   * No se puede hacer con un UPDATE directo: la RLS de `perfiles_admin` solo
+   * permite `id = auth.uid()`, y además hay que impedir auto-desactivarse.
+   */
   async cambiarActivo(id: string, activo: boolean): Promise<void> {
-    const { error } = await this.sb
-      .from('perfiles_admin')
-      .update({ activo })
-      .eq('id', id);
-    if (error) throw error;
+    const { data, error } = await this.supabase.invokeFunction<{
+      ok?: boolean;
+      error?: string;
+    }>('set-admin-activo', { id, activo });
+    if (error) {
+      const detalle = (data as { error?: string } | null)?.error;
+      throw new Error(detalle ?? error.message);
+    }
   }
 }
