@@ -1,4 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CategoriasService } from '../../../core/services/categorias.service';
 import type { Categoria } from '../../../core/models';
@@ -19,6 +26,8 @@ import type { Categoria } from '../../../core/models';
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
     <header class="masthead">
       <div class="masthead-bar">
         <div class="masthead-identidad">
@@ -54,8 +63,8 @@ import type { Categoria } from '../../../core/models';
       </div>
     </header>
 
-    <main class="site-main">
-      <router-outlet />
+    <main class="site-main" id="contenido" tabindex="-1" #main>
+      <router-outlet (activate)="alActivarRuta()" />
     </main>
 
     <footer class="site-footer">
@@ -66,11 +75,27 @@ import type { Categoria } from '../../../core/models';
 })
 export class PublicLayout implements OnInit {
   private readonly catSrv = inject(CategoriasService);
+  private readonly main = viewChild<ElementRef<HTMLElement>>('main');
   readonly anio = new Date().getFullYear();
   readonly navAbierto = signal(false);
   readonly categorias = signal<Categoria[]>([]);
+  private primeraCarga = true;
 
   async ngOnInit() {
     this.categorias.set(await this.catSrv.listar().catch(() => []));
+  }
+
+  /** Tras navegar: fade-in del contenido y foco al main (lectores de pantalla). */
+  alActivarRuta() {
+    if (this.primeraCarga) {
+      this.primeraCarga = false;
+      return;
+    }
+    const el = this.main()?.nativeElement;
+    if (!el) return;
+    el.classList.remove('ruta-entrando');
+    void el.offsetWidth; // reinicia la animación
+    el.classList.add('ruta-entrando');
+    el.focus({ preventScroll: true });
   }
 }

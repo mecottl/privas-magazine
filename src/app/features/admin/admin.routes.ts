@@ -6,6 +6,7 @@ import { AdminLayout } from './layout/admin-layout';
 export const ADMIN_ROUTES: Routes = [
   {
     path: 'login',
+    title: 'Acceso',
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
   {
@@ -16,11 +17,13 @@ export const ADMIN_ROUTES: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+    title: 'Panel · Gestión',
         loadComponent: () =>
           import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
         path: 'categorias',
+    title: 'Categorías · Gestión',
         loadComponent: () =>
           import('./pages/categorias/categorias-lista').then(
             (m) => m.CategoriasLista,
@@ -28,6 +31,7 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'articulos',
+    title: 'Artículos · Gestión',
         loadComponent: () =>
           import('./pages/articulos/articulos-lista').then(
             (m) => m.ArticulosLista,
@@ -35,6 +39,7 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'articulos/nuevo',
+    title: 'Nuevo artículo · Gestión',
         loadComponent: () =>
           import('./pages/articulos/articulo-editar').then(
             (m) => m.ArticuloEditar,
@@ -42,6 +47,7 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'articulos/:id',
+    title: 'Editar artículo · Gestión',
         loadComponent: () =>
           import('./pages/articulos/articulo-editar').then(
             (m) => m.ArticuloEditar,
@@ -49,6 +55,7 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'ediciones',
+    title: 'Ediciones · Gestión',
         loadComponent: () =>
           import('./pages/ediciones/ediciones-lista').then(
             (m) => m.EdicionesLista,
@@ -56,11 +63,13 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'marcas',
+    title: 'Marcas · Gestión',
         loadComponent: () =>
           import('./pages/marcas/marcas-lista').then((m) => m.MarcasLista),
       },
       {
         path: 'administradores',
+    title: 'Administradores · Gestión',
         loadComponent: () =>
           import('./pages/administradores/administradores-lista').then(
             (m) => m.AdministradoresLista,

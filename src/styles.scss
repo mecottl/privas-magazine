@@ -129,6 +129,89 @@ a {
   }
 }
 
+/* Fade-in suave del contenido al navegar (clase la pone el shell) */
+.ruta-entrando {
+  animation: ruta-fade 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ruta-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ruta-entrando {
+    animation: none;
+  }
+}
+
+/* Enlace para saltar al contenido (accesibilidad / teclado) */
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -3rem;
+  z-index: 100;
+  padding: 0.55rem 0.9rem;
+  background: var(--color-texto);
+  color: var(--color-blanco);
+  font-size: var(--fs-sm);
+  border-radius: var(--radius);
+  transition: top var(--transicion);
+}
+.skip-link:focus-visible {
+  top: 0.75rem;
+}
+
+/* -----------------------------------------------------------------------
+   Skeletons — placeholders mientras carga contenido async
+   (contenedor de tamaño estable para no provocar saltos de layout)
+   ----------------------------------------------------------------------- */
+
+.sk {
+  --sk-base: #e9e7e0;
+  --sk-shine: #f4f2ec;
+  background: var(--sk-base);
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+}
+.sk::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--sk-shine),
+    transparent
+  );
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+}
+.sk--line {
+  height: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+.sk--title {
+  height: 1.4rem;
+  width: 70%;
+  margin-bottom: 0.7rem;
+}
+.sk--img {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+@keyframes sk-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk::after {
+    animation: none;
+  }
+}
+
 /* -----------------------------------------------------------------------
    Reveal on scroll (directiva RevealDirective + IntersectionObserver)
    ----------------------------------------------------------------------- */
@@ -362,6 +445,15 @@ app-admin-layout {
 .admin-main {
   min-width: 0;
   padding: var(--admin-gutter);
+}
+.admin-main:focus {
+  outline: none;
+}
+.admin-cargando {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--color-texto-suave);
+  font-size: var(--fs-sm);
 }
 
 /* ---------- Encabezado de página ---------- */
@@ -1191,6 +1283,13 @@ fieldset.panel {
 }
 .newsletter input {
   border-color: var(--color-linea);
+}
+
+.site-main {
+  min-height: 60vh;
+}
+.site-main:focus {
+  outline: none;
 }
 
 /* ---------- Footer ---------- */

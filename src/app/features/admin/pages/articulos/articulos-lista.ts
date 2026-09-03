@@ -38,6 +38,9 @@ import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core
           <tr><th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha pub.</th><th></th></tr>
         </thead>
         <tbody>
+          @if (cargando()) {
+            <tr><td colspan="5"><div class="admin-cargando">Cargando artículos…</div></td></tr>
+          } @else {
           @for (a of articulos(); track a.id) {
             <tr>
               <td><a [routerLink]="[a.id]">{{ a.titulo }}</a></td>
@@ -60,6 +63,7 @@ import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core
           } @empty {
             <tr><td colspan="5"><div class="admin-empty">Sin artículos en este filtro.</div></td></tr>
           }
+          }
         </tbody>
       </table>
     </div>
@@ -70,6 +74,7 @@ export class ArticulosLista implements OnInit {
   private readonly route = inject(ActivatedRoute);
   readonly articulos = signal<Articulo[]>([]);
   readonly error = signal('');
+  readonly cargando = signal(true);
   readonly estados = ESTADOS;
   filtro: EstadoPublicacion | '' = '';
 
@@ -87,6 +92,8 @@ export class ArticulosLista implements OnInit {
       this.articulos.set(await this.srv.listarAdmin(this.filtro));
     } catch (e) {
       this.error.set(String(e));
+    } finally {
+      this.cargando.set(false);
     }
   }
 

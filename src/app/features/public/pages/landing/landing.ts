@@ -5,6 +5,7 @@ import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { NewsletterForm } from '../newsletter/newsletter-form';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { ListaSkeleton } from '../../../../shared/components/lista-skeleton';
 import type { Articulo, EdicionRevista } from '../../../../core/models';
 
 interface Tema {
@@ -27,7 +28,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, DatePipe, NewsletterForm, RevealDirective],
+  imports: [RouterLink, DatePipe, NewsletterForm, RevealDirective, ListaSkeleton],
   template: `
     <div class="landing">
       <!-- HERO -->
@@ -93,10 +94,14 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 
         @if (error()) { <p class="error">{{ error() }}</p> }
 
+        @if (cargando()) {
+          <app-lista-skeleton [filas]="4" />
+        } @else {
+
         @if (principal(); as p) {
           <a [routerLink]="['/articulos', p.slug]" class="nota-principal" reveal>
             @if (p.imagen_portada_url) {
-              <img [src]="p.imagen_portada_url" [alt]="p.titulo" />
+              <img [src]="p.imagen_portada_url" [alt]="p.titulo" loading="lazy" decoding="async" />
             }
             <div>
               <span class="meta">
@@ -127,6 +132,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 
         @if (!principal() && resto().length === 0 && !error()) {
           <p class="indice-vacio">Todavía no hay artículos publicados.</p>
+        }
         }
       </section>
 
@@ -170,6 +176,7 @@ export class Landing implements OnInit {
   readonly articulos = signal<Articulo[]>([]);
   readonly edicion = signal<EdicionRevista | null>(null);
   readonly error = signal('');
+  readonly cargando = signal(true);
 
   readonly principal = computed(() => this.articulos()[0]);
   readonly resto = computed(() => this.articulos().slice(1, 5));
@@ -214,6 +221,8 @@ export class Landing implements OnInit {
       this.articulos.set(await this.artSrv.listarPublicos());
     } catch (e) {
       this.error.set(String(e));
+    } finally {
+      this.cargando.set(false);
     }
     try {
       const eds = await this.edSrv.listarPublicas();

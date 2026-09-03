@@ -11,12 +11,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { CategoriasService } from '../../../../core/services/categorias.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { ListaSkeleton } from '../../../../shared/components/lista-skeleton';
 import type { Articulo, Categoria } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulos',
   standalone: true,
-  imports: [RouterLink, DatePipe, RevealDirective],
+  imports: [RouterLink, DatePipe, RevealDirective, ListaSkeleton],
   template: `
     <section class="page">
       <div class="inicio-encabezado" reveal>
@@ -40,10 +41,13 @@ import type { Articulo, Categoria } from '../../../../core/models';
 
       @if (error()) { <p class="error">{{ error() }}</p> }
 
+      @if (cargando()) {
+        <app-lista-skeleton [filas]="5" />
+      } @else {
       <ul class="articulos">
         @for (a of articulos(); track a.id) {
           <li>
-            @if (a.imagen_portada_url) { <img [src]="a.imagen_portada_url" [alt]="a.titulo" /> }
+            @if (a.imagen_portada_url) { <img [src]="a.imagen_portada_url" [alt]="a.titulo" loading="lazy" decoding="async" /> }
             <div>
               <span class="meta">
                 <span class="categoria-tag">
@@ -56,10 +60,31 @@ import type { Articulo, Categoria } from '../../../../core/models';
             </div>
           </li>
         } @empty {
-          <li class="indice-vacio">No hay artículos publicados todavía.</li>
+          <li class="indice-vacio">
+            @if (categoria()) {
+              No hay artículos publicados en esta categoría.
+              <button type="button" class="enlace" (click)="filtrar('')">Ver todos →</button>
+            } @else {
+              No hay artículos publicados todavía.
+            }
+          </li>
         }
       </ul>
+      }
     </section>
+  `,
+  styles: `
+    .enlace {
+      background: none;
+      border: none;
+      padding: 0;
+      margin-left: 0.5rem;
+      font: inherit;
+      font-weight: 600;
+      color: var(--color-acento);
+      cursor: pointer;
+      border-bottom: 1px solid currentColor;
+    }
   `,
 })
 export class Articulos implements OnInit {
@@ -72,6 +97,7 @@ export class Articulos implements OnInit {
   readonly articulos = signal<Articulo[]>([]);
   readonly categorias = signal<Categoria[]>([]);
   readonly error = signal('');
+  readonly cargando = signal(true);
   /** slug de categoría activo; '' = todas. Refleja el query param `categoria`. */
   readonly categoria = signal('');
 
@@ -105,6 +131,8 @@ export class Articulos implements OnInit {
       );
     } catch (e) {
       this.error.set(String(e));
+    } finally {
+      this.cargando.set(false);
     }
   }
 }

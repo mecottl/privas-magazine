@@ -22,6 +22,17 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 
       @if (error()) { <p class="error">{{ error() }}</p> }
 
+      @if (cargando()) {
+        <ul class="revistas" aria-hidden="true">
+          @for (n of [1, 2, 3, 4]; track n) {
+            <li>
+              <div class="sk sk--img" style="aspect-ratio:3/4"></div>
+              <div class="sk sk--line" style="width:80%;margin-top:.6rem"></div>
+              <div class="sk sk--line" style="width:50%"></div>
+            </li>
+          }
+        </ul>
+      } @else {
       <ul class="revistas" data-reveal-stagger>
         @for (ed of ediciones(); track ed.id) {
           <li reveal>
@@ -38,6 +49,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
           <li class="indice-vacio">Todavía no hay ediciones publicadas.</li>
         }
       </ul>
+      }
     </section>
   `,
 })
@@ -45,6 +57,7 @@ export class Revistas implements OnInit {
   private readonly srv = inject(EdicionesService);
   readonly ediciones = signal<EdicionRevista[]>([]);
   readonly error = signal('');
+  readonly cargando = signal(true);
 
   nombreTemporada(t: string): string {
     return NOMBRE_TEMPORADA[t] ?? t;
@@ -55,6 +68,8 @@ export class Revistas implements OnInit {
       this.ediciones.set(await this.srv.listarPublicas());
     } catch (e) {
       this.error.set(String(e));
+    } finally {
+      this.cargando.set(false);
     }
   }
 }

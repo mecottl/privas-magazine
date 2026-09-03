@@ -19,5 +19,5 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/public/public.routes').then((m) => m.PUBLIC_ROUTES),
   },
-  { path: '**', redirectTo: '' },
+  // Cualquier ruta desconocida entra al sitio público y su `**` muestra el 404.
 ];
