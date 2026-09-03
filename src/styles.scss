@@ -1121,8 +1121,8 @@ fieldset.panel {
 .articulo-cuerpo p {
   margin: 0 0 1.3em;
 }
-/* Capitular (drop cap) en el primer párrafo — tratamiento de prensa */
-.articulo-cuerpo > p:first-of-type::first-letter {
+/* Capitular (drop cap) solo si el artículo abre con un párrafo */
+.articulo-cuerpo > p:first-child::first-letter {
   float: left;
   font-family: var(--fuente-titulos);
   font-size: 3.4em;
@@ -1138,6 +1138,9 @@ fieldset.panel {
   font-size: 1.3em;
   line-height: 1.4;
   color: var(--color-texto);
+}
+.articulo-cuerpo blockquote p {
+  margin: 0;
 }
 
 /* ---------- Revistas: muro de portadas ---------- */

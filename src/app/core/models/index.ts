@@ -25,10 +25,23 @@ export interface Categoria {
   created_at?: string;
 }
 
-/** Un bloque del contenido del artículo. MVP: solo tipo 'texto'. */
+/**
+ * Un bloque de contenido de artículo.
+ *
+ * Es un elemento del array `blocks` de Editor.js, guardado tal cual en
+ * `articulos.contenido_json` (SIN el wrapper `time` / `version`).
+ * `type`: 'paragraph' | 'header' | 'quote' | 'list' | 'image' (y los que se
+ * agreguen). `data`: la forma varía por herramienta:
+ *   - paragraph: { text }
+ *   - header:    { text, level }
+ *   - quote:     { text, caption, alignment }
+ *   - list:      { style: 'ordered'|'unordered', items: string[] }
+ *   - image:     { file: { url }, caption, withBorder, stretched, withBackground }
+ */
 export interface BloqueContenido {
-  tipo: string;
-  contenido: string;
+  id?: string;
+  type: string;
+  data: Record<string, unknown>;
 }
 
 export interface Articulo {

@@ -6,6 +6,7 @@ import { CategoriasService } from '../../../../core/services/categorias.service'
 import { AdminsService } from '../../../../core/services/admins.service';
 import { UploadsService } from '../../../../core/services/uploads.service';
 import { slugify } from '../../../../core/services/slug';
+import { EditorContenido } from '../../editor-contenido/editor-contenido';
 import {
   ESTADOS,
   type Articulo,
@@ -18,7 +19,7 @@ import {
 @Component({
   selector: 'app-admin-articulo-editar',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, EditorContenido],
   template: `
     <div class="admin-page-head">
       <div>
@@ -37,13 +38,14 @@ import {
           <label>Título
             <input name="titulo" [(ngModel)]="m.titulo" (ngModelChange)="tituloCambio($event)" required />
           </label>
-          <label>Slug
-            <input name="slug" [(ngModel)]="m.slug" required />
-          </label>
-          <label>Contenido — JSON de bloques (MVP)
-            <textarea name="contenido" rows="12" [(ngModel)]="contenidoTexto"></textarea>
-          </label>
-          <span class="hint">Formato: [{{ '{' }} "tipo": "texto", "contenido": "…" {{ '}' }}]. El extracto se genera solo.</span>
+          <p class="hint">
+            URL pública: <code>/articulos/{{ m.slug || 'se-genera-del-titulo' }}</code>
+            — se genera automáticamente del título.
+          </p>
+
+          <label class="editor-label">Cuerpo del artículo</label>
+          <app-editor-contenido [(contenido)]="contenidoBloques" />
+          <span class="hint">El extracto se genera solo a partir de los encabezados y párrafos.</span>
         </fieldset>
 
         <div class="editor-lado">
@@ -125,6 +127,9 @@ import {
       flex-direction: column;
       gap: var(--space-lg);
     }
+    .editor-label {
+      margin-bottom: 0.4rem;
+    }
     .portada-preview {
       margin-top: 0.5rem;
       max-height: 160px;
@@ -160,7 +165,6 @@ export class ArticuloEditar implements OnInit {
   readonly ok = signal('');
   readonly guardando = signal(false);
   readonly subiendo = signal(false);
-  private slugEditadoManualmente = false;
 
   m: Partial<Articulo> = {
     titulo: '',
@@ -172,7 +176,7 @@ export class ArticuloEditar implements OnInit {
     imagen_portada_url: null,
     estado: 'borrador',
   };
-  contenidoTexto = '[\n  { "tipo": "texto", "contenido": "" }\n]';
+  contenidoBloques: BloqueContenido[] = [];
   fechaLocal = '';
 
   async ngOnInit() {
@@ -184,8 +188,9 @@ export class ArticuloEditar implements OnInit {
       try {
         const a = await this.srv.obtener(this.id);
         this.m = { ...a };
-        this.slugEditadoManualmente = true;
-        this.contenidoTexto = JSON.stringify(a.contenido_json ?? [], null, 2);
+        this.contenidoBloques = Array.isArray(a.contenido_json)
+          ? (a.contenido_json as BloqueContenido[])
+          : [];
         if (a.fecha_publicacion) {
           this.fechaLocal = new Date(a.fecha_publicacion).toISOString().slice(0, 16);
         }
@@ -195,8 +200,9 @@ export class ArticuloEditar implements OnInit {
     }
   }
 
+  /** El slug SIEMPRE se deriva del título (no editable). */
   tituloCambio(titulo: string) {
-    if (!this.slugEditadoManualmente) this.m.slug = slugify(titulo);
+    this.m.slug = slugify(titulo ?? '');
   }
 
   async subirPortada(ev: Event) {
@@ -217,14 +223,8 @@ export class ArticuloEditar implements OnInit {
     this.error.set('');
     this.ok.set('');
 
-    let contenido: BloqueContenido[];
-    try {
-      contenido = JSON.parse(this.contenidoTexto);
-      if (!Array.isArray(contenido)) throw new Error('debe ser un array');
-    } catch (e) {
-      this.error.set(`Contenido JSON inválido: ${e}`);
-      return;
-    }
+    const contenido = this.contenidoBloques ?? [];
+    this.m.slug = slugify(this.m.titulo ?? '');
 
     if (this.m.autor_tipo === 'libre' && !this.m.autor_texto?.trim()) {
       this.error.set('Autor (texto) es obligatorio con tipo "libre".');
@@ -263,11 +263,23 @@ export class ArticuloEditar implements OnInit {
     }
   }
 
-  /** Extracto automático: primer texto plano, truncado. */
+  /**
+   * Extracto automático: concatena el texto de los bloques `header` y
+   * `paragraph` (los demás — imagen, cita, lista — se ignoran), quita el
+   * HTML inline de Editor.js y trunca a 200 caracteres.
+   */
   private extracto(bloques: BloqueContenido[]): string {
     const texto = bloques
-      .map((b) => b.contenido ?? '')
+      .filter((b) => b.type === 'header' || b.type === 'paragraph')
+      .map((b) => String((b.data as { text?: string })?.text ?? ''))
       .join(' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
       .replace(/\s+/g, ' ')
       .trim();
     return texto.slice(0, 200);
