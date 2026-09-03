@@ -43,3 +43,164 @@ img {
 a {
   color: inherit;
 }
+
+/* ---------------------------------------------------------------------------
+   MVP funcional — estilos mínimos "feo pero usable" (el diseño final va aparte)
+   --------------------------------------------------------------------------- */
+
+.page {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.error {
+  color: #b00020;
+}
+.ok {
+  color: #0a7d28;
+}
+.hint {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Formularios */
+form label,
+fieldset label {
+  display: block;
+  margin: 0.5rem 0;
+}
+input,
+select,
+textarea {
+  font: inherit;
+  padding: 0.4rem;
+  max-width: 100%;
+}
+button {
+  font: inherit;
+  padding: 0.4rem 0.8rem;
+  margin: 0.15rem 0.15rem 0.15rem 0;
+  cursor: pointer;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.75rem 0;
+}
+fieldset {
+  margin: 1rem 0;
+}
+
+/* Tablas del panel */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 0.4rem;
+  text-align: left;
+  vertical-align: top;
+}
+.acciones button,
+.acciones a {
+  white-space: nowrap;
+}
+
+/* Layout público */
+.site-header,
+.site-footer {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.site-header .brand {
+  font-family: var(--fuente-titulos);
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.site-header nav {
+  display: flex;
+  gap: 1rem;
+}
+.site-footer {
+  border-top: 1px solid #ddd;
+  margin-top: 3rem;
+}
+
+/* Layout admin */
+app-admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.admin-sidebar {
+  width: 200px;
+  padding: 1rem;
+  background: #f4f2ee;
+  border-right: 1px solid #ddd;
+}
+.admin-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 1rem 0;
+}
+.admin-main {
+  flex: 1;
+}
+
+/* Listados de artículos / revistas / marcas */
+.articulos {
+  list-style: none;
+  padding: 0;
+}
+.articulos li {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+.articulos img {
+  width: 160px;
+  object-fit: cover;
+}
+.meta {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+.revistas,
+.marcas {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.revistas img,
+.marcas img {
+  width: 180px;
+}
+
+.auth-box {
+  max-width: 320px;
+  margin: 4rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+}
+.newsletter {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}

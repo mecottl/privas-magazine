@@ -21,10 +21,11 @@ export class SupabaseService {
     },
   );
 
-  /** Invoca una Edge Function pasando el JWT del admin logueado. */
-  invokeFunction<T = unknown>(name: string, body?: unknown) {
-    return this.client.functions.invoke<T>(name, {
-      body: body as Record<string, unknown> | undefined,
-    });
+  /**
+   * Invoca una Edge Function pasando el JWT del usuario logueado.
+   * Acepta un objeto JSON o un FormData (para subidas multipart).
+   */
+  invokeFunction<T = unknown>(name: string, body?: Record<string, unknown> | FormData) {
+    return this.client.functions.invoke<T>(name, { body });
   }
 }

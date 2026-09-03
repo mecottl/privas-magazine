@@ -20,6 +20,13 @@ export const ADMIN_ROUTES: Routes = [
           import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
+        path: 'categorias',
+        loadComponent: () =>
+          import('./pages/categorias/categorias-lista').then(
+            (m) => m.CategoriasLista,
+          ),
+      },
+      {
         path: 'articulos',
         loadComponent: () =>
           import('./pages/articulos/articulos-lista').then(

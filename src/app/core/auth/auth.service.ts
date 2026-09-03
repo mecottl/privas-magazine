@@ -18,7 +18,14 @@ export class AuthService {
   readonly user = computed<User | null>(() => this.session()?.user ?? null);
   readonly esAdmin = computed(() => this.perfil() !== null);
 
-  async init(): Promise<void> {
+  private iniciado?: Promise<void>;
+
+  /** Idempotente: se puede llamar desde el app initializer y desde el guard. */
+  init(): Promise<void> {
+    return (this.iniciado ??= this.arrancar());
+  }
+
+  private async arrancar(): Promise<void> {
     const { data } = await this.supabase.client.auth.getSession();
     this.session.set(data.session);
     if (data.session) await this.cargarPerfil();
