@@ -20,6 +20,6 @@ jobs:
         with:
           version: latest
       - run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_REF"
-      # Los secretos de las funciones (SFTP_*, RESEND_API_KEY, UPLOAD_TARGET,
+      # Los secretos de las funciones (FTP_*, RESEND_API_KEY, UPLOAD_TARGET,
       # GH_DISPATCH_TOKEN, GH_DISPATCH_REPO) se configuran una vez desde el
       # dashboard de Supabase o con `supabase secrets set` — ver docs/SECRETS.md.
