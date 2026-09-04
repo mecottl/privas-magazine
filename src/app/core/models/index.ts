@@ -15,6 +15,9 @@ export const ESTADOS: EstadoPublicacion[] = [
 
 export type AutorTipo = 'libre' | 'usuario';
 
+/** Destino real de una subida de archivo. */
+export type DestinoArchivo = 'supabase' | 'sftp';
+
 export type Temporada = 'primavera-verano' | 'otono-invierno';
 export const TEMPORADAS: Temporada[] = ['primavera-verano', 'otono-invierno'];
 
@@ -58,6 +61,9 @@ export interface Articulo {
   autor_tipo: AutorTipo;
   autor_texto: string | null;
   autor_uid: string | null;
+  /** Ruta interna y destino de la portada — para borrarla si se reemplaza/elimina. */
+  imagen_portada_path?: string | null;
+  imagen_portada_target?: DestinoArchivo | null;
   fecha_publicacion: string | null;
   created_at?: string;
   updated_at?: string;
@@ -74,6 +80,11 @@ export interface EdicionRevista {
   pdf_url: string;
   /** NOT NULL en la BD. */
   portada_url: string;
+  /** Rutas internas y destinos — para borrar los archivos al reemplazar/eliminar. */
+  pdf_path?: string | null;
+  portada_path?: string | null;
+  pdf_target?: DestinoArchivo | null;
+  portada_target?: DestinoArchivo | null;
   estado: EstadoPublicacion;
   fecha_publicacion: string | null;
   created_at?: string;

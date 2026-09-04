@@ -169,9 +169,16 @@ export class EdicionesLista implements OnInit {
     this.subiendo.set(true);
     this.error.set('');
     try {
-      const url = await this.uploads.subir(file, tipo);
-      if (tipo === 'revista-pdf') this.edit.pdf_url = url;
-      else this.edit.portada_url = url;
+      const subida = await this.uploads.subir(file, tipo);
+      if (tipo === 'revista-pdf') {
+        this.edit.pdf_url = subida.url;
+        this.edit.pdf_path = subida.path;
+        this.edit.pdf_target = subida.target;
+      } else {
+        this.edit.portada_url = subida.url;
+        this.edit.portada_path = subida.path;
+        this.edit.portada_target = subida.target;
+      }
     } catch (e) {
       this.error.set(`Subida: ${mensajeError(e)}`);
     } finally {

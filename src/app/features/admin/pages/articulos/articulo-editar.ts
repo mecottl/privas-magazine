@@ -294,6 +294,8 @@ export class ArticuloEditar implements OnInit {
     autor_texto: '',
     autor_uid: null,
     imagen_portada_url: null,
+    imagen_portada_path: null,
+    imagen_portada_target: null,
     estado: 'borrador',
   };
   contenidoBloques: BloqueContenido[] = [];
@@ -351,7 +353,10 @@ export class ArticuloEditar implements OnInit {
     this.subiendo.set(true);
     this.error.set('');
     try {
-      this.m.imagen_portada_url = await this.uploads.subir(file, 'articulo-portada');
+      const subida = await this.uploads.subir(file, 'articulo-portada');
+      this.m.imagen_portada_url = subida.url;
+      this.m.imagen_portada_path = subida.path;
+      this.m.imagen_portada_target = subida.target;
     } catch (e) {
       this.error.set(`Subida: ${mensajeError(e)}`);
     } finally {
@@ -465,6 +470,8 @@ export class ArticuloEditar implements OnInit {
       contenido_json: contenido,
       extracto: this.extracto(contenido),
       imagen_portada_url: this.m.imagen_portada_url ?? null,
+      imagen_portada_path: this.m.imagen_portada_path ?? null,
+      imagen_portada_target: this.m.imagen_portada_target ?? null,
       autor_tipo: 'libre',
       autor_texto: this.m.autor_texto?.trim() ?? '',
       autor_uid: null,

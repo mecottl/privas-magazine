@@ -8,7 +8,8 @@ NO son secretos de GitHub Actions: es Supabase quien llama a GitHub, no al revé
 | Secreto | Usado por | Notas |
 | --- | --- | --- |
 | `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | todas | inyectados automáticamente por Supabase |
-| `CRON_SECRET` | `programar-publicacion` | token compartido con la llamada de `pg_cron`; la función responde 401 si no coincide |
+| `CRON_SECRET` | `programar-publicacion`, `eliminar-archivo` | token compartido con las llamadas de `pg_cron` / triggers de BD (`pg_net`); la función responde 401 si no coincide. En el Vault de Postgres debe existir como `cron_secret` con el MISMO valor |
+| `UPLOAD_BUCKET` / `SFTP_HOST` / `SFTP_USER` / `SFTP_PASSWORD` | `eliminar-archivo` | mismos que `subir-archivo`; la rama SFTP solo se ejercita cuando el archivo se subió con `target='sftp'` |
 | `GH_DISPATCH_TOKEN` | `programar-publicacion` | PAT de GitHub con permiso de `repository_dispatch` sobre el repo. NO puede llamarse `GITHUB_*` (prefijo reservado) |
 | `GH_DISPATCH_REPO` | `programar-publicacion` | opcional, `owner/repo`. Default `mecottl/privas-magazine` |
 | `RESEND_API_KEY` | `programar-publicacion` | opcional hoy (sin dominio). Si falta, el envío de newsletter se salta silenciosamente |

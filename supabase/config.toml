@@ -10,6 +10,10 @@ verify_jwt = true
 # Invocada por pg_cron cada 15 min con la service key — no requiere JWT de usuario.
 verify_jwt = false
 
+[functions.eliminar-archivo]
+# Invocada por triggers de la BD vía pg_net con el CRON_SECRET — no hay JWT de usuario.
+verify_jwt = false
+
 [functions.invitar-admin]
 verify_jwt = true
 
