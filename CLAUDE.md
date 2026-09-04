@@ -1,5 +1,17 @@
 # PRIVAS Magazine — contexto del proyecto
 
+## Estado actual (4 sep 2026)
+
+Este proyecto ya no está en fase "MVP" genérica: el **backend está
+terminado y probado en vivo** (Edge Functions, RLS, cron de publicación
+programada, limpieza de archivos huérfanos). El **frontend está en fase
+activa de diseño y construcción** (editor de bloques, UI definitiva,
+pulido de páginas públicas — ver milestone "Frontend — diseño y editor").
+
+La infraestructura final se está migrando de Hostinger a Akky (ver sección
+de Stack más abajo) — el código de subida/borrado de archivos ya se
+adaptó a FTP, falta el paso de deploy y las credenciales reales.
+
 Plataforma editorial (artículos + revista digital) para PRIVAS Magazine.
 Este archivo es la fuente de verdad de la arquitectura ya decidida. Léelo
 completo antes de generar código. El seguimiento de pendientes vive en
