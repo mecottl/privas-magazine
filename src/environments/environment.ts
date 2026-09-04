@@ -1,7 +1,7 @@
 /**
  * Entorno de producción.
  *
- * SUPABASE_SERVICE_ROLE_KEY, credenciales SFTP y RESEND_API_KEY NUNCA
+ * SUPABASE_SERVICE_ROLE_KEY, credenciales FTP y RESEND_API_KEY NUNCA
  * viven aquí — son secretos de Edge Function.
  *
  * En CI estos valores se inyectan desde GitHub Actions al hacer el build

@@ -1,8 +1,13 @@
 # Brief: lógica real de las Edge Functions
 
-Las 5 funciones viven en `supabase/functions/`. Este documento detalla la
+Las **7 funciones** viven en `supabase/functions/`. Este documento detalla la
 lógica real de cada una. Léelo junto con `CLAUDE.md` — no repite el contexto
 general, solo añade el detalle de implementación.
+
+> **4 sep 2026**: Hostinger → Akky. Akky no tiene SFTP, solo FTP plano vía
+> cPanel. `subir-archivo` y `eliminar-archivo` se migraron de
+> `ssh2-sftp-client` (SFTP real, cifrado) a `basic-ftp` (FTP, con intento de
+> FTPS explícito primero y caída a FTP plano si el servidor lo rechaza).
 
 ## Regla transversal de seguridad — aplica a TODAS
 
@@ -59,16 +64,43 @@ Quién la llama: un admin logueado, desde el panel.
 2. `multipart/form-data`: `archivo` + `tipo`
    (`articulo-portada` | `revista-pdf` | `revista-portada`).
 3. Validar tamaño según el tipo antes de subir. `revista-pdf`: 45 MB con
-   `UPLOAD_TARGET=supabase` (límite real ~50 MB de Storage), 60 MB con `sftp`.
+   `UPLOAD_TARGET=supabase` (límite real ~50 MB de Storage), 60 MB con `ftp`.
 4. Nombre seguro y único: `slug-timestamp.ext` (nunca el nombre original).
 5. Según `UPLOAD_TARGET`:
    - `supabase` → bucket privado con `service_role`, devolver URL firmada
      de larga expiración.
-   - `sftp` → `SFTP_HOST/USER/PASSWORD`, subir a `public_html/uploads/...`,
-     devolver la URL pública final.
+   - `ftp` → `FTP_HOST/USER/PASSWORD`, sube a `public_html/uploads/...` en
+     cPanel de Akky. Intenta conectar con FTPS explícito (`secure: true`)
+     primero; si el servidor lo rechaza, reintenta en FTP plano
+     (`secure: false`) — Akky confirmó que no tiene SFTP.
 6. 200 con `{ url }` — el frontend la guarda en la fila correspondiente.
 
-## 4. `confirmar-suscripcion`
+## 4. `eliminar-archivo`
+
+Quién la llama: los triggers de base de datos `articulos_limpiar_portada` y
+`ediciones_limpiar_archivos` vía `pg_net` — NUNCA el frontend directo. Se
+dispara automáticamente cuando se reemplaza o borra un artículo/edición, para
+no dejar archivos huérfanos en Storage o en Akky.
+
+1. Validar `CRON_SECRET` (mismo secreto que `programar-publicacion`, vía
+   `requireCronSecret()`) — si no coincide, 401. Así no es invocable
+   públicamente aunque la URL sea pública.
+2. Body: `{ path, target }` o `{ archivos: [{ path, target }, ...] }` (PDF +
+   portada de una edición en una sola llamada).
+3. Por cada archivo, según `target`:
+   - `supabase` → `storage.from(bucket).remove([path])` con `service_role`.
+     `UPLOAD_BUCKET` define el bucket (default `uploads`).
+   - `ftp` → conecta a Akky igual que `subir-archivo` (FTPS primero, FTP
+     plano si falla) y usa `removeQuiet()` (no lanza error si el archivo ya
+     no existe — a diferencia de `remove()`).
+4. Si un archivo individual falla, NO tumba la respuesta completa: se
+   registra en `console.error` y se sigue con el resto del lote.
+5. 200 con `{ ok: true, resultados: [{ path, target, ok, error? }, ...] }`.
+
+Secretos: `CRON_SECRET`, `UPLOAD_BUCKET`, `FTP_HOST` / `FTP_USER` /
+`FTP_PASSWORD` (solo rama `ftp`).
+
+## 5. `confirmar-suscripcion`
 
 Pública, vía el link del correo de confirmación.
 
@@ -80,12 +112,12 @@ Pública, vía el link del correo de confirmación.
 5. Respuesta genérica de éxito. El mensaje visible lo pinta Angular en
    `/newsletter/confirmar`.
 
-## 5. `cancelar-suscripcion`
+## 6. `cancelar-suscripcion`
 
 Igual que la 4, pero `activo = false`. NO borra la fila (respeta la baja aunque
 reintenten confirmar con un token viejo).
 
-## 6. `set-admin-activo`
+## 7. `set-admin-activo`
 
 Quién la llama: un admin logueado, desde la pantalla de Administradores.
 
@@ -104,8 +136,9 @@ es imposible desde el cliente. Se hace aquí con `service_role`.
 ## Nota general sobre pruebas
 
 - `invitar-admin`: probar con una segunda cuenta real, no la del dev.
-- `subir-archivo`: probar con `UPLOAD_TARGET=supabase` (hoy). La rama SFTP no se
-  puede probar hasta que exista Hostinger.
+- `subir-archivo` / `eliminar-archivo`: probar con `UPLOAD_TARGET=supabase`
+  (hoy). La rama `ftp` no se puede probar en vivo hasta tener credenciales
+  reales de Akky.
 - `confirmar/cancelar-suscripcion`: probables de punta a punta ya. Sin
   `RESEND_API_KEY` no hay correo real: insertar un registro de prueba directo en
   `suscriptores_newsletter` vía SQL, tomar su `token_confirmacion` y llamar la

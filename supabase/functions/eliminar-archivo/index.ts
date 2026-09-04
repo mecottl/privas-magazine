@@ -7,24 +7,28 @@
  * para que no sea invocable públicamente.
  *
  * Recibe uno de:
- *   { path: string, target: 'supabase' | 'sftp' }
+ *   { path: string, target: 'supabase' | 'ftp' }
  *   { archivos: [{ path, target }, ...] }        // PDF + portada de una edición
  *
  * Lógica:
  *   - target 'supabase' → storage.from(bucket).remove([path]) con service_role.
- *   - target 'sftp'      → SFTP DELETE en public_html/uploads/<path>.
- *     (rama sin probar hasta que exista Hostinger — igual que subir-archivo.)
+ *   - target 'ftp'       → FTP DELETE en public_html/uploads/<path> (cPanel
+ *     de Akky). Akky no tiene SFTP, solo FTP plano — mismo criterio que
+ *     subir-archivo: intenta FTPS explícito primero, cae a FTP sin cifrar
+ *     si el servidor lo rechaza.
+ *     (rama sin probar en vivo hasta tener credenciales reales de Akky —
+ *     igual que subir-archivo.)
  *
  * Si el archivo ya no existe (borrado doble, o nunca se subió) NO falla
  * ruidosamente: lo registra y responde 200 igual.
  *
  * Secretos: CRON_SECRET, UPLOAD_BUCKET (default "uploads"),
- *           SFTP_HOST / SFTP_USER / SFTP_PASSWORD (solo rama sftp).
+ *           FTP_HOST / FTP_USER / FTP_PASSWORD (solo rama ftp).
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
 import { adminClient, requireCronSecret } from '../_shared/clients.ts';
 
-type Target = 'supabase' | 'sftp';
+type Target = 'supabase' | 'ftp';
 interface ArchivoRef {
   path: string;
   target: Target;
@@ -43,7 +47,7 @@ function normalizarEntrada(body: unknown): ArchivoRef[] {
       const r = (x ?? {}) as Record<string, unknown>;
       return {
         path: typeof r['path'] === 'string' ? r['path'].trim() : '',
-        target: (r['target'] === 'sftp' ? 'sftp' : 'supabase') as Target,
+        target: (r['target'] === 'ftp' ? 'ftp' : 'supabase') as Target,
       };
     })
     .filter((a) => a.path.length > 0);
@@ -57,24 +61,33 @@ async function borrarDeSupabase(path: string): Promise<void> {
   if (error) throw new Error(`Storage: ${error.message}`);
 }
 
-async function borrarPorSftp(path: string): Promise<void> {
-  const host = Deno.env.get('SFTP_HOST');
-  const user = Deno.env.get('SFTP_USER');
-  const password = Deno.env.get('SFTP_PASSWORD');
+async function borrarPorFtp(path: string): Promise<void> {
+  const host = Deno.env.get('FTP_HOST');
+  const user = Deno.env.get('FTP_USER');
+  const password = Deno.env.get('FTP_PASSWORD');
   if (!host || !user || !password) {
-    throw new Error('Faltan credenciales SFTP (SFTP_HOST/USER/PASSWORD)');
+    throw new Error('Faltan credenciales FTP (FTP_HOST/USER/PASSWORD)');
   }
 
-  const { default: SftpClient } = await import('npm:ssh2-sftp-client@11');
-  const sftp = new SftpClient();
+  const { Client } = await import('npm:basic-ftp@5');
   const remotePath = `public_html/uploads/${path}`;
+
+  let client = new Client();
+  let conectado = false;
   try {
-    await sftp.connect({ host, username: user, password });
-    if (await sftp.exists(remotePath)) {
-      await sftp.delete(remotePath);
-    }
+    await client.access({ host, user, password, secure: true });
+    conectado = true;
+  } catch {
+    client.close();
+    client = new Client();
+  }
+  try {
+    if (!conectado) await client.access({ host, user, password, secure: false });
+    // basic-ftp no tiene un "exists()" directo: removeQuiet no falla si el
+    // archivo no existe (a diferencia de client.remove(), que sí lanza).
+    await client.removeQuiet(remotePath);
   } finally {
-    await sftp.end().catch(() => {});
+    client.close();
   }
 }
 
@@ -103,7 +116,7 @@ Deno.serve(async (req) => {
   const resultados: { path: string; target: Target; ok: boolean; error?: string }[] = [];
   for (const a of archivos) {
     try {
-      if (a.target === 'sftp') await borrarPorSftp(a.path);
+      if (a.target === 'ftp') await borrarPorFtp(a.path);
       else await borrarDeSupabase(a.path);
       resultados.push({ path: a.path, target: a.target, ok: true });
     } catch (e) {

@@ -6,13 +6,13 @@ export type TipoArchivo =
   | 'revista-pdf'
   | 'revista-portada';
 
-export type DestinoArchivo = 'supabase' | 'sftp';
+export type DestinoArchivo = 'supabase' | 'ftp';
 
 /**
  * Resultado de subir un archivo. Se guardan los 3 valores juntos en la fila:
  *   url    → para MOSTRAR el archivo.
  *   path   → ruta interna, necesaria para BORRARLO luego (limpieza de huérfanos).
- *   target → destino real de esta subida ('supabase' | 'sftp').
+ *   target → destino real de esta subida ('supabase' | 'ftp').
  */
 export interface ArchivoSubido {
   url: string;
@@ -51,7 +51,7 @@ export class UploadsService {
     return {
       url: data.url,
       path: data.ruta,
-      target: data.target === 'sftp' ? 'sftp' : 'supabase',
+      target: data.target === 'ftp' ? 'ftp' : 'supabase',
     };
   }
 }

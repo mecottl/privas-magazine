@@ -2,17 +2,18 @@
 
 Plataforma editorial (artículos + revista digital) para PRIVAS Magazine.
 Este archivo es la fuente de verdad de la arquitectura ya decidida. Léelo
-completo antes de generar código. No relees el chat de planeación — todo lo
-relevante está aquí.
+completo antes de generar código. El seguimiento de pendientes vive en
+**GitHub Issues** de este repo, no aquí — este archivo es solo arquitectura
+y decisiones ya tomadas.
 
 ## Quién construye qué (regla de flujo de trabajo)
 
 - **Claude Code construye todo el código**: proyecto Angular, Edge Functions,
   workflows de CI/CD.
-- **El desarrollador configura Hostinger y Supabase a mano** desde los
-  dashboards (Auth, Storage, extensiones, RLS ya aplicado). No asumas que vas
-  a poder ejecutar cambios de configuración de esos dashboards — tu trabajo es
-  el código que se conecta a esa configuración, no la configuración en sí.
+- **El desarrollador configura Akky y Supabase a mano** desde los dashboards
+  (Auth, Storage, extensiones, RLS ya aplicado). No asumas que vas a poder
+  ejecutar cambios de configuración de esos dashboards — tu trabajo es el
+  código que se conecta a esa configuración, no la configuración en sí.
 - El esquema de base de datos y las políticas RLS **ya están aplicados** en el
   proyecto real de Supabase (ref `xiqqhjdpmqdnzsvpjhwq`). No los regeneres
   salvo que el desarrollador pida un cambio explícito — si hace falta un
@@ -31,17 +32,25 @@ este repo.
   100% estático — sin Node.js en runtime (el hosting final no lo soporta).
 - **Backend/BaaS**: Supabase (Postgres + Auth + Storage + Edge Functions),
   plan Free.
-- **Hosting final**: Hostinger Premium (SFTP, sin Node.js) — el build
-  estático y los archivos pesados (PDFs, imágenes) viven ahí, NO en Supabase
-  Storage.
-- **Staging temporal**: Cloudflare Pages o Vercel, mientras no exista la
-  cuenta de Hostinger de la clienta (pendiente de que ella pague).
+- **Hosting final**: **Akky** — cPanel + **FTP** (Akky confirmó que NO tiene
+  SFTP). El build estático y los archivos pesados (PDFs, imágenes) viven ahí,
+  NO en Supabase Storage.
+- **Staging temporal**: Vercel, mientras no exista la cuenta de Akky de la
+  clienta (pendiente de que ella la contrate).
 - **CI/CD**: GitHub Actions — build de Angular + deploy.
+
+> **Historial:** el plan original era Hostinger + SFTP real. Se cambió a
+> Akky el 4 sep 2026 porque el hosting definitivo se decidió distinto, y
+> Akky confirmó que solo ofrece FTP plano (sin cifrar) vía cPanel, no SFTP.
+> El código de `subir-archivo` y `eliminar-archivo` ya se migró de
+> `ssh2-sftp-client` a `basic-ftp` en consecuencia — ver detalle en
+> `EDGE_FUNCTIONS_BRIEF.md`. Si Akky llega a habilitar SFTP/FTPS más
+> adelante, vale la pena volver a cifrar esa subida.
 
 ## Esquema de base de datos (ya aplicado, no regenerar)
 
-Tablas: `articulos`, `categorias`, `ediciones_revista`, `perfiles_admin`,
-`marcas`. Falta agregar `suscriptores_newsletter` (ver sección Newsletter).
+Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
+`ediciones_revista`, `perfiles_admin`, `marcas`, `suscriptores_newsletter`.
 
 - `perfiles_admin.id` = `auth.users.id` (sin duplicar login).
 - `is_admin()` es la función `security definer` que valida permisos en TODAS
@@ -54,10 +63,32 @@ Tablas: `articulos`, `categorias`, `ediciones_revista`, `perfiles_admin`,
   No lo conviertas a enum.
 - `autor_tipo` en `articulos` es `'libre'` o `'usuario'`, con un CHECK que
   obliga a llenar `autor_texto` o `autor_uid` según corresponda.
+- **Categorías: YA implementadas y en uso**, no son un pendiente. Las trae
+  dinámicamente `CategoriasService` desde la tabla `categorias`, con
+  filtro real en la página de artículos — no están hardcodeadas en el
+  frontend. Si la clienta pide agregar/quitar una categoría, es un dato
+  (insert/update en la tabla), no un cambio de código.
+- `*_target` (`imagen_portada_target`, `pdf_target`, `portada_target`) en
+  `articulos`/`ediciones_revista`: `'supabase' | 'ftp'` — destino real donde
+  vive ESE archivo específico, distinto de la URL (necesario para poder
+  borrarlo luego). Renombrado de `'sftp'` a `'ftp'` el 4 sep 2026 (ver
+  migración `20260904220000_renombrar_target_sftp_a_ftp.sql`).
 
-## Piezas de arquitectura que SÍ construye Claude Code
+## Piezas de arquitectura — Edge Functions (7 en total)
 
-### 1. Editor de contenido de artículos
+Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
+
+| Función | Quién la llama | Qué hace |
+| --- | --- | --- |
+| `subir-archivo` | admin (panel) | Sube a Supabase Storage o FTP (Akky) según `UPLOAD_TARGET`. |
+| `eliminar-archivo` | triggers de BD (`pg_net`) | Limpieza automática de archivos huérfanos al reemplazar/borrar. |
+| `programar-publicacion` | `pg_cron` cada 15 min | Publica lo programado, dispara rebuild + newsletter. |
+| `invitar-admin` | admin (panel) | Única vía autorizada para crear cuentas nuevas de admin. |
+| `set-admin-activo` | admin (panel) | Activar/desactivar OTRO admin (RLS de `perfiles_admin` no lo permite desde el cliente). Bloquea auto-desactivación y dejar 0 admins activos. |
+| `confirmar-suscripcion` | público (link de correo) | Doble opt-in del newsletter. |
+| `cancelar-suscripcion` | público (link de correo) | Baja del newsletter por token, no borra la fila. |
+
+### Editor de contenido de artículos
 Constructor de bloques libre: texto, imágenes, video embebido, layout libre
 dentro del artículo (la clienta pidió libertad total tipo "arma tu página
 como quieras"). Evaluar una librería existente (TipTap, Editor.js,
@@ -68,54 +99,18 @@ El `extracto` se genera automáticamente a partir del contenido (no lo llena
 el usuario a mano) — resuélvelo en el momento de guardar (frontend o Edge
 Function), truncando el texto plano extraído del JSON de bloques.
 
-### 2. Puente de subida de archivos
-```
-Panel Angular → Edge Function "subir-archivo" → SFTP → Hostinger (public_html/uploads)
-```
-La Edge Function recibe el archivo desde el panel, se conecta por SFTP a
-Hostinger, lo sube, y devuelve la URL pública final para guardar en
-`imagen_portada_url`, `pdf_url` o `portada_url` según corresponda. Las
-credenciales SFTP van como secreto de la Edge Function — NUNCA en el
-frontend. Durante la etapa de staging (sin Hostinger real todavía), esta
-función puede apuntar temporalmente al bucket privado de Supabase Storage ya
-creado, y cambiar de destino cuando exista la cuenta Hostinger real —
-diséñala con el destino configurable, no hardcodeado.
-
-### 3. Programación de publicación + recompilación automática
-Edge Function `programar-publicacion`, disparada por `pg_cron` cada 15 min
-(las extensiones `pg_cron` y `pg_net` ya están activas en el proyecto):
+### Programación de publicación + recompilación automática
+`programar-publicacion`, disparada por `pg_cron` cada 15 min (`pg_cron` y
+`pg_net` ya activas):
 ```sql
 update articulos set estado = 'publicado'
 where estado = 'programado' and fecha_publicacion <= now();
 -- mismo patrón para ediciones_revista
 ```
-Si hubo filas afectadas, dispara (vía `pg_net`) un webhook hacia GitHub
-Actions para reconstruir y redesplegar el sitio — esto es lo que resuelve el
-SEO/Open Graph correcto por artículo, dado que es una SPA estática sin
-servidor Node en producción.
-
-### 4. Gestión de administradores
-Edge Function `invitar-admin` — única vía autorizada para crear cuentas
-nuevas de admin, usa `SUPABASE_SERVICE_ROLE_KEY` (nunca expuesta al
-frontend):
-1. `auth.admin.createUser()` para la cuenta en `auth.users`
-2. `insert` en `perfiles_admin` con el `nivel_permiso` indicado
-
-No expongas ningún flujo de creación de admins que no pase por esta función.
-
-### 5. Newsletter / suscripción por correo (toques finales, no bloquea el resto)
-- Tabla nueva `suscriptores_newsletter` (email, activo, token_confirmacion,
-  fecha_alta). RLS: `INSERT` público (cualquiera se puede suscribir), `SELECT`
-  solo admin (nunca expongas la lista completa de correos).
-- Doble opt-in: Edge Function `confirmar-suscripcion` que activa `activo =
-  true` cuando el visitante hace clic en el link de confirmación.
-- Link de baja individual: Edge Function `cancelar-suscripcion` por token.
-- El envío real usa el producto de "marketing" de Resend (por contactos, no
-  por email enviado) — pero esto depende de que exista el dominio real, así
-  que el código se puede dejar listo con las llamadas a Resend, aunque no se
-  pueda probar en vivo hasta el cutover final.
-- Se dispara desde la misma Edge Function `programar-publicacion` cuando algo
-  pasa a `publicado`.
+Si hubo filas afectadas, dispara (vía `pg_net`) un `repository_dispatch`
+hacia GitHub Actions para reconstruir y redesplegar el sitio — esto es lo
+que resuelve el SEO/Open Graph correcto por artículo, dado que es una SPA
+estática sin servidor Node en producción.
 
 ## Decisiones de frontend
 
@@ -124,11 +119,10 @@ No expongas ningún flujo de creación de admins que no pase por esta función.
   limpias, foco en fotografía, tarjetas de artículo con imagen + categoría +
   fecha.
 - **100% responsive, mobile-first.** Diseña primero para celular.
-- **Login de administración en ruta oculta**, sin link visible en la
-  navegación pública (ej. `/gestion-privas` o similar, no algo obvio como
-  `/admin` o `/login`). Esto es solo para que un visitante normal no la
-  encuentre por accidente — la seguridad real es Supabase Auth + RLS, no la
-  ruta oscura.
+- **Login de administración en ruta oculta** (`/gestion-privas`), sin link
+  visible en la navegación pública. Esto es solo para que un visitante
+  normal no la encuentre por accidente — la seguridad real es Supabase
+  Auth + RLS, no la ruta oscura.
 - **Aviso de privacidad**: página + link visible en el footer (obligatorio
   porque se recolectan correos para el newsletter).
 - Secciones esperadas: inicio, listado de artículos con filtro por categoría,
@@ -143,9 +137,12 @@ No expongas ningún flujo de creación de admins que no pase por esta función.
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY` — sí van en el frontend, son públicas.
 - `SUPABASE_SERVICE_ROLE_KEY` — SOLO en Edge Functions, nunca en el bundle de
   Angular.
-- `SFTP_HOST`, `SFTP_USER`, `SFTP_PASSWORD` — secretos de Edge Function.
+- `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`, `FTP_PUBLIC_BASE_URL` — secretos de
+  Edge Function (Akky). Antes eran `SFTP_*` — renombrados el 4 sep 2026.
 - `RESEND_API_KEY` — secreto de Edge Function, se activa cuando exista el
   dominio.
+- Lista completa (incluye `CRON_SECRET`, `GH_DISPATCH_TOKEN`, `UPLOAD_TARGET`,
+  `UPLOAD_BUCKET`, secretos de GitHub Actions, etc.): `docs/SECRETS.md`.
 
 ## Pendientes de negocio que SÍ afectan código (avisar si se topa con estos)
 
@@ -158,3 +155,23 @@ No expongas ningún flujo de creación de admins que no pase por esta función.
 - Sección "Nuestras Marcas": si es fija o administrable desde el panel —
   sigue sin confirmar, construir el CRUD de todos modos ya que la tabla
   `marcas` ya existe, pero avisar si se prefiere dejarla fija por ahora.
+- **Nombre exacto de la ruta de cuentas FTP dentro de cPanel de Akky** —
+  pendiente de confirmar (equivalente a lo que en Hostinger era
+  hPanel → Archivos → Cuentas FTP).
+
+## Dónde está el seguimiento de trabajo
+
+**GitHub Issues de este repo** — no hay un TODO paralelo en Drive ni en este
+archivo. Labels: `backend`, `frontend`, `bug`, `bloqueado-dominio`,
+`pendiente-cliente`, `seguridad`, `transferencia`, `documentation`.
+Milestones: "Backend — fase 1", "Frontend — diseño y editor", "Transferencia
+final".
+
+Documentación de arquitectura que SÍ vive fuera de este archivo:
+- `README.md` — estructura de carpetas y cómo correr el proyecto local.
+- `EDGE_FUNCTIONS_BRIEF.md` — lógica detallada de cada Edge Function.
+- `docs/SECRETS.md` — cada secreto: qué es, dónde se obtiene, dónde se
+  configura.
+- Carpeta de Documentación en Drive — explicación en lenguaje llano para la
+  clienta (no técnica), y el historial de descubrimiento del proyecto
+  (propuesta original, respuestas de la clienta).

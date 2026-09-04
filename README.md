@@ -7,7 +7,7 @@ para la arquitectura completa y las decisiones ya tomadas.
 
 - **Frontend**: Angular 22 (standalone components, sin NgModules), build 100% estático.
 - **BaaS**: Supabase (Postgres + Auth + Storage + Edge Functions), ref `xiqqhjdpmqdnzsvpjhwq`.
-- **Hosting**: Hostinger (SFTP) en producción; Cloudflare Pages / Vercel en staging.
+- **Hosting**: Akky (cPanel + FTP) en producción; Vercel en staging.
 - **CI/CD**: GitHub Actions.
 
 ## Estructura
@@ -38,12 +38,15 @@ supabase/
   config.toml
   functions/
     _shared/               cors.ts · clients.ts (admin/user/requireAdmin)
-    subir-archivo/         panel → SFTP/Storage → URL pública (§ 2)
-    programar-publicacion/ pg_cron cada 15 min + rebuild + newsletter (§ 3, § 5)
-    invitar-admin/         única alta de admins con service_role (§ 4)
-    confirmar-suscripcion/ doble opt-in newsletter (§ 5)
-    cancelar-suscripcion/  baja por token (§ 5)
-  migrations/              20260901230618_suscriptores_newsletter.sql
+    subir-archivo/         panel → FTP (Akky) / Storage → URL pública
+    eliminar-archivo/      limpieza de archivos huérfanos (triggers de BD)
+    programar-publicacion/ pg_cron cada 15 min + rebuild + newsletter
+    invitar-admin/         única alta de admins con service_role
+    set-admin-activo/      activar/desactivar OTRO admin
+    confirmar-suscripcion/ doble opt-in newsletter
+    cancelar-suscripcion/  baja por token
+  migrations/              ver EDGE_FUNCTIONS_BRIEF.md y CLAUDE.md para el
+                           detalle de cada una
 
 .github/workflows/
   deploy.yml               build Angular estático + deploy

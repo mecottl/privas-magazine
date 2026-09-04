@@ -1,7 +1,7 @@
 /**
  * subir-archivo (CLAUDE.md § 2 · brief "lógica real")
  *
- *   Panel Angular → esta función → (Supabase Storage | SFTP Hostinger) → URL
+ *   Panel Angular → esta función → (Supabase Storage | FTP Akky) → URL
  *
  * Quién la llama: un admin logueado, desde el panel (portada de artículo, o
  * PDF + portada de revista).
@@ -13,12 +13,20 @@
  * 4. Nombre seguro y único: <slug>-<timestamp>.<ext> (nunca el nombre original).
  * 5. Según UPLOAD_TARGET:
  *      - 'supabase' → bucket privado, devuelve URL firmada de larga expiración.
- *      - 'sftp'     → SFTP a public_html/uploads/<...>, devuelve URL pública.
+ *      - 'ftp'      → FTP (cPanel de Akky) a public_html/uploads/<...>,
+ *                     devuelve URL pública. Akky confirmó que NO tiene SFTP,
+ *                     solo FTP plano (sin cifrar) vía cPanel — ver nota de
+ *                     seguridad en `subirPorFtp` más abajo.
  * 6. 200 { url } — el frontend guarda esa URL en la fila correspondiente.
  *
- * Secretos: SFTP_HOST / SFTP_USER / SFTP_PASSWORD, UPLOAD_TARGET,
- *           SFTP_PUBLIC_BASE_URL (ej. https://privasmagazine.com),
+ * Secretos: FTP_HOST / FTP_USER / FTP_PASSWORD, UPLOAD_TARGET,
+ *           FTP_PUBLIC_BASE_URL (ej. https://privasmagazine.com),
  *           UPLOAD_BUCKET (default "uploads").
+ *
+ * Historial: antes usaba SFTP real (ssh2-sftp-client) pensando en Hostinger.
+ * Se migró a FTP plano (basic-ftp) el 4 sep 2026 porque Akky confirmó que no
+ * ofrece SFTP. Si Akky llega a habilitar SFTP/FTPS más adelante, vale la pena
+ * volver a esta función para cifrar la subida.
  */
 import { Buffer } from 'node:buffer';
 import { corsHeaders, json } from '../_shared/cors.ts';
@@ -48,7 +56,7 @@ const REGLAS: Record<TipoArchivo, ReglaTipo> = {
     carpeta: 'revistas',
   },
   'revista-pdf': {
-    // Tope absoluto (rama SFTP). Con UPLOAD_TARGET=supabase se recorta a 45 MB
+    // Tope absoluto (rama FTP). Con UPLOAD_TARGET=supabase se recorta a 45 MB
     // porque Supabase Storage tiene un límite real de ~50 MB por archivo.
     maxBytes: 60 * MB,
     mimes: ['application/pdf'],
@@ -61,7 +69,7 @@ const REVISTA_PDF_MAX_SUPABASE = 45 * MB;
 
 /** Tamaño máximo efectivo según el tipo y el destino de subida. */
 function maxBytesPara(tipo: TipoArchivo, target: string): number {
-  if (tipo === 'revista-pdf' && target !== 'sftp') {
+  if (tipo === 'revista-pdf' && target !== 'ftp') {
     return REVISTA_PDF_MAX_SUPABASE;
   }
   return REGLAS[tipo].maxBytes;
@@ -105,27 +113,45 @@ async function subirASupabase(
   return data.signedUrl;
 }
 
-async function subirPorSftp(ruta: string, bytes: Uint8Array): Promise<string> {
-  const host = Deno.env.get('SFTP_HOST');
-  const user = Deno.env.get('SFTP_USER');
-  const password = Deno.env.get('SFTP_PASSWORD');
-  const baseUrl = Deno.env.get('SFTP_PUBLIC_BASE_URL');
+async function subirPorFtp(ruta: string, bytes: Uint8Array): Promise<string> {
+  const host = Deno.env.get('FTP_HOST');
+  const user = Deno.env.get('FTP_USER');
+  const password = Deno.env.get('FTP_PASSWORD');
+  const baseUrl = Deno.env.get('FTP_PUBLIC_BASE_URL');
   if (!host || !user || !password || !baseUrl) {
-    throw new Error('Faltan credenciales SFTP (SFTP_HOST/USER/PASSWORD/PUBLIC_BASE_URL)');
+    throw new Error('Faltan credenciales FTP (FTP_HOST/USER/PASSWORD/PUBLIC_BASE_URL)');
   }
 
-  // Import dinámico: solo se carga si realmente se usa la rama SFTP.
-  const { default: SftpClient } = await import('npm:ssh2-sftp-client@11');
-  const sftp = new SftpClient();
-  const remotePath = `public_html/uploads/${ruta}`;
+  // Import dinámico: solo se carga si realmente se usa la rama FTP.
+  // basic-ftp es puro JS (sin bindings nativos), a diferencia de ssh2.
+  const { Client } = await import('npm:basic-ftp@5');
+  const { Readable } = await import('node:stream');
+
+  const remoteDir = `public_html/uploads/${ruta.slice(0, ruta.lastIndexOf('/'))}`;
+  const remoteName = ruta.slice(ruta.lastIndexOf('/') + 1);
+
+  // Akky confirmó que NO tiene SFTP — solo FTP plano vía cPanel. Intentamos
+  // primero FTPS explícito (mismo puerto 21, cifra la sesión SI el servidor
+  // lo soporta) y, solo si esa conexión falla, abrimos una segunda conexión
+  // en FTP sin cifrar. Dos clientes distintos a propósito: un `Client` de
+  // basic-ftp no se puede "reintentar" limpiamente tras un access() fallido.
+  let client = new Client();
+  let conectado = false;
   try {
-    await sftp.connect({ host, username: user, password });
-    const dir = remotePath.slice(0, remotePath.lastIndexOf('/'));
-    if (!(await sftp.exists(dir))) await sftp.mkdir(dir, true);
-    // ssh2-sftp-client acepta Buffer; Uint8Array funciona vía Buffer.from.
-    await sftp.put(Buffer.from(bytes), remotePath);
+    await client.access({ host, user, password, secure: true });
+    conectado = true;
+  } catch {
+    client.close();
+    client = new Client();
+  }
+  try {
+    if (!conectado) {
+      await client.access({ host, user, password, secure: false });
+    }
+    await client.ensureDir(remoteDir);
+    await client.uploadFrom(Readable.from(bytes), remoteName);
   } finally {
-    await sftp.end().catch(() => {});
+    client.close();
   }
   return `${baseUrl.replace(/\/$/, '')}/uploads/${ruta}`;
 }
@@ -179,8 +205,8 @@ Deno.serve(async (req) => {
     const bytes = new Uint8Array(await archivo.arrayBuffer());
 
     let url: string;
-    if (target === 'sftp') {
-      url = await subirPorSftp(ruta, bytes);
+    if (target === 'ftp') {
+      url = await subirPorFtp(ruta, bytes);
     } else {
       url = await subirASupabase(ruta, bytes, contentType);
     }

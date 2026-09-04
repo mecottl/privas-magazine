@@ -16,7 +16,7 @@ export const ESTADOS: EstadoPublicacion[] = [
 export type AutorTipo = 'libre' | 'usuario';
 
 /** Destino real de una subida de archivo. */
-export type DestinoArchivo = 'supabase' | 'sftp';
+export type DestinoArchivo = 'supabase' | 'ftp';
 
 export type Temporada = 'primavera-verano' | 'otono-invierno';
 export const TEMPORADAS: Temporada[] = ['primavera-verano', 'otono-invierno'];
