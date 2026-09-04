@@ -1,5 +1,5 @@
 /**
- * programar-publicacion (CLAUDE.md § 3 y § 5 · brief "lógica real")
+ * programar-publicacion (CLAUDE.md → sección "Programación de publicación + recompilación automática" · brief "lógica real")
  *
  * Quién la llama: pg_cron cada 15 min, autenticado con CRON_SECRET.
  *

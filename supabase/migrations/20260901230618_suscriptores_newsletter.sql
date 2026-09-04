@@ -1,4 +1,4 @@
--- Newsletter / suscripción por correo (CLAUDE.md § 5).
+-- Newsletter / suscripción por correo (CLAUDE.md → tabla de Edge Functions).
 -- Migración NUEVA — no toca el esquema base ya aplicado.
 -- Reutiliza is_admin() para las políticas de escritura/lectura de admin.
 

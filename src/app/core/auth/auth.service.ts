@@ -7,7 +7,7 @@ import type { PerfilAdmin } from '../models';
  * Estado de sesión del panel de administración.
  *
  * La creación de cuentas de admin NO ocurre aquí: la única vía autorizada
- * es la Edge Function `invitar-admin` (ver CLAUDE.md § 4).
+ * es la Edge Function `invitar-admin` (ver CLAUDE.md → tabla de Edge Functions).
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {

@@ -1,5 +1,5 @@
 /**
- * invitar-admin (CLAUDE.md § 4 · brief "lógica real")
+ * invitar-admin (CLAUDE.md → tabla de Edge Functions · brief "lógica real")
  *
  * Quién la llama: un admin ya logueado, desde el panel.
  * ÚNICA vía autorizada para crear cuentas de admin.

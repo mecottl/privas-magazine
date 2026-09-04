@@ -1,5 +1,5 @@
 /**
- * subir-archivo (CLAUDE.md § 2 · brief "lógica real")
+ * subir-archivo (CLAUDE.md → tabla de Edge Functions · brief "lógica real")
  *
  *   Panel Angular → esta función → (Supabase Storage | FTP Akky) → URL
  *

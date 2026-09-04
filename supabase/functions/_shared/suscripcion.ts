@@ -2,7 +2,8 @@ import { corsHeaders, json } from './cors.ts';
 import { adminClient } from './clients.ts';
 
 /**
- * Lógica compartida de confirmar/cancelar suscripción (brief § 4 y § 5).
+ * Lógica compartida de confirmar/cancelar suscripción
+ * (brief → confirmar-suscripcion y cancelar-suscripcion).
  *
  * Públicas por diseño: no requieren sesión, pero SÍ un `token_confirmacion`
  * válido en query param `?token=` o en el body JSON `{ "token": "..." }`.

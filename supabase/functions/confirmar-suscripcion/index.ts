@@ -1,5 +1,5 @@
 /**
- * confirmar-suscripcion (CLAUDE.md § 5 · brief § 4)
+ * confirmar-suscripcion (CLAUDE.md → tabla de Edge Functions · brief → confirmar-suscripcion)
  *
  * Pública. Doble opt-in: pone `activo = true` en la fila cuyo
  * `token_confirmacion` coincide. Respuesta genérica siempre (no revela si un

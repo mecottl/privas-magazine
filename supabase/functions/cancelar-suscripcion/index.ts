@@ -1,5 +1,5 @@
 /**
- * cancelar-suscripcion (CLAUDE.md § 5 · brief § 5)
+ * cancelar-suscripcion (CLAUDE.md → tabla de Edge Functions · brief → cancelar-suscripcion)
  *
  * Pública. Baja individual: pone `activo = false` (NO borra la fila — así se
  * respeta la baja aunque reintenten confirmar con un token viejo, y no se le

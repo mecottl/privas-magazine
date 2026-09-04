@@ -31,7 +31,7 @@ src/
         layout/            AdminLayout (sidebar)
         pages/             login, dashboard, articulos, ediciones, marcas,
                            administradores
-        editor-contenido/  editor de bloques (CLAUDE.md § 1)
+        editor-contenido/  editor de bloques (CLAUDE.md → sección "Editor de contenido de artículos")
         admin.routes.ts
 
 supabase/
