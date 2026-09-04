@@ -91,10 +91,44 @@ export interface EdicionRevista {
   updated_at?: string;
 }
 
+/** Tipos de red social conocidos para `EnlaceMarca.tipo` (texto libre en la BD). */
+export type TipoEnlace =
+  | 'instagram'
+  | 'facebook'
+  | 'tiktok'
+  | 'youtube'
+  | 'x'
+  | 'linkedin'
+  | 'whatsapp'
+  | 'otro';
+
+export const TIPOS_ENLACE: TipoEnlace[] = [
+  'instagram',
+  'facebook',
+  'tiktok',
+  'youtube',
+  'x',
+  'linkedin',
+  'whatsapp',
+  'otro',
+];
+
+/** Un enlace de red social dentro de `Marca.enlaces`. */
+export interface EnlaceMarca {
+  tipo: TipoEnlace | string;
+  url: string;
+}
+
 export interface Marca {
   id: string;
   nombre: string;
-  red_social_url: string;
+  descripcion: string | null;
+  /** Link principal al sitio propio de la marca (CTA destacado). */
+  sitio_web_url: string | null;
+  /** Lista flexible de redes sociales. */
+  enlaces: EnlaceMarca[];
+  /** @deprecated conservada por compatibilidad; usar `enlaces`. */
+  red_social_url: string | null;
   logo_url: string | null;
   orden: number;
   created_at?: string;
