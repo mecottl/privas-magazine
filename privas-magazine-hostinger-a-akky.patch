@@ -325,7 +325,7 @@ index e8ca4a3..b4aa612 100644
    `RESEND_API_KEY` no hay correo real: insertar un registro de prueba directo en
    `suscriptores_newsletter` vía SQL, tomar su `token_confirmacion` y llamar la
 diff --git a/README.md b/README.md
-index ad00719..a46595c 100644
+index ad00719..ddaa3d2 100644
 --- a/README.md
 +++ b/README.md
 @@ -7,7 +7,7 @@ para la arquitectura completa y las decisiones ya tomadas.
@@ -337,7 +337,15 @@ index ad00719..a46595c 100644
  - **CI/CD**: GitHub Actions.
  
  ## Estructura
-@@ -38,12 +38,15 @@ supabase/
+@@ -31,19 +31,22 @@ src/
+         layout/            AdminLayout (sidebar)
+         pages/             login, dashboard, articulos, ediciones, marcas,
+                            administradores
+-        editor-contenido/  editor de bloques (CLAUDE.md § 1)
++        editor-contenido/  editor de bloques (CLAUDE.md § Editor de contenido de artículos)
+         admin.routes.ts
+ 
+ supabase/
    config.toml
    functions/
      _shared/               cors.ts · clients.ts (admin/user/requireAdmin)
@@ -418,6 +426,19 @@ index 913fab2..2c2fb71 100644
  - **`confirmar-suscripcion` / `cancelar-suscripcion`**: probables de punta a punta ya.
    Sin `RESEND_API_KEY` no se puede enviar el correo con el link, así que:
    1. `insert into suscriptores_newsletter (email) values ('prueba@ejemplo.com');`
+diff --git a/src/app/core/auth/auth.service.ts b/src/app/core/auth/auth.service.ts
+index af7d07b..bae4b82 100644
+--- a/src/app/core/auth/auth.service.ts
++++ b/src/app/core/auth/auth.service.ts
+@@ -7,7 +7,7 @@ import type { PerfilAdmin } from '../models';
+  * Estado de sesión del panel de administración.
+  *
+  * La creación de cuentas de admin NO ocurre aquí: la única vía autorizada
+- * es la Edge Function `invitar-admin` (ver CLAUDE.md § 4).
++ * es la Edge Function `invitar-admin` (ver CLAUDE.md → tabla de Edge Functions).
+  */
+ @Injectable({ providedIn: 'root' })
+ export class AuthService {
 diff --git a/src/app/core/models/index.ts b/src/app/core/models/index.ts
 index b657846..29cc9af 100644
 --- a/src/app/core/models/index.ts
@@ -473,6 +494,41 @@ index d8faf08..3fd20ca 100644
   * viven aquí — son secretos de Edge Function.
   *
   * En CI estos valores se inyectan desde GitHub Actions al hacer el build
+diff --git a/supabase/functions/_shared/suscripcion.ts b/supabase/functions/_shared/suscripcion.ts
+index cb4e3c7..4a3b12b 100644
+--- a/supabase/functions/_shared/suscripcion.ts
++++ b/supabase/functions/_shared/suscripcion.ts
+@@ -2,7 +2,7 @@ import { corsHeaders, json } from './cors.ts';
+ import { adminClient } from './clients.ts';
+ 
+ /**
+- * Lógica compartida de confirmar/cancelar suscripción (brief § 4 y § 5).
++ * Lógica compartida de confirmar/cancelar suscripción (brief § confirmar-suscripcion y § cancelar-suscripcion).
+  *
+  * Públicas por diseño: no requieren sesión, pero SÍ un `token_confirmacion`
+  * válido en query param `?token=` o en el body JSON `{ "token": "..." }`.
+diff --git a/supabase/functions/cancelar-suscripcion/index.ts b/supabase/functions/cancelar-suscripcion/index.ts
+index 81510ff..4ba6439 100644
+--- a/supabase/functions/cancelar-suscripcion/index.ts
++++ b/supabase/functions/cancelar-suscripcion/index.ts
+@@ -1,5 +1,5 @@
+ /**
+- * cancelar-suscripcion (CLAUDE.md § 5 · brief § 5)
++ * cancelar-suscripcion (CLAUDE.md → tabla de Edge Functions · brief § cancelar-suscripcion)
+  *
+  * Pública. Baja individual: pone `activo = false` (NO borra la fila — así se
+  * respeta la baja aunque reintenten confirmar con un token viejo, y no se le
+diff --git a/supabase/functions/confirmar-suscripcion/index.ts b/supabase/functions/confirmar-suscripcion/index.ts
+index 46b266d..eca7a3e 100644
+--- a/supabase/functions/confirmar-suscripcion/index.ts
++++ b/supabase/functions/confirmar-suscripcion/index.ts
+@@ -1,5 +1,5 @@
+ /**
+- * confirmar-suscripcion (CLAUDE.md § 5 · brief § 4)
++ * confirmar-suscripcion (CLAUDE.md → tabla de Edge Functions · brief § confirmar-suscripcion)
+  *
+  * Pública. Doble opt-in: pone `activo = true` en la fila cuyo
+  * `token_confirmacion` coincide. Respuesta genérica siempre (no revela si un
 diff --git a/supabase/functions/eliminar-archivo/index.ts b/supabase/functions/eliminar-archivo/index.ts
 index eceb75f..40fb8ca 100644
 --- a/supabase/functions/eliminar-archivo/index.ts
@@ -575,13 +631,36 @@ index eceb75f..40fb8ca 100644
        else await borrarDeSupabase(a.path);
        resultados.push({ path: a.path, target: a.target, ok: true });
      } catch (e) {
+diff --git a/supabase/functions/invitar-admin/index.ts b/supabase/functions/invitar-admin/index.ts
+index 4d4facd..552b2c2 100644
+--- a/supabase/functions/invitar-admin/index.ts
++++ b/supabase/functions/invitar-admin/index.ts
+@@ -1,5 +1,5 @@
+ /**
+- * invitar-admin (CLAUDE.md § 4 · brief "lógica real")
++ * invitar-admin (CLAUDE.md → tabla de Edge Functions · brief "lógica real")
+  *
+  * Quién la llama: un admin ya logueado, desde el panel.
+  * ÚNICA vía autorizada para crear cuentas de admin.
+diff --git a/supabase/functions/programar-publicacion/index.ts b/supabase/functions/programar-publicacion/index.ts
+index 5d6a9db..5b42af0 100644
+--- a/supabase/functions/programar-publicacion/index.ts
++++ b/supabase/functions/programar-publicacion/index.ts
+@@ -1,5 +1,5 @@
+ /**
+- * programar-publicacion (CLAUDE.md § 3 y § 5 · brief "lógica real")
++ * programar-publicacion (CLAUDE.md → tabla de Edge Functions · brief "lógica real")
+  *
+  * Quién la llama: pg_cron cada 15 min, autenticado con CRON_SECRET.
+  *
 diff --git a/supabase/functions/subir-archivo/index.ts b/supabase/functions/subir-archivo/index.ts
-index 22cf086..2dbe779 100644
+index 22cf086..fc7ec50 100644
 --- a/supabase/functions/subir-archivo/index.ts
 +++ b/supabase/functions/subir-archivo/index.ts
 @@ -1,7 +1,7 @@
  /**
-  * subir-archivo (CLAUDE.md § 2 · brief "lógica real")
+- * subir-archivo (CLAUDE.md § 2 · brief "lógica real")
++ * subir-archivo (CLAUDE.md → tabla de Edge Functions · brief "lógica real")
   *
 - *   Panel Angular → esta función → (Supabase Storage | SFTP Hostinger) → URL
 + *   Panel Angular → esta función → (Supabase Storage | FTP Akky) → URL
@@ -703,6 +782,16 @@ index 22cf086..2dbe779 100644
      } else {
        url = await subirASupabase(ruta, bytes, contentType);
      }
+diff --git a/supabase/migrations/20260901230618_suscriptores_newsletter.sql b/supabase/migrations/20260901230618_suscriptores_newsletter.sql
+index bb073a3..683ea7a 100644
+--- a/supabase/migrations/20260901230618_suscriptores_newsletter.sql
++++ b/supabase/migrations/20260901230618_suscriptores_newsletter.sql
+@@ -1,4 +1,4 @@
+--- Newsletter / suscripción por correo (CLAUDE.md § 5).
++-- Newsletter / suscripción por correo (CLAUDE.md → tabla de Edge Functions, programar-publicacion).
+ -- Migración NUEVA — no toca el esquema base ya aplicado.
+ -- Reutiliza is_admin() para las políticas de escritura/lectura de admin.
+ 
 diff --git a/supabase/migrations/20260904220000_renombrar_target_sftp_a_ftp.sql b/supabase/migrations/20260904220000_renombrar_target_sftp_a_ftp.sql
 new file mode 100644
 index 0000000..3088b0f
