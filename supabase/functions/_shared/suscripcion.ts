@@ -1,5 +1,6 @@
 import { corsHeaders, json } from './cors.ts';
 import { adminClient } from './clients.ts';
+import { dentroDelLimite, ipDeRequest } from './rate_limit.ts';
 
 /**
  * Lógica compartida de confirmar/cancelar suscripción
@@ -22,6 +23,14 @@ export async function actualizarEstadoSuscripcion(
   activo: boolean,
 ): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  // Rate limit por IP: 10 intentos cada 15 min, separado por ruta (confirmar
+  // y cancelar no comparten cupo entre sí).
+  const ruta = activo ? 'confirmar-suscripcion' : 'cancelar-suscripcion';
+  const dentro = await dentroDelLimite(ruta, ipDeRequest(req), 10, 15);
+  if (!dentro) {
+    return json({ error: 'Demasiados intentos. Intenta de nuevo más tarde.' }, 429);
+  }
 
   const body = await req.json().catch(() => ({}));
   const token = leerToken(req, body as Record<string, unknown>);

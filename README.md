@@ -43,8 +43,9 @@ supabase/
     programar-publicacion/ pg_cron cada 15 min + rebuild + newsletter
     invitar-admin/         única alta de admins con service_role
     set-admin-activo/      activar/desactivar OTRO admin
-    confirmar-suscripcion/ doble opt-in newsletter
-    cancelar-suscripcion/  baja por token
+    suscribirse/           alta al newsletter con rate limiting (reemplaza el insert directo)
+    confirmar-suscripcion/ doble opt-in newsletter, con rate limiting
+    cancelar-suscripcion/  baja por token, con rate limiting
   migrations/              ver EDGE_FUNCTIONS_BRIEF.md y CLAUDE.md para el
                            detalle de cada una
 

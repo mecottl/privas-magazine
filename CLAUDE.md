@@ -86,7 +86,7 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   borrarlo luego). Renombrado de `'sftp'` a `'ftp'` el 4 sep 2026 (ver
   migración `20260904220000_renombrar_target_sftp_a_ftp.sql`).
 
-## Piezas de arquitectura — Edge Functions (7 en total)
+## Piezas de arquitectura — Edge Functions (8 en total)
 
 Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 
@@ -97,8 +97,9 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `programar-publicacion` | `pg_cron` cada 15 min | Publica lo programado, dispara rebuild + newsletter. |
 | `invitar-admin` | admin (panel) | Única vía autorizada para crear cuentas nuevas de admin. |
 | `set-admin-activo` | admin (panel) | Activar/desactivar OTRO admin (RLS de `perfiles_admin` no lo permite desde el cliente). Bloquea auto-desactivación y dejar 0 admins activos. |
-| `confirmar-suscripcion` | público (link de correo) | Doble opt-in del newsletter. |
-| `cancelar-suscripcion` | público (link de correo) | Baja del newsletter por token, no borra la fila. |
+| `suscribirse` | público (form de newsletter) | Alta al newsletter con rate limiting (5/10min por IP) — reemplaza el INSERT directo del frontend. |
+| `confirmar-suscripcion` | público (link de correo) | Doble opt-in del newsletter, con rate limiting (10/15min por IP). |
+| `cancelar-suscripcion` | público (link de correo) | Baja del newsletter por token, no borra la fila. Mismo rate limiting que confirmar. |
 
 ### Editor de contenido de artículos
 Constructor de bloques libre: texto, imágenes, video embebido, layout libre

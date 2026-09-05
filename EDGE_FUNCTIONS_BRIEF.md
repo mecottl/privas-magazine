@@ -1,6 +1,6 @@
 # Brief: lógica real de las Edge Functions
 
-Las **7 funciones** viven en `supabase/functions/`. Este documento detalla la
+Las **8 funciones** viven en `supabase/functions/`. Este documento detalla la
 lógica real de cada una. Léelo junto con `CLAUDE.md` — no repite el contexto
 general, solo añade el detalle de implementación.
 
@@ -23,10 +23,12 @@ cuenta quién la llama, antes de hacer nada.
 - **Solo el sistema** (`programar-publicacion`): validar
   `Authorization: Bearer <CRON_SECRET>` contra la variable de entorno. Si no
   coincide → 401. → `requireCronSecret()` en `_shared/clients.ts`.
-- **Públicas por diseño** (`confirmar-suscripcion`, `cancelar-suscripcion`): no
-  requieren sesión, pero SÍ el token correcto en la URL/body — sin token
-  válido, no hacen nada. Respuesta SIEMPRE genérica (no revelan si un email
-  está suscrito).
+- **Públicas por diseño** (`suscribirse`, `confirmar-suscripcion`,
+  `cancelar-suscripcion`): no requieren sesión. `confirmar`/`cancelar` exigen
+  el token correcto en la URL/body — sin token válido, no hacen nada.
+  Respuesta SIEMPRE genérica (no revelan si un email está suscrito). Las 3
+  aplican rate limiting por IP (`_shared/rate_limit.ts`, issue #15) para que
+  un endpoint sin sesión no sea spameable ni fuerza-bruteable sin límite.
 
 ## 1. `programar-publicacion`
 
@@ -100,24 +102,45 @@ no dejar archivos huérfanos en Storage o en Akky.
 Secretos: `CRON_SECRET`, `UPLOAD_BUCKET`, `FTP_HOST` / `FTP_USER` /
 `FTP_PASSWORD` (solo rama `ftp`).
 
-## 5. `confirmar-suscripcion`
+## 5. `suscribirse`
+
+Pública, vía el formulario de newsletter del sitio. Reemplaza el INSERT
+directo del frontend a `suscriptores_newsletter` — esa policy pública se
+cerró (migración `20260905000000_cerrar_insert_publico_newsletter.sql`)
+precisamente para poder validar y limitar aquí antes de escribir (issue #15).
+
+1. Rate limit: `dentroDelLimite('suscribirse', ipDeRequest(req), 5, 10)` — 5
+   intentos por IP cada 10 min. Si excede → 429.
+2. Body: `{ email }`. Validar formato con una regex simple; si no matchea →
+   400.
+3. Con `service_role`: `insert` en `suscriptores_newsletter`.
+4. Si `error.code === '23505'` (email duplicado, columna `unique`) → 409
+   "Ese correo ya está registrado.". Otro error → 500.
+5. 200 `{ ok: true }`.
+
+## 6. `confirmar-suscripcion`
 
 Pública, vía el link del correo de confirmación.
 
-1. Recibir `token` (query param o body).
-2. Con `service_role`: buscar la fila con ese `token_confirmacion`.
-3. Si no existe → respuesta genérica ("enlace inválido o ya usado"), sin
+1. Rate limit: `dentroDelLimite('confirmar-suscripcion', ipDeRequest(req), 10, 15)`
+   — 10 intentos por IP cada 15 min (frena fuerza bruta de tokens). Si excede
+   → 429.
+2. Recibir `token` (query param o body).
+3. Con `service_role`: buscar la fila con ese `token_confirmacion`.
+4. Si no existe → respuesta genérica ("enlace inválido o ya usado"), sin
    confirmar ni negar la existencia de un email.
-4. Si existe → `update ... set activo = true`.
-5. Respuesta genérica de éxito. El mensaje visible lo pinta Angular en
+5. Si existe → `update ... set activo = true`.
+6. Respuesta genérica de éxito. El mensaje visible lo pinta Angular en
    `/newsletter/confirmar`.
 
-## 6. `cancelar-suscripcion`
+## 7. `cancelar-suscripcion`
 
-Igual que la 4, pero `activo = false`. NO borra la fila (respeta la baja aunque
-reintenten confirmar con un token viejo).
+Igual que `confirmar-suscripcion`, pero `activo = false` y su propio cupo de
+rate limit (misma función `actualizarEstadoSuscripcion`, ruta
+`'cancelar-suscripcion'` — no comparte cupo con confirmar). NO borra la fila
+(respeta la baja aunque reintenten confirmar con un token viejo).
 
-## 7. `set-admin-activo`
+## 8. `set-admin-activo`
 
 Quién la llama: un admin logueado, desde la pantalla de Administradores.
 
@@ -141,5 +164,10 @@ es imposible desde el cliente. Se hace aquí con `service_role`.
   reales de Akky.
 - `confirmar/cancelar-suscripcion`: probables de punta a punta ya. Sin
   `RESEND_API_KEY` no hay correo real: insertar un registro de prueba directo en
-  `suscriptores_newsletter` vía SQL, tomar su `token_confirmacion` y llamar la
-  función manualmente.
+  `suscriptores_newsletter` vía SQL (el `insert` directo por SQL/dashboard no
+  pasa por RLS, así que la policy pública cerrada no lo afecta), tomar su
+  `token_confirmacion` y llamar la función manualmente.
+- `suscribirse`: probar con el formulario de newsletter del sitio. Para
+  probar el rate limit, llamar la función 6+ veces seguidas — la 6ª debe
+  devolver 429. Revisar `intentos_publicos` por SQL para confirmar que se
+  están registrando los intentos.

@@ -5,18 +5,21 @@ import { SupabaseService } from '../supabase/supabase.client';
 export class NewsletterService {
   private readonly supabase = inject(SupabaseService);
 
-  /** INSERT directo con la clave pública — RLS permite el insert sin sesión. */
+  /**
+   * Vía la Edge Function `suscribirse` (no INSERT directo): la policy
+   * pública de INSERT se cerró para poder aplicar rate limiting antes de
+   * escribir — ver migración `20260905000000_cerrar_insert_publico_newsletter.sql`.
+   */
   async suscribir(email: string): Promise<{ ok: boolean; error?: string }> {
-    const { error } = await this.supabase.client
-      .from('suscriptores_newsletter')
-      .insert({ email: email.trim().toLowerCase() });
+    const { data, error } = await this.supabase.invokeFunction<{
+      ok?: boolean;
+      error?: string;
+    }>('suscribirse', { email: email.trim().toLowerCase() });
     if (error) {
-      if (error.code === '23505') {
-        return { ok: false, error: 'Ese correo ya está registrado.' };
-      }
-      return { ok: false, error: error.message };
+      const detalle = (data as { error?: string } | null)?.error;
+      return { ok: false, error: detalle ?? error.message };
     }
-    return { ok: true };
+    return { ok: data?.ok ?? true };
   }
 
   async confirmar(token: string) {

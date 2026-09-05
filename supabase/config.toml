@@ -20,6 +20,9 @@ verify_jwt = true
 [functions.set-admin-activo]
 verify_jwt = true
 
+[functions.suscribirse]
+verify_jwt = false
+
 [functions.confirmar-suscripcion]
 verify_jwt = false
 

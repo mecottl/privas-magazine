@@ -28,6 +28,13 @@ NO son secretos de GitHub Actions: es Supabase quien llama a GitHub, no al revé
 | `RESEND_AUDIENCE_ID` / `NEWSLETTER_FROM` | `programar-publicacion` | audiencia de Resend "marketing" y remitente |
 | `SITE_URL` | `programar-publicacion` | base pública para armar links (default `https://privasmagazine.com`) |
 
+## Rate limiting (issue #15)
+
+`suscribirse`, `confirmar-suscripcion` y `cancelar-suscripcion` no usan
+secretos nuevos — cuentan sus propios intentos en la tabla
+`intentos_publicos` (RLS sin policies públicas, solo `service_role`) vía
+`_shared/rate_limit.ts`. No hace falta configurar nada para que funcione.
+
 ## Secretos de GitHub Actions (repo → Settings → Secrets and variables → Actions)
 
 Usados por `.github/workflows/`:
