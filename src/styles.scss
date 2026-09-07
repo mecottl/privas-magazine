@@ -87,7 +87,7 @@
   --ancho-max: 1240px;
   --ancho-texto: 66ch;
   --ancho-lectura: 42rem;
-  --head-h: 76px;
+  --head-h: 86px;
 
   --radio: 3px; /* admin */
   --r-sm: 12px;
@@ -453,9 +453,24 @@ code {
     box-shadow 240ms ease,
     border-color 240ms ease;
 }
-/* Portada arriba (primeros px): sólo un velo para leer sobre la foto */
+/* Portada arriba (primeros px): sólo un velo para leer sobre la foto.
+   El velo lo pinta un ::after que rebasa el borde inferior y se desvanece
+   fuera de la barra, así no se ve el canto duro del degradado. */
 .site-head:not(.is-glass):not(.is-solid) {
-  background: linear-gradient(to bottom, rgba(12, 40, 54, 0.5), rgba(12, 40, 54, 0));
+  background: transparent;
+}
+.site-head:not(.is-glass):not(.is-solid)::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 -40px 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 40, 54, 0.52) 0%,
+    rgba(12, 40, 54, 0.28) 45%,
+    rgba(12, 40, 54, 0) 100%
+  );
 }
 
 /* --- Páginas interiores: teal sólido (no hay foto detrás) --- */
