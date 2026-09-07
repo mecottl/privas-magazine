@@ -1,7 +1,11 @@
 /* =============================================================================
-   PANEL DE ADMINISTRACIÓN
-   Misma familia visual — papel, tinta, teal. Densidad algo mayor.
-   (los tokens --admin-* viven en _tokens.scss)
+   PANEL DE ADMINISTRACIÓN — sistema visual compartido
+   Este SÍ es global a propósito: es el kit de UI que comparten los ~10
+   componentes de página del panel (sidebar, .panel, .badge, tablas,
+   formularios, .auth-*, dialog.confirm). Son hermanos proyectados en el
+   <router-outlet> de app-admin-layout, así que no pueden recibir estilos
+   scoped unos de otros. Misma familia visual que el sitio: papel, tinta,
+   teal, con algo más de densidad. Tokens --admin-* en _tokens.scss.
    ========================================================================= */
 
 /* Shell fijo: solo el área de contenido hace scroll */

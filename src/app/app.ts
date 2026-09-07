@@ -5,18 +5,6 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-  template: `
-    <!-- Filtro SVG de refracción para el efecto "liquid glass" (backdrop-filter: url(#lg-filter)).
-         Navegadores que no lo soportan en backdrop-filter ignoran esa parte y usan el blur normal. -->
-    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-      <filter id="lg-filter" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.012" numOctaves="2" seed="7" result="turb" />
-        <feGaussianBlur in="turb" stdDeviation="1.4" result="soft" />
-        <feDisplacementMap in="SourceGraphic" in2="soft" scale="46" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-    </svg>
-
-    <router-outlet />
-  `,
+  templateUrl: './app.html',
 })
 export class App {}

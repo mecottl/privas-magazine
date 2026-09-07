@@ -45,26 +45,7 @@ export class ConfirmService {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  template: `
-    <dialog #dlg class="confirm" (close)="svc.responder(false)">
-      @if (svc.estado(); as e) {
-        <h2>{{ e.opts.titulo }}</h2>
-        @if (e.opts.mensaje) { <p>{{ e.opts.mensaje }}</p> }
-        <div class="confirm__acciones">
-          <button type="button" class="secundario" (click)="svc.responder(false)">
-            Cancelar
-          </button>
-          <button
-            type="button"
-            [class.peligro-solido]="e.opts.peligro"
-            (click)="svc.responder(true)"
-          >
-            {{ e.opts.cta ?? 'Aceptar' }}
-          </button>
-        </div>
-      }
-    </dialog>
-  `,
+  templateUrl: './confirm-dialog.html',
 })
 export class ConfirmDialog {
   readonly svc = inject(ConfirmService);

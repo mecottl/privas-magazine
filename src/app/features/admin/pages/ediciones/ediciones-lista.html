@@ -1,0 +1,86 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <h1>Ediciones de revista</h1>
+    @if (edit.id) {
+      <div class="admin-page-head__acciones">
+        <button class="secundario" (click)="nuevo()">Cancelar edición</button>
+      </div>
+    }
+  </div>
+
+  <div class="admin-page__scroll">
+    @if (error()) { <p class="error">{{ error() }}</p> }
+
+    <fieldset class="panel">
+      <legend>{{ edit.id ? 'Editar edición' : 'Nueva edición' }}</legend>
+      <div class="campos-grid">
+        <label>Título <input [(ngModel)]="edit.titulo" /></label>
+        <label>Temporada
+          <select [(ngModel)]="edit.temporada">
+            @for (t of temporadas; track t) { <option [value]="t">{{ t }}</option> }
+          </select>
+        </label>
+        <label>Año <input type="number" [(ngModel)]="edit.anio" /></label>
+        <label>Estado
+          <select [(ngModel)]="edit.estado">
+            @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+          </select>
+        </label>
+        <label>PDF
+          <input type="file" accept="application/pdf" (change)="subir($event, 'revista-pdf')" />
+          @if (edit.pdf_url) { <span class="hint">PDF cargado</span> }
+        </label>
+        <label>Portada
+          <input type="file" accept="image/*" (change)="subir($event, 'revista-portada')" />
+          @if (edit.portada_url) { <span class="hint">Portada cargada</span> }
+        </label>
+        @if (edit.estado === 'programado' || edit.estado === 'publicado') {
+          <label>Fecha de publicación
+            <input type="datetime-local" [(ngModel)]="fechaLocal" />
+          </label>
+        }
+      </div>
+      @if (subiendo()) { <p class="hint">Subiendo…</p> }
+      <div class="row" style="margin-bottom:0">
+        <button (click)="guardar()" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : 'Guardar edición' }}
+        </button>
+      </div>
+    </fieldset>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th><th>Temporada</th><th>Año</th><th>Estado</th>
+            <th class="col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ed of ediciones(); track ed.id) {
+            <tr>
+              <td>{{ ed.titulo }}</td>
+              <td>{{ ed.temporada }}</td>
+              <td>{{ ed.anio }}</td>
+              <td><span class="badge badge--{{ ed.estado }}">{{ ed.estado }}</span></td>
+              <td class="col-acciones">
+                <div class="acciones">
+                  <button class="secundario" (click)="cargarEnForm(ed)">Editar</button>
+                  <select #sel aria-label="Más acciones" (change)="ejecutar(ed, sel.value); sel.value = ''">
+                    <option value="" selected>Acciones…</option>
+                    @if (ed.pdf_url) { <option value="pdf">Ver PDF</option> }
+                    @if (ed.estado !== 'publicado') { <option value="publicado">Publicar</option> }
+                    @if (ed.estado === 'publicado') { <option value="despublicado">Despublicar</option> }
+                    <option value="eliminar">Eliminar</option>
+                  </select>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5"><div class="admin-empty">Sin ediciones.</div></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

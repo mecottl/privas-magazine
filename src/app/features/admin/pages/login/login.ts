@@ -7,36 +7,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
   selector: 'app-admin-login',
   standalone: true,
   imports: [FormsModule],
-  template: `
-    <div class="auth-shell">
-      <section class="auth-box">
-        <p class="eyebrow">PRIVAS Magazine</p>
-        <h1>Acceso a gestión</h1>
-        <form (ngSubmit)="entrar()">
-          <label>
-            Correo
-            <input type="email" name="email" [(ngModel)]="email" required autocomplete="username" />
-          </label>
-          <label>
-            Contraseña
-            <input
-              type="password"
-              name="password"
-              [(ngModel)]="password"
-              required
-              autocomplete="current-password"
-            />
-          </label>
-          @if (error()) {
-            <p class="error">{{ error() }}</p>
-          }
-          <button type="submit" [disabled]="cargando()">
-            {{ cargando() ? 'Entrando…' : 'Entrar' }}
-          </button>
-        </form>
-      </section>
-    </div>
-  `,
+  templateUrl: './login.html',
 })
 export class Login {
   private readonly auth = inject(AuthService);

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoriasService } from '../../../../core/services/categorias.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog';
+import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Categoria } from '../../../../core/models';
 
@@ -9,46 +9,7 @@ import type { Categoria } from '../../../../core/models';
   selector: 'app-admin-categorias-lista',
   standalone: true,
   imports: [FormsModule],
-  template: `
-    <div class="admin-page">
-      <div class="admin-page-head">
-        <h1>Categorías</h1>
-      </div>
-
-      <div class="admin-page__scroll">
-        <fieldset class="panel">
-          <legend>Nueva categoría</legend>
-          <form class="row" (ngSubmit)="crear()" style="margin:0">
-            <input name="nombre" [(ngModel)]="nuevoNombre" placeholder="Nombre" required />
-            <button type="submit" [disabled]="!nuevoNombre.trim()">Crear</button>
-          </form>
-        </fieldset>
-
-        @if (error()) { <p class="error">{{ error() }}</p> }
-
-        <div class="tabla-wrap">
-          <table>
-            <thead><tr><th>Nombre</th><th class="col-acciones">Acciones</th></tr></thead>
-            <tbody>
-              @for (c of categorias(); track c.id) {
-                <tr>
-                  <td><input [(ngModel)]="c.nombre" aria-label="Nombre" /></td>
-                  <td class="col-acciones">
-                    <div class="acciones">
-                      <button class="secundario" (click)="guardar(c)">Guardar</button>
-                      <button class="secundario peligro" (click)="eliminar(c)">Eliminar</button>
-                    </div>
-                  </td>
-                </tr>
-              } @empty {
-                <tr><td colspan="2"><div class="admin-empty">Sin categorías.</div></td></tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './categorias-lista.html',
 })
 export class CategoriasLista implements OnInit {
   private readonly srv = inject(CategoriasService);

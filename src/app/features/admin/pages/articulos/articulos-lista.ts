@@ -4,7 +4,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog';
+import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core/models';
 
@@ -14,68 +14,7 @@ type Accion = 'publicado' | 'despublicado' | 'borrador' | 'eliminar';
   selector: 'app-admin-articulos-lista',
   standalone: true,
   imports: [FormsModule, RouterLink, DatePipe, CategoriasNombrePipe],
-  template: `
-    <div class="admin-page">
-      <div class="admin-page-head">
-        <h1>Artículos</h1>
-        <div class="admin-page-head__acciones">
-          <a routerLink="nuevo"><button>Nuevo artículo</button></a>
-        </div>
-      </div>
-
-      <div class="admin-page__fill">
-        <div class="row" style="margin:0">
-          <label style="margin:0">
-            <select [(ngModel)]="filtro" (ngModelChange)="cargar()" aria-label="Filtrar por estado">
-              <option value="">Todos los estados</option>
-              @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
-            </select>
-          </label>
-        </div>
-
-        @if (error()) { <p class="error">{{ error() }}</p> }
-
-        <div class="tabla-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha pub.</th>
-                <th class="col-acciones">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @if (cargando()) {
-                <tr><td colspan="5"><div class="admin-cargando">Cargando…</div></td></tr>
-              } @else {
-                @for (a of articulos(); track a.id) {
-                  <tr>
-                    <td><a [routerLink]="[a.id]">{{ a.titulo }}</a></td>
-                    <td>{{ a.categorias | categoriasNombre: '—' }}</td>
-                    <td><span class="badge badge--{{ a.estado }}">{{ a.estado }}</span></td>
-                    <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'dd MMM y') : '—' }}</td>
-                    <td class="col-acciones">
-                      <div class="acciones">
-                        <a [routerLink]="[a.id]"><button class="secundario">Editar</button></a>
-                        <select #sel aria-label="Más acciones" (change)="ejecutar(a, sel.value); sel.value = ''">
-                          <option value="" selected>Acciones…</option>
-                          @if (a.estado !== 'publicado') { <option value="publicado">Publicar</option> }
-                          @if (a.estado === 'publicado') { <option value="despublicado">Despublicar</option> }
-                          @if (a.estado !== 'borrador') { <option value="borrador">Pasar a borrador</option> }
-                          <option value="eliminar">Eliminar</option>
-                        </select>
-                      </div>
-                    </td>
-                  </tr>
-                } @empty {
-                  <tr><td colspan="5"><div class="admin-empty">Sin artículos.</div></td></tr>
-                }
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './articulos-lista.html',
 })
 export class ArticulosLista implements OnInit {
   private readonly srv = inject(ArticulosService);

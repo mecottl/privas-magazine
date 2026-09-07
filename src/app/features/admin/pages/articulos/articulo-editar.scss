@@ -1,0 +1,123 @@
+/* Todo el editor cabe en una pantalla; solo el cuerpo del artículo scrollea */
+.editor-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-sm);
+}
+.editor-body > .error,
+.editor-body > .ok { flex: none; margin: 0 0 0.6rem; }
+
+.editor-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--space-md);
+  overflow: hidden;
+}
+
+/* --- Documento (izquierda) --- */
+.editor-doc {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radio);
+  background: var(--white);
+  overflow: hidden;
+}
+.editor-titulo {
+  flex: none;
+  width: 100%;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid var(--line-2);
+  border-radius: 0;
+  background: var(--white);
+  padding: 0.9rem 1.1rem;
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.editor-titulo:focus { outline: none; box-shadow: none; border-color: var(--line-2); border-bottom-color: var(--teal); }
+.editor-holder-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.editor-holder-wrap app-editor-contenido {
+  position: absolute;
+  inset: 0;
+}
+
+/* --- Panel lateral (derecha): compacto, sin scroll salvo pantallas muy bajas --- */
+.editor-lado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+.lado-panel {
+  flex: none;
+  background: var(--white);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radio);
+  padding: 0.8rem 0.9rem;
+}
+.lado-titulo {
+  margin: 0 0 0.55rem;
+  font-family: var(--sans);
+  font-size: var(--fs-3xs);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-55);
+}
+.lado-panel input {
+  margin: 0;
+  width: 100%;
+}
+.editor-estado { margin: 0 0 0.6rem; }
+.editor-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.editor-acciones button {
+  width: 100%;
+  justify-content: center;
+  height: 2.2rem;
+  padding-block: 0;
+}
+.portada-preview {
+  margin-top: 0.5rem;
+  max-height: 120px;
+  border: 1px solid var(--line);
+  border-radius: var(--radio);
+}
+.check-list { display: flex; flex-direction: column; gap: 0.35rem; }
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-weight: 400;
+  font-size: var(--fs-sm);
+  color: var(--ink-80);
+  cursor: pointer;
+}
+.check input { width: auto; margin: 0; }
+
+@media (max-width: 900px) {
+  .editor-body { overflow-y: auto; }
+  .editor-grid { display: block; min-height: 0; }
+  .editor-doc { height: 60vh; margin-bottom: var(--space-md); }
+  .editor-lado { overflow: visible; min-height: 0; }
+}

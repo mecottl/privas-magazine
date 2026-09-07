@@ -1,0 +1,23 @@
+.marca-form { display: flex; flex-direction: column; gap: 0.7rem; }
+.marca-grid {
+  display: grid;
+  grid-template-columns: 1fr 5rem;
+  gap: 0.6rem 0.8rem;
+  align-items: end;
+}
+.marca-grid label { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; font-size: var(--fs-sm); }
+.marca-grid label.ancho { grid-column: 1 / -1; }
+.marca-grid input { margin: 0; width: 100%; }
+.enlace-row {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+.enlace-row select, .enlace-row input { margin: 0; }
+.enlace-row button, .marca-form__pie button { height: 2rem; padding-block: 0; }
+.marca-form__pie { display: flex; gap: 0.5rem; margin-top: 0.3rem; }
+@media (max-width: 640px) {
+  .marca-grid { grid-template-columns: 1fr; }
+  .enlace-row { grid-template-columns: 1fr; }
+}

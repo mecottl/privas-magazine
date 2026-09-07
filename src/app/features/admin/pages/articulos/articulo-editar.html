@@ -1,0 +1,110 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <div>
+      <a routerLink=".." class="volver">← Artículos</a>
+      <h1>{{ id ? 'Editar artículo' : 'Nuevo artículo' }}</h1>
+    </div>
+  </div>
+
+  <div class="editor-body">
+    @if (error()) { <p class="error">{{ error() }}</p> }
+    @if (ok()) { <p class="ok">{{ ok() }}</p> }
+
+    <form (submit)="$event.preventDefault()" class="editor-grid">
+      <section class="editor-doc">
+        <input
+          class="editor-titulo"
+          name="titulo"
+          placeholder="Título del artículo"
+          [(ngModel)]="m.titulo"
+          (ngModelChange)="tituloCambio($event)"
+          required
+        />
+        <div class="editor-holder-wrap">
+          <app-editor-contenido [(contenido)]="contenidoBloques" />
+        </div>
+      </section>
+
+      <aside class="editor-lado">
+        <div class="lado-panel">
+          <p class="lado-titulo">Publicación</p>
+          <p class="editor-estado">
+            <span class="badge badge--{{ m.estado }}">{{ m.estado }}</span>
+          </p>
+          <div class="editor-acciones">
+            @if (m.estado === 'publicado') {
+              <button type="button" (click)="guardarSinCambiarEstado()" [disabled]="guardando()">
+                {{ guardando() ? 'Guardando…' : 'Guardar cambios' }}
+              </button>
+              <button type="button" class="secundario peligro" (click)="abrir('despublicar')">
+                Despublicar
+              </button>
+            } @else {
+              <button type="button" (click)="abrir('publicar')">Publicar ahora</button>
+              <button type="button" class="secundario" (click)="abrir('programar')">Programar…</button>
+              <button type="button" class="secundario" (click)="guardarSinCambiarEstado()" [disabled]="guardando()">
+                {{ guardando() ? 'Guardando…' : 'Guardar borrador' }}
+              </button>
+            }
+            @if (id) {
+              <button type="button" class="secundario peligro" (click)="eliminar()">Eliminar</button>
+            }
+          </div>
+        </div>
+
+        <div class="lado-panel">
+          <p class="lado-titulo">Autor</p>
+          <input name="autor" aria-label="Autor" [(ngModel)]="m.autor_texto" placeholder="Nombre del autor" />
+        </div>
+
+        <div class="lado-panel">
+          <p class="lado-titulo">Categorías</p>
+          @if (categorias().length) {
+            <div class="check-list">
+              @for (c of categorias(); track c.id) {
+                <label class="check">
+                  <input
+                    type="checkbox"
+                    [checked]="categoriaIds().has(c.id)"
+                    (change)="toggleCategoria(c.id)"
+                  />
+                  {{ c.nombre }}
+                </label>
+              }
+            </div>
+          } @else {
+            <p class="hint"><a routerLink="../../categorias">Crear categorías</a></p>
+          }
+        </div>
+
+        <div class="lado-panel">
+          <p class="lado-titulo">Portada</p>
+          <input type="file" accept="image/*" aria-label="Imagen de portada" (change)="subirPortada($event)" />
+          @if (subiendo()) { <p class="hint">Subiendo…</p> }
+          @if (m.imagen_portada_url) {
+            <img [src]="m.imagen_portada_url" alt="Portada del artículo" class="portada-preview" />
+          }
+        </div>
+      </aside>
+    </form>
+  </div>
+</div>
+
+<dialog #dlg class="confirm" (close)="alCerrarModal()">
+  @if (modo(); as md) {
+    <h2>{{ tituloModal(md) }}</h2>
+    <p>{{ textoModal(md) }}</p>
+    @if (md === 'programar') {
+      <label>Fecha y hora de publicación
+        <input type="datetime-local" [(ngModel)]="fechaProgramada" [min]="minProgramable" />
+      </label>
+    }
+    @if (errorModal()) { <p class="error">{{ errorModal() }}</p> }
+    <div class="confirm__acciones">
+      <button type="button" class="secundario" (click)="cerrarModal()">Cancelar</button>
+      <button type="button" (click)="confirmarAccion()" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando…' : ctaModal(md) }}
+      </button>
+    </div>
+  }
+</dialog>

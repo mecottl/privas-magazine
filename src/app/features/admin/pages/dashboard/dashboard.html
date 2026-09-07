@@ -1,0 +1,40 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <h1>Panel</h1>
+  </div>
+
+  <div class="admin-page__scroll">
+<div class="dash-tiles">
+  <a routerLink="../articulos" class="dash-tile">
+    <span class="dash-tile__n">{{ publicados() }}</span>
+    <span class="dash-tile__k">artículos publicados</span>
+  </a>
+  <a routerLink="../articulos" [queryParams]="{ estado: 'borrador' }" class="dash-tile">
+    <span class="dash-tile__n">{{ borradores() }}</span>
+    <span class="dash-tile__k">en borrador</span>
+  </a>
+  <a routerLink="../articulos" [queryParams]="{ estado: 'programado' }" class="dash-tile">
+    <span class="dash-tile__n">{{ programados() }}</span>
+    <span class="dash-tile__k">programados</span>
+  </a>
+  <a routerLink="../ediciones" class="dash-tile">
+    <span class="dash-tile__n">{{ ediciones() }}</span>
+    <span class="dash-tile__k">ediciones de revista</span>
+  </a>
+  <a routerLink="../categorias" class="dash-tile">
+    <span class="dash-tile__n">{{ categorias() }}</span>
+    <span class="dash-tile__k">categorías</span>
+  </a>
+</div>
+
+    <div class="panel">
+      <h2>Accesos rápidos</h2>
+      <div class="dash-links">
+        <a routerLink="../articulos/nuevo">Nuevo artículo →</a>
+        <a routerLink="../ediciones">Subir una edición →</a>
+        <a routerLink="../categorias">Gestionar categorías →</a>
+        <a routerLink="../administradores">Invitar administrador →</a>
+      </div>
+    </div>
+  </div>
+</div>
