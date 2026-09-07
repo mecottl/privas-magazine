@@ -473,8 +473,13 @@ code {
     rgba(255, 255, 255, 0.08);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur-refract);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: var(--glass-edge), 0 10px 34px -12px rgba(11, 37, 48, 0.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* Sin --glass-edge aquí: en una barra a todo el ancho los inset claros de
+     0.5 de alpha dibujan un marco blanco en los cantos. Solo un brillo
+     superior muy tenue + la sombra de profundidad. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 34px -12px rgba(11, 37, 48, 0.45);
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .site-head.is-glass { background: rgba(15, 42, 54, 0.95); }
