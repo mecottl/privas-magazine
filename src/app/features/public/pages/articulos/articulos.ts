@@ -14,7 +14,7 @@ import { RevealDirective } from '../../../../shared/directives/reveal.directive'
 import { ListaSkeleton } from '../../../../shared/components/lista-skeleton';
 import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
 import { mensajeError } from '../../../../core/services/errores';
-import type { Articulo, Categoria } from '../../../../core/models';
+import { ordenSeccion, type Articulo, type Categoria } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulos',
@@ -106,7 +106,14 @@ export class Articulos implements OnInit {
   readonly categoria = signal('');
 
   async ngOnInit() {
-    this.categorias.set(await this.catSrv.listar().catch(() => []));
+    const cats = await this.catSrv.listar().catch(() => []);
+    // Mismo orden que la navegación del header (secciones editoriales primero).
+    cats.sort(
+      (a, b) =>
+        ordenSeccion(a.slug) - ordenSeccion(b.slug) ||
+        a.nombre.localeCompare(b.nombre, 'es'),
+    );
+    this.categorias.set(cats);
 
     // El filtro se toma de la URL (?categoria=slug) para que los enlaces del
     // kicker del masthead funcionen aunque ya estemos en /articulos.

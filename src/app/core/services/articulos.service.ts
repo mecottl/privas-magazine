@@ -43,7 +43,9 @@ export class ArticulosService {
       .from('articulos')
       .select(SELECT_CON_CATEGORIAS)
       .eq('estado', 'publicado')
-      .order('fecha_publicacion', { ascending: false });
+      // Más recientes primero; los que no tienen fecha van al final, no arriba.
+      .order('fecha_publicacion', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false });
     if (error) throw error;
     let arts = data as unknown as Articulo[];
     if (categoriaSlug) {

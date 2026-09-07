@@ -11,11 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { NewsletterForm } from '../pages/newsletter/newsletter-form';
-
-interface Seccion {
-  nombre: string;
-  slug: string;
-}
+import { SECCIONES } from '../../../core/models';
 
 /**
  * Shell del sitio público: header fijo (transparente sobre el hero, teal al
@@ -153,13 +149,7 @@ export class PublicLayout {
   readonly glass = computed(() => this.esPortada() && this.scrolled());
   private primeraCarga = true;
 
-  readonly secciones: Seccion[] = [
-    { nombre: 'Turismo', slug: 'turismo' },
-    { nombre: 'Gastronomía', slug: 'gastronomia' },
-    { nombre: 'Cultura', slug: 'cultura' },
-    { nombre: 'Arte', slug: 'arte' },
-    { nombre: 'Entretenimiento', slug: 'entretenimiento' },
-  ];
+  readonly secciones = SECCIONES;
 
   /** SVG paths de los iconos sociales (24x24, fill). */
   readonly redes = [

@@ -36,7 +36,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
       </div>
 
       <div class="hero__inner">
-        <span class="hero__eyebrow">Grupo Privas · Península de Yucatán</span>
+        <span class="hero__eyebrow">Grupo Privas</span>
         <h1 class="hero__title">
           Una revista para los <em>amantes</em> a los viajes
         </h1>
@@ -53,7 +53,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
     <section class="franja" id="articulos">
       <div class="franja__wrap">
         <div class="seccion-head" reveal>
-          <h2>Artículos Del Mes</h2>
+          <h2>Últimos Artículos</h2>
           <a routerLink="/articulos" class="ver-todo">Ver todos los artículos</a>
         </div>
 

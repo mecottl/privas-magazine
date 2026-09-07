@@ -28,6 +28,32 @@ export interface Categoria {
   created_at?: string;
 }
 
+/**
+ * Secciones editoriales de la marca, en su orden oficial.
+ * Fuente única para la navegación pública y los filtros de `/articulos`.
+ */
+export interface Seccion {
+  slug: string;
+  nombre: string;
+}
+
+export const SECCIONES: Seccion[] = [
+  { slug: 'turismo', nombre: 'Turismo' },
+  { slug: 'gastronomia', nombre: 'Gastronomía' },
+  { slug: 'cultura', nombre: 'Cultura' },
+  { slug: 'arte', nombre: 'Arte' },
+  { slug: 'entretenimiento', nombre: 'Entretenimiento' },
+];
+
+/**
+ * Índice de una categoría en el orden editorial (por slug).
+ * Las categorías que no forman parte de las secciones oficiales van al final.
+ */
+export function ordenSeccion(slug: string): number {
+  const i = SECCIONES.findIndex((s) => s.slug === slug);
+  return i === -1 ? SECCIONES.length : i;
+}
+
 /** Categoría embebida en un artículo (join M2M `articulos_categorias`). */
 export type CategoriaRef = Pick<Categoria, 'id' | 'nombre' | 'slug'>;
 
