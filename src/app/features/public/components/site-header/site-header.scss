@@ -79,8 +79,10 @@
   gap: clamp(1rem, 4vw, 2.5rem);
   transition: height var(--t-slow);
 }
-.site-head.is-glass .site-head__inner,
-.site-head.is-solid .site-head__inner { height: calc(var(--head-h) - 12px); }
+/* La barra solo se encoge al bajar en la portada (efecto de scroll).
+   En páginas interiores mantiene la altura completa del hero para que
+   todos los headers se vean igual que el de la portada en reposo. */
+.site-head.is-glass .site-head__inner { height: calc(var(--head-h) - 12px); }
 
 .brand {
   display: flex;
