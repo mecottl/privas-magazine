@@ -29,6 +29,12 @@
    CARRUSEL DE ARTÍCULOS
    ========================================================================= */
 
+/* La franja "Últimos artículos" lleva el contenido más angosto: deja más
+   teal a los lados arriba y el cambio de sección no se siente tan de golpe. */
+.franja--angosta .franja__wrap {
+  max-width: 60rem;
+}
+
 .carrusel {
   display: flex;
   flex-direction: column;
