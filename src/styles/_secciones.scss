@@ -50,13 +50,14 @@
   inset: 0;
   z-index: -1;
   background:
-    /* La foto se disuelve en el teal de la franja: el borde inferior del hero
-       ya es el color de marca, así el cambio de sección no es un corte seco. */
+    /* La foto se disuelve en el teal de la franja en su tramo final: el borde
+       inferior del hero ya es el color de marca, sin corte seco y sin comerse
+       mucho alto de la foto. */
     linear-gradient(
       to bottom,
-      transparent 58%,
-      rgba(37, 101, 133, 0.28) 78%,
-      rgba(37, 101, 133, 0.72) 92%,
+      transparent 74%,
+      rgba(37, 101, 133, 0.3) 88%,
+      rgba(37, 101, 133, 0.78) 96%,
       var(--brand) 100%
     ),
     linear-gradient(to top, rgba(12, 40, 54, 0.6) 0%, rgba(12, 40, 54, 0.14) 34%, rgba(12, 40, 54, 0.08) 55%, rgba(12, 40, 54, 0.42) 100%),

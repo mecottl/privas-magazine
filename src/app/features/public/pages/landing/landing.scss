@@ -29,10 +29,17 @@
    CARRUSEL DE ARTÍCULOS
    ========================================================================= */
 
-/* La franja "Últimos artículos" lleva el contenido más angosto: deja más
-   teal a los lados arriba y el cambio de sección no se siente tan de golpe. */
-.franja--angosta .franja__wrap {
-  max-width: 60rem;
+/* La franja "Últimos artículos" es más baja: menos padding vertical, menos
+   hueco bajo el encabezado y carrusel más apretado — que la sección no ocupe
+   tanto alto de la página. */
+.franja--compacta {
+  padding-block: clamp(0.9rem, 2.6vw, 1.6rem);
+}
+.franja--compacta .seccion-head {
+  margin-bottom: clamp(0.6rem, 1.8vw, 1rem);
+}
+.franja--compacta .carrusel {
+  gap: clamp(0.7rem, 1.6vw, 1.1rem);
 }
 
 .carrusel {
