@@ -1,11 +1,12 @@
 /**
- * Recorta el fondo transparente y reescala los logos que la clienta entrega
- * (PNG enormes de Canva, ~6000px / <1 MB) a tamaños de web.
+ * Optimiza los assets que entrega la clienta a tamaños de web.
  *
  *   npm run assets:optimize
  *
- * Entrada  → design/logos/<nombre>.png   (los originales sin tocar)
- * Salida   → public/<nombre>.png        (optimizado, el que usa la app)
+ * - Logos (design/logos/*.png, PNG enormes de Canva) → public/*.png recortados.
+ * - Favicon → public/favicon.svg (adaptable al theme) + png + apple-touch-icon.
+ * - Fotos de hero por categoría (design/categorias/*.jpg) →
+ *   public/categorias/<slug>.jpg reescaladas y recomprimidas.
  */
 import sharp from 'sharp';
 import { statSync, writeFileSync } from 'node:fs';
@@ -79,4 +80,26 @@ for (const { src, out, height } of JOBS) {
     .png()
     .toFile('public/apple-touch-icon.png');
   console.log(`public/apple-touch-icon.png  180x180  ${(statSync('public/apple-touch-icon.png').size / 1024).toFixed(1)} KB`);
+}
+
+/* --- Fotos de hero por categoría ------------------------------------------
+ * design/categorias/<slug>.jpg (originales de la clienta) → public/categorias/.
+ * Las que aún no tienen foto propia siguen siendo copia de hero.jpg.
+ */
+{
+  const CATS = { turismo: 1800, gastronomia: 2000, cultura: 1800, arte: 1800, entretenimiento: 1800 };
+  for (const [slug, width] of Object.entries(CATS)) {
+    const src = `design/categorias/${slug}.jpg`;
+    try {
+      statSync(src);
+    } catch {
+      continue; // sin original todavía → se queda el placeholder
+    }
+    await sharp(src)
+      .resize({ width, withoutEnlargement: true })
+      .jpeg({ quality: 78, mozjpeg: true })
+      .toFile(`public/categorias/${slug}.jpg`);
+    const m = await sharp(`public/categorias/${slug}.jpg`).metadata();
+    console.log(`public/categorias/${slug}.jpg  ${m.width}x${m.height}  ${(statSync(`public/categorias/${slug}.jpg`).size / 1024).toFixed(0)} KB`);
+  }
 }
