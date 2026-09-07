@@ -1,0 +1,104 @@
+/* =============================================================================
+   DETALLE DE ARTÍCULO
+   ========================================================================= */
+
+.articulo-volver {
+  display: inline-block;
+  margin: 0 0 var(--space-sm);
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-55);
+  transition: color var(--t);
+}
+.articulo-volver:hover { color: var(--brand); }
+
+.articulo {
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  padding: var(--space-md) clamp(1.1rem, 4vw, 2rem) var(--space-3xl);
+}
+.page + .articulo { padding-top: 0; }
+.articulo h1 {
+  font-size: clamp(2rem, 1.4rem + 2.8vw, 3.1rem);
+  font-weight: 500;
+  color: var(--brand);
+  margin: 0.4rem 0 0;
+}
+.articulo > img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--r-card);
+  margin: var(--space-md) 0;
+}
+.articulo-cabecera { margin-bottom: var(--space-md); }
+.articulo-firma {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  color: var(--ink-55);
+  margin: 0.7rem 0 0;
+}
+.articulo-pie {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--line-2);
+}
+.articulo-cuerpo {
+  font-family: var(--sans);
+  font-size: 1.08rem;
+  line-height: 1.75;
+  color: var(--ink-80);
+}
+.articulo-cuerpo p { margin: 0 0 1.35em; }
+.articulo-cuerpo > p:first-child::first-letter {
+  float: left;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 3.4em;
+  line-height: 0.82;
+  padding: 0.06em 0.12em 0 0;
+  color: var(--brand);
+}
+.articulo-cuerpo h2,
+.articulo-cuerpo h3,
+.articulo-cuerpo h4 { color: var(--brand); }
+.articulo-cuerpo h2 { font-size: clamp(1.5rem, 1.1rem + 1.2vw, 1.9rem); margin: 2.2rem 0 0.6rem; }
+.articulo-cuerpo h3 { font-size: 1.35rem; margin: 1.9rem 0 0.5rem; }
+.articulo-cuerpo h4 { font-size: 1.12rem; margin: 1.6rem 0 0.4rem; }
+.articulo-cuerpo ul,
+.articulo-cuerpo ol { margin: 0 0 1.35em; padding-left: 1.4em; }
+.articulo-cuerpo li { margin-bottom: 0.45em; }
+.articulo-cuerpo blockquote {
+  margin: 1.9em 0;
+  padding: 0.2em 0 0.2em 1.2em;
+  border-left: 3px solid var(--brand);
+  font-family: var(--display);
+  font-size: 1.4em;
+  line-height: 1.4;
+  font-style: italic;
+  color: var(--ink);
+}
+.articulo-cuerpo blockquote p { margin: 0; }
+.articulo-cuerpo blockquote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.55em;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-55);
+}
+.articulo-cuerpo figure { margin: 1.9em 0; }
+.articulo-cuerpo figure img { width: 100%; border-radius: var(--r-sm); }
+.articulo-cuerpo figcaption {
+  margin-top: 0.5rem;
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+  color: var(--ink-55);
+  text-align: center;
+}

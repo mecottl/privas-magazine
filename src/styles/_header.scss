@@ -1,0 +1,214 @@
+/* =============================================================================
+   HEADER  (fijo, transparente sobre el hero → teal al hacer scroll)
+   ========================================================================= */
+
+.site-head {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 200;
+  animation: head-drop 0.7s var(--ease) both;
+  border-bottom: 1px solid transparent;
+  transition:
+    background 240ms ease,
+    -webkit-backdrop-filter 240ms ease,
+    backdrop-filter 240ms ease,
+    box-shadow 240ms ease,
+    border-color 240ms ease;
+}
+/* Portada arriba (primeros px): sólo un velo para leer sobre la foto.
+   El velo lo pinta un ::after que rebasa el borde inferior y se desvanece
+   fuera de la barra, así no se ve el canto duro del degradado. */
+.site-head:not(.is-glass):not(.is-solid) {
+  background: transparent;
+}
+.site-head:not(.is-glass):not(.is-solid)::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 -40px 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 40, 54, 0.52) 0%,
+    rgba(12, 40, 54, 0.28) 45%,
+    rgba(12, 40, 54, 0) 100%
+  );
+}
+
+/* --- Páginas interiores: teal sólido (no hay foto detrás) --- */
+.site-head.is-solid {
+  background: var(--brand);
+  box-shadow: var(--shadow-head);
+  border-bottom-color: rgba(251, 247, 238, 0.12);
+}
+
+/* --- Portada al bajar: Liquid Glass --- */
+.site-head.is-glass {
+  /* velo teal oscuro (legibilidad sobre foto) + tinte de cristal blanco */
+  background:
+    linear-gradient(180deg, rgba(9, 30, 40, 0.66), rgba(9, 30, 40, 0.42)),
+    rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur-refract);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* Sin --glass-edge aquí: en una barra a todo el ancho los inset claros de
+     0.5 de alpha dibujan un marco blanco en los cantos. Solo un brillo
+     superior muy tenue + la sombra de profundidad. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 34px -12px rgba(11, 37, 48, 0.45);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-head.is-glass { background: rgba(15, 42, 54, 0.95); }
+}
+
+.site-head__inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--ancho-max);
+  margin-inline: auto;
+  padding: 0 clamp(1.1rem, 4vw, 2.5rem);
+  height: var(--head-h);
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 4vw, 2.5rem);
+  transition: height var(--t-slow);
+}
+.site-head.is-glass .site-head__inner,
+.site-head.is-solid .site-head__inner { height: calc(var(--head-h) - 12px); }
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.86;
+  color: var(--on-brand);
+  flex: none;
+}
+/* Sombra sutil: mantiene legible el texto blanco sobre foto y sobre el cristal */
+.brand,
+.site-nav__link,
+.nav-toggle {
+  text-shadow: 0 1px 12px rgba(11, 37, 48, 0.55), 0 0 2px rgba(11, 37, 48, 0.35);
+}
+.site-head.is-solid .brand,
+.site-head.is-solid .site-nav__link,
+.site-head.is-solid .nav-toggle { text-shadow: none; }
+.brand__word {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
+  letter-spacing: 0.06em;
+}
+.brand__sub {
+  align-self: flex-end;
+  margin-top: 0.1rem;
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+.site-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.4vw, 2.1rem);
+}
+.site-nav__link {
+  position: relative;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-brand);
+  padding: 0.5rem 0;
+}
+.site-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--on-brand);
+  transform: scaleX(0.001);
+  transform-origin: left;
+  transition: transform var(--t-slow);
+}
+.site-nav__link:hover::after,
+.site-nav__link.is-active::after { transform: scaleX(1); }
+
+.site-nav__revista {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.15rem;
+  border-radius: var(--r-pill);
+  background: var(--cream);
+  color: var(--brand);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: transform var(--t), box-shadow var(--t), background var(--t);
+}
+.site-nav__revista:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-2);
+  background: var(--white);
+}
+
+.nav-toggle {
+  display: none;
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--line-brand);
+  border-radius: var(--r-pill);
+  background: rgba(251, 247, 238, 0.08);
+  color: var(--on-brand);
+  cursor: pointer;
+}
+.nav-toggle svg { width: 1.3rem; height: 1.3rem; }
+
+/* --- Menú móvil a pantalla completa --- */
+.nav-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  background: var(--brand);
+  padding: calc(var(--head-h) + 1.5rem) clamp(1.5rem, 8vw, 4rem) 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transform: translateY(-101%);
+  transition: transform var(--t-slow);
+  overflow-y: auto;
+}
+.nav-sheet.is-open { transform: none; }
+.nav-sheet a {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line-brand);
+  font-family: var(--display);
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  color: var(--on-brand);
+}
+.nav-sheet a:last-child { border-bottom: none; }
+.nav-sheet__revista {
+  margin-top: 1.4rem;
+  align-self: flex-start;
+}
+
+@media (max-width: 900px) {
+  .site-nav { display: none; }
+  .nav-toggle { display: inline-flex; }
+}
+@media (min-width: 901px) {
+  .nav-sheet { display: none; }
+}

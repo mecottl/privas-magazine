@@ -1,0 +1,7 @@
+/* =============================================================================
+   MAIN
+   ========================================================================= */
+
+.site-main { display: block; }
+.site-main:focus { outline: none; }
+.site-main:not(.site-main--flush) { padding-top: var(--head-h); }

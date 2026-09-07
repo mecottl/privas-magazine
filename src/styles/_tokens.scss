@@ -1,0 +1,124 @@
+/* =============================================================================
+   PRIVAS MAGAZINE — sistema de diseño
+   Dirección nueva (portada): revista de viajes cálida. Teal profundo como
+   superficie dominante, marfil para las tarjetas, fotografía a sangre,
+   esquinas muy redondeadas, tipografía de revista (Fraunces) y movimiento
+   con intención (header, scroll, footer, carrusel).
+   El panel /gestion-privas conserva su propio bloque al final del archivo.
+   ========================================================================= */
+
+:root {
+  /* ---- Marca / teal ------------------------------------------------- */
+  --brand: #256585; /* teal de marca — paneles, botones */
+  --brand-hi: #357e9e; /* teal claro — degradados, hover */
+  --brand-lo: #1c4a60; /* teal profundo — presionado, sombras */
+  --brand-ink: #143848; /* casi navy — bloques oscuros */
+  --navy: #0e2c3a; /* el más oscuro — "próximamente" */
+  --teal: var(--brand); /* alias usado por el panel admin */
+  --teal-ink: #1a4759;
+  --teal-wash: #e6f0f4;
+  --on-teal: #fbf7ee;
+
+  /* ---- Neutros cálidos (marfil) ----------------------------------- */
+  --cream: #f7f2e7; /* tarjetas sobre teal */
+  --cream-2: #efe6d2; /* alterno sutil */
+  --paper: #edeae1; /* fondo de página tras los paneles */
+  --paper-2: #f4f1e9; /* secciones alternas / panel admin */
+  --paper-3: #e7e2d5; /* hover suave */
+  --white: #ffffff;
+
+  /* ---- Texto ------------------------------------------------------- */
+  --ink: #16323a; /* texto principal (carbón entintado de teal) */
+  --ink-80: #2c4a52;
+  --ink-55: #5b747b; /* secundario */
+  --ink-35: #93a6ab; /* deshabilitado / hairline sobre oscuro */
+  --on-brand: #fbf7ee; /* texto sobre teal */
+  --on-brand-dim: rgba(251, 247, 238, 0.8);
+
+  /* ---- Filetes --------------------------------------------------- */
+  --line: #ded6c3; /* sobre marfil */
+  --line-2: #cec5ac;
+  --line-brand: rgba(251, 247, 238, 0.24); /* sobre teal */
+  --rule: #22424a;
+
+  /* ---- Estado / feedback --------------------------------------- */
+  --danger: #a33124;
+  --danger-wash: #f6eae7;
+  --exito: #1f6b4f;
+
+  --estado-borrador: #6a6660;
+  --estado-programado: #8a5a12;
+  --estado-publicado: #256585;
+  --estado-despublicado: #9a958c;
+
+  /* ---- Tipografía --------------------------------------------------- */
+  --display: 'Fraunces', 'Libre Bodoni', Georgia, 'Times New Roman', serif;
+  --serif: 'Libre Bodoni', Georgia, 'Times New Roman', serif; /* wordmark + admin */
+  --sans: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --fs-3xs: 0.6875rem; /* 11 */
+  --fs-2xs: 0.75rem; /* 12 */
+  --fs-xs: 0.8125rem; /* 13 */
+  --fs-sm: 0.875rem; /* 14 */
+  --fs-base: 1rem; /* 16 */
+  --fs-md: 1.125rem; /* 18 */
+  --fs-lg: 1.375rem; /* 22 */
+  --fs-h3: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+  --fs-h2: clamp(1.9rem, 1.3rem + 2.6vw, 3rem);
+  --fs-h1: clamp(2.2rem, 1.5rem + 3.4vw, 3.9rem);
+  --fs-display: clamp(2.6rem, 1.5rem + 5.6vw, 5.4rem);
+
+  --tracking-caps: 0.18em;
+  --leading-tight: 1.08;
+  --leading-body: 1.62;
+
+  /* ---- Espaciado -------------------------------------------------- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.25rem;
+  --space-xl: 3.5rem;
+  --space-2xl: 5.5rem;
+  --space-3xl: 8rem;
+
+  /* ---- Medidas -------------------------------------------------- */
+  --ancho-max: 1240px;
+  --ancho-texto: 66ch;
+  --ancho-lectura: 42rem;
+  --head-h: 86px;
+
+  --radio: 3px; /* admin */
+  --r-sm: 12px;
+  --r-card: 20px;
+  --r-lg: 28px;
+  --r-panel: clamp(24px, 4vw, 48px);
+  --r-pill: 999px;
+
+  --sombra-1: 0 1px 2px rgba(12, 40, 54, 0.06);
+  --sombra-2: 0 14px 34px -16px rgba(12, 40, 54, 0.24);
+  --sombra-3: 0 30px 60px -24px rgba(12, 40, 54, 0.34);
+  --shadow-card: 0 20px 44px -22px rgba(12, 40, 54, 0.5);
+  --shadow-lift: 0 34px 70px -26px rgba(12, 40, 54, 0.55);
+  --shadow-head: 0 12px 30px -14px rgba(12, 40, 54, 0.4);
+
+  /* ---- Liquid glass ------------------------------------------------- */
+  --glass-blur: blur(8px) saturate(1.8) brightness(1.12) contrast(1.05);
+  --glass-blur-refract: blur(0.5px) url(#lg-filter) blur(1px) saturate(1.5) brightness(1.1);
+  --glass-edge:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    inset 1.5px 1.5px 0 rgba(255, 255, 255, 0.5),
+    inset 0 0 12px rgba(255, 255, 255, 0.2);
+  --glass-drop: 0 8px 32px rgba(9, 28, 38, 0.28);
+
+  --t: 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  --t-slow: 520ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Tokens del panel de administración --- */
+:root {
+  --admin-sidebar-w: 232px;
+  --admin-gutter: clamp(1.1rem, 0.6rem + 1.4vw, 2rem);
+}

@@ -1,0 +1,48 @@
+/* =============================================================================
+   REVISTAS (biblioteca)
+   ========================================================================= */
+
+.revistas {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-md) 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-lg) var(--space-md);
+}
+.revistas > li.indice-vacio { grid-column: 1 / -1; text-align: center; color: var(--ink-55); padding: var(--space-2xl) 0; }
+.revistas a { display: block; }
+.revistas figure {
+  margin: 0 0 0.8rem;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--t-slow), transform var(--t-slow);
+}
+.revistas a:hover figure { box-shadow: var(--shadow-lift); transform: translateY(-6px); }
+.revistas img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.revistas figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 0.9rem;
+  background: linear-gradient(to top, rgba(12, 40, 54, 0.85), transparent);
+  color: var(--on-brand);
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity var(--t);
+}
+.revistas a:hover figcaption,
+.revistas a:focus-visible figcaption { opacity: 1; }
+.revistas .titulo-edicion {
+  display: block;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--brand);
+}
+.revistas .temporada { display: block; font-size: var(--fs-xs); color: var(--ink-55); }

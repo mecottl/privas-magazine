@@ -1,0 +1,173 @@
+/* =============================================================================
+   PRIMITIVAS
+   ========================================================================= */
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: -4rem;
+  z-index: 300;
+  padding: 0.6rem 1rem;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  border-radius: var(--r-pill);
+  transition: top var(--t);
+}
+.skip-link:focus-visible { top: 1rem; }
+
+.wrap {
+  max-width: var(--ancho-max);
+  margin-inline: auto;
+  padding-inline: clamp(1.1rem, 4vw, 2.5rem);
+}
+
+/* Rótulo pequeño */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 var(--space-sm);
+  font-family: var(--sans);
+  font-size: var(--fs-3xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.eyebrow::before {
+  content: '';
+  width: 2rem;
+  height: 2px;
+  background: currentColor;
+}
+
+/* Etiqueta de categoría */
+.categoria-tag {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: var(--fs-3xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+a.categoria-tag { transition: color var(--t); }
+a.categoria-tag:hover { color: var(--brand-hi); }
+.meta a.categoria-tag + a.categoria-tag::before {
+  content: '·';
+  margin-right: 0.4rem;
+  color: var(--ink-35);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: var(--fs-xs);
+  color: var(--ink-55);
+  margin-bottom: 0.5rem;
+}
+
+/* Botones */
+.btn {
+  --btn-bg: var(--brand);
+  --btn-fg: var(--on-brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.9rem 1.7rem;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 1.5px solid var(--btn-bg);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: transform var(--t), box-shadow var(--t), background var(--t), color var(--t), border-color var(--t);
+}
+.btn svg { width: 1.05em; height: 1.05em; }
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-2);
+}
+.btn:active { transform: translateY(0); }
+.btn--primario { --btn-bg: var(--brand); --btn-fg: var(--on-brand); }
+.btn--primario:hover { background: var(--brand-hi); border-color: var(--brand-hi); }
+.btn--crema {
+  --btn-bg: var(--cream);
+  --btn-fg: var(--brand);
+}
+.btn--crema:hover { background: var(--white); border-color: var(--white); }
+.btn--fantasma {
+  background: transparent;
+  color: currentColor;
+  border-color: currentColor;
+}
+.btn--fantasma:hover { background: currentColor; color: var(--brand); }
+.btn--sm { padding: 0.62rem 1.15rem; font-size: var(--fs-xs); }
+
+/* Enlace "leer" con subrayado animado */
+.leer {
+  position: relative;
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--brand);
+  padding-bottom: 3px;
+}
+.leer::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform-origin: right;
+  transition: transform var(--t-slow);
+}
+.leer:hover { color: var(--brand-hi); }
+.leer:hover::after { transform: scaleX(0.001); }
+
+.error { color: var(--danger); font-size: var(--fs-sm); }
+.ok { color: var(--exito); font-size: var(--fs-sm); }
+.hint { font-size: var(--fs-sm); color: var(--ink-55); }
+.hint code,
+code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--paper-3);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+/* Encabezado de sección (usado dentro de los paneles teal) */
+.seccion-head {
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+.seccion-head h2 {
+  margin: 0;
+  color: var(--on-brand);
+  font-weight: 500;
+}
+.seccion-head .ver-todo {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--on-brand);
+  border-bottom: 2px solid var(--on-brand-dim);
+  padding-bottom: 2px;
+  transition: border-color var(--t);
+}
+.seccion-head .ver-todo:hover { border-color: var(--on-brand); }

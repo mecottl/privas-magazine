@@ -1,0 +1,24 @@
+/* =============================================================================
+   SKELETONS
+   ========================================================================= */
+
+.sk {
+  --sk-a: var(--paper-3);
+  --sk-b: var(--cream);
+  background: var(--sk-a);
+  border-radius: var(--r-sm);
+  position: relative;
+  overflow: hidden;
+}
+.sk::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--sk-b), transparent);
+  animation: sk-shine 1.5s ease-in-out infinite;
+}
+.sk--line { height: 0.8rem; margin-bottom: 0.55rem; }
+.sk--title { height: 1.5rem; width: 68%; margin-bottom: 0.8rem; }
+.sk--img { aspect-ratio: 4 / 3; width: 100%; }
+@media (prefers-reduced-motion: reduce) { .sk::after { animation: none; } }
