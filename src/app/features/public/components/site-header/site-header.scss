@@ -49,22 +49,27 @@
 
 /* --- Portada al bajar: Liquid Glass --- */
 .site-head.is-glass {
-  /* velo teal oscuro (legibilidad sobre foto) + tinte de cristal blanco */
+  /* Cristal de verdad: tinte blanco muy leve + un velo teal apenas
+     perceptible para el texto. El desenfoque y la refracción (#lg-filter)
+     hacen el trabajo; nada de barra azul opaca. */
   background:
-    linear-gradient(180deg, rgba(9, 30, 40, 0.66), rgba(9, 30, 40, 0.42)),
-    rgba(255, 255, 255, 0.08);
+    linear-gradient(180deg, rgba(9, 30, 40, 0.22), rgba(9, 30, 40, 0.1)),
+    rgba(255, 255, 255, 0.06);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur-refract);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  /* Sin --glass-edge aquí: en una barra a todo el ancho los inset claros de
-     0.5 de alpha dibujan un marco blanco en los cantos. Solo un brillo
-     superior muy tenue + la sombra de profundidad. */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  /* Sin --glass-edge aquí: en una barra a todo el ancho sus inset claros a
+     0.5 de alpha dibujan un marco blanco en los cantos (#27). Solo un brillo
+     superior tenue + la sombra de profundidad. */
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 10px 34px -12px rgba(11, 37, 48, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 10px 34px -12px rgba(11, 37, 48, 0.4);
 }
+/* Navegadores sin backdrop-filter: velo teal semiopaco para no perder el texto. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .site-head.is-glass { background: rgba(15, 42, 54, 0.95); }
+  .site-head.is-glass {
+    background: linear-gradient(180deg, rgba(15, 42, 54, 0.92), rgba(15, 42, 54, 0.82));
+  }
 }
 
 .site-head__inner {
