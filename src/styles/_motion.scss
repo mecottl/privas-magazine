@@ -22,10 +22,6 @@
   from { transform: scale(1.15) translate(-1.5%, -1%); }
   to { transform: scale(1.15) translate(1.5%, 1%); }
 }
-@keyframes franja-pulso {
-  from { transform: translate3d(-3%, -2%, 0) scale(1); }
-  to { transform: translate3d(4%, 3%, 0) scale(1.18); }
-}
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes sk-shine { 100% { transform: translateX(100%); } }
 @keyframes aparecer { from { opacity: 0; } }
