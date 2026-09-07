@@ -2,94 +2,77 @@ import {
   Component,
   DestroyRef,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { CategoriasService } from '../../../../core/services/categorias.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
-import { ListaSkeleton } from '../../../../shared/components/lista-skeleton';
-import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
+import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { mensajeError } from '../../../../core/services/errores';
-import { mismoSlug, ordenSeccion, type Articulo, type Categoria } from '../../../../core/models';
+import {
+  mismoSlug,
+  normalizarSlug,
+  ordenSeccion,
+  type Articulo,
+  type Categoria,
+} from '../../../../core/models';
 
+interface HeroSeccion {
+  eyebrow: string;
+  titulo: string;
+  texto: string;
+  img: string;
+}
+
+/** Copia del hero por categoría. La imagen vive en `public/categorias/`. */
+const HERO_CATEGORIA: Record<string, Omit<HeroSeccion, 'img' | 'eyebrow'>> = {
+  turismo: {
+    titulo: 'Turismo',
+    texto:
+      'Rincones, rutas y escapadas para descubrir la península de Yucatán a tu ritmo.',
+  },
+  gastronomia: {
+    titulo: 'Gastronomía',
+    texto:
+      'Cocinas de humo, mercados y sobremesas: los sabores que cuentan la región.',
+  },
+  cultura: {
+    titulo: 'Cultura',
+    texto:
+      'Tradiciones vivas, comunidades y el pulso cotidiano de los pueblos mayas y coloniales.',
+  },
+  arte: {
+    titulo: 'Arte',
+    texto: 'Talleres, oficios y creadores que le ponen color a la península.',
+  },
+  entretenimiento: {
+    titulo: 'Entretenimiento',
+    texto: 'Agenda, música y planes para vivir la península cuando cae el sol.',
+  },
+};
+
+const HERO_ARCHIVO: Omit<HeroSeccion, 'img'> = {
+  eyebrow: 'El archivo completo',
+  titulo: 'Artículos',
+  texto:
+    'Todo lo que hemos publicado sobre la península: turismo, gastronomía, cultura, arte y entretenimiento.',
+};
+
+/**
+ * Página de artículos / categorías (`/articulos`, `/articulos?categoria=slug`).
+ * Misma estructura que la portada: hero a sangre con copia de la categoría +
+ * franja teal con los filtros y la rejilla de tarjetas (app-articulo-card).
+ */
 @Component({
   selector: 'app-articulos',
   standalone: true,
-  imports: [RouterLink, DatePipe, RevealDirective, ListaSkeleton, CategoriasNombrePipe],
-  template: `
-    <section class="page">
-      <div class="inicio-encabezado" reveal>
-        <p class="eyebrow">El archivo completo</p>
-        <h1>Artículos</h1>
-        <p>Todo lo que hemos publicado, filtrable por sección.</p>
-      </div>
-
-      <nav class="filtro-categorias" aria-label="Filtrar por categoría">
-        <button type="button" [class.activa]="!categoria()" (click)="filtrar('')">Todas</button>
-        @for (c of categorias(); track c.id) {
-          <button
-            type="button"
-            [class.activa]="mismoSlug(categoria(), c.slug)"
-            (click)="filtrar(c.slug)"
-          >
-            {{ c.nombre }}
-          </button>
-        }
-      </nav>
-
-      @if (error()) { <p class="error">{{ error() }}</p> }
-
-      @if (cargando()) {
-        <app-lista-skeleton [filas]="5" />
-      } @else {
-      <ul class="articulos">
-        @for (a of articulos(); track a.id) {
-          <li>
-            @if (a.imagen_portada_url) {
-              <img [src]="a.imagen_portada_url" [alt]="a.titulo" loading="lazy" decoding="async" />
-            } @else {
-              <span class="articulos-sinimg" aria-hidden="true"></span>
-            }
-            <div>
-              <span class="meta">
-                <span class="categoria-tag">{{ a.categorias | categoriasNombre }}</span>
-                · {{ a.fecha_publicacion | date: 'longDate' }}
-              </span>
-              <a [routerLink]="['/articulos', a.slug]"><h2>{{ a.titulo }}</h2></a>
-              <p>{{ a.extracto }}</p>
-            </div>
-          </li>
-        } @empty {
-          <li class="indice-vacio">
-            @if (categoria()) {
-              No hay artículos publicados en esta categoría.
-              <button type="button" class="enlace" (click)="filtrar('')">Ver todos →</button>
-            } @else {
-              No hay artículos publicados todavía.
-            }
-          </li>
-        }
-      </ul>
-      }
-    </section>
-  `,
-  styles: `
-    .enlace {
-      background: none;
-      border: none;
-      padding: 0;
-      margin-left: 0.5rem;
-      font: inherit;
-      font-weight: 600;
-      color: var(--teal);
-      cursor: pointer;
-      border-bottom: 1px solid currentColor;
-    }
-  `,
+  imports: [RevealDirective, ArticuloCard],
+  templateUrl: './articulos.html',
+  styleUrl: './articulos.scss',
 })
 export class Articulos implements OnInit {
   private readonly srv = inject(ArticulosService);
@@ -106,6 +89,21 @@ export class Articulos implements OnInit {
   readonly categoria = signal('');
   /** Expuesto al template para resaltar la píldora activa sin depender de acentos. */
   readonly mismoSlug = mismoSlug;
+  readonly skeletons = [0, 1, 2, 3, 4, 5];
+
+  /** Hero (imagen + copia) según la categoría activa. */
+  readonly hero = computed<HeroSeccion>(() => {
+    const slug = normalizarSlug(this.categoria());
+    const base = HERO_CATEGORIA[slug];
+    if (!base) {
+      return { ...HERO_ARCHIVO, img: '/categorias/archivo.jpg' };
+    }
+    return {
+      eyebrow: 'PRIVAS Magazine',
+      ...base,
+      img: `/categorias/${slug}.jpg`,
+    };
+  });
 
   async ngOnInit() {
     const cats = await this.catSrv.listar().catch(() => []);
@@ -118,7 +116,7 @@ export class Articulos implements OnInit {
     this.categorias.set(cats);
 
     // El filtro se toma de la URL (?categoria=slug) para que los enlaces del
-    // kicker del masthead funcionen aunque ya estemos en /articulos.
+    // header funcionen aunque ya estemos en /articulos.
     this.route.queryParamMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((pm) => {

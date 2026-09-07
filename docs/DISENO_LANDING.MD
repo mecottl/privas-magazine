@@ -100,16 +100,38 @@ cubic-bezier(0.16, 1, 0.3, 1)` (transiciones grandes). Todo respeta
 
 ## Patrones de referencia
 
-**Hero** (`.hero`): `min-height: 100vh` con fallback a `100svh`/`100dvh`.
-Indicador de scroll: `.hero__cue` (link a `#articulos`, `aria-label`,
-ícono animado que se desactiva en `prefers-reduced-motion`).
+Los patrones de sección compartidos viven en `src/styles/_secciones.scss`
+y los usan tanto la portada como la página de categorías.
 
-**Footer** (`.site-foot`): grid en 4 secciones — `__brand` (logo +
-tagline), `__redes-list`, `__base`/`__base-row` (legales/privacidad),
-`__grupo`.
+**Hero a sangre** (`.hero`): foto de fondo (`.hero__media`), degradado de
+legibilidad (`.hero::after`), contenido centrado (`.hero__inner` con
+`.hero__eyebrow` / `.hero__title` / `.hero__texto`). Modificadores:
+- `.hero--full` → `min-height: 100dvh` (portada; título mayor).
+- `.hero--seccion` → `min-height: clamp(24rem, 62vh, 34rem)` (cabecera de
+  categoría).
 
-## Estado de organización del CSS
+Indicador de scroll: `.hero__cue` (link al primer bloque de contenido,
+`aria-label`, ícono animado que se desactiva en `prefers-reduced-motion`).
 
-Todo el CSS (2,183 líneas) vive en `src/styles.scss` — cero componentes
-tienen su propio archivo de estilos. Pendiente en issue #28: separar por
-componente, dejando en el global solo tokens/utilidades compartidas/resets.
+**Franja teal** (`.franja`): panel `--brand` con esquinas `--r-panel` que
+"monta" sobre la sección previa con `margin-top` negativo. `.hero + .franja`
+y `.franja + .franja` anulan ese margen y el redondeo. `.franja--foto` pone
+una foto de fondo (`--franja-bg`) con degradado teal encima; `.franja--fin`
+añade padding inferior.
+
+**Footer** (`app-site-footer`): grid en 4 secciones — `__brand` (logo +
+tagline + `__redes-list`), columnas `.foot-col`, y `__base`/`__base-row`
+(Grupo Privas + legales/privacidad + copyright).
+
+## Organización del CSS (issue #28)
+
+- `src/styles.scss` importa con `@use` solo lo global: `_tokens` `_reset`
+  `_motion` (keyframes + `.reveal`) `_primitives` (`.btn`, `.eyebrow`…)
+  `_secciones` (hero + franja) `_paginas` (`.page`, `.inicio-encabezado`)
+  `_newsletter` `_skeletons` `_not-found` `_admin`.
+- Cada componente lleva su `.scss` scoped: `site-header/` `site-footer/`
+  `articulo-card/`, y las páginas `landing/` y `articulos/`.
+- Tarjeta de artículo reutilizable: `<app-articulo-card [articulo]>`.
+- Imágenes de hero por categoría: `public/categorias/<slug>.jpg`
+  (+ `archivo.jpg` para "Todas"). Hoy son copias del hero; se reemplazan
+  archivo por archivo.

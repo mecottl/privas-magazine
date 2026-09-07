@@ -1,0 +1,71 @@
+<!-- ===================== HERO DE CATEGORÍA ===================== -->
+<section class="hero hero--seccion">
+  <div class="hero__media">
+    <img [src]="hero().img" [alt]="hero().titulo" fetchpriority="high" />
+  </div>
+
+  <div class="hero__inner">
+    <span class="hero__eyebrow">{{ hero().eyebrow }}</span>
+    <h1 class="hero__title">{{ hero().titulo }}</h1>
+    <p class="hero__texto">{{ hero().texto }}</p>
+  </div>
+
+  <a href="#archivo" class="hero__cue" aria-label="Ver los artículos">
+    <span>Explora</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M5 8l7 7 7-7M5 14l7 7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </a>
+</section>
+
+<!-- ===================== ARCHIVO ===================== -->
+<section class="franja franja--fin" id="archivo">
+  <div class="franja__wrap">
+    <nav class="cat-filtros" reveal aria-label="Filtrar por categoría">
+      <button type="button" [class.activa]="!categoria()" (click)="filtrar('')">Todas</button>
+      @for (c of categorias(); track c.id) {
+        <button
+          type="button"
+          [class.activa]="mismoSlug(categoria(), c.slug)"
+          (click)="filtrar(c.slug)"
+        >
+          {{ c.nombre }}
+        </button>
+      }
+    </nav>
+
+    @if (error()) {
+      <p class="cat-aviso error">{{ error() }}</p>
+    } @else if (cargando()) {
+      <div class="cat-grid">
+        @for (s of skeletons; track s) {
+          <div class="cat-skel">
+            <div class="sk cat-skel__img"></div>
+            <div class="cat-skel__body">
+              <div class="sk sk--line" style="width:40%"></div>
+              <div class="sk sk--title"></div>
+              <div class="sk sk--line" style="width:85%"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="cat-grid" reveal>
+        @for (a of articulos(); track a.id; let i = $index) {
+          <app-articulo-card [articulo]="a" [style.--i]="i" />
+        } @empty {
+          <p class="cat-aviso">
+            @if (categoria()) {
+              Todavía no hay artículos publicados en esta sección.
+              <button type="button" class="cat-aviso__enlace" (click)="filtrar('')">
+                Ver todos los artículos
+              </button>
+            } @else {
+              Todavía no hay artículos publicados. Vuelve pronto.
+            }
+          </p>
+        }
+      </div>
+    }
+  </div>
+</section>
