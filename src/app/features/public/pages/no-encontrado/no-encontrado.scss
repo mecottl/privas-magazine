@@ -1,0 +1,25 @@
+/* Página 404. .page / .eyebrow / .btn son globales. */
+
+.no-encontrado {
+  max-width: 640px;
+  padding-block: var(--space-3xl);
+}
+.no-encontrado h1 {
+  font-size: var(--fs-h1);
+  margin-bottom: var(--space-md);
+  color: var(--brand);
+  font-style: italic;
+}
+.no-encontrado__texto {
+  color: var(--ink-80);
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-xl);
+}
+.no-encontrado__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.no-encontrado .btn--fantasma:hover {
+  color: var(--white);
+}

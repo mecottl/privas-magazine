@@ -13,46 +13,8 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
   selector: 'app-revistas',
   standalone: true,
   imports: [RevealDirective],
-  template: `
-    <section class="page">
-      <div class="inicio-encabezado" reveal>
-        <p class="eyebrow">La biblioteca</p>
-        <h1>Ediciones de la revista</h1>
-        <p>El catálogo completo de PRIVAS Magazine, dos ediciones al año.</p>
-      </div>
-
-      @if (error()) { <p class="error">{{ error() }}</p> }
-
-      @if (cargando()) {
-        <ul class="revistas" aria-hidden="true">
-          @for (n of [1, 2, 3, 4]; track n) {
-            <li>
-              <div class="sk sk--img" style="aspect-ratio:3/4"></div>
-              <div class="sk sk--line" style="width:80%;margin-top:.6rem"></div>
-              <div class="sk sk--line" style="width:50%"></div>
-            </li>
-          }
-        </ul>
-      } @else {
-      <ul class="revistas" data-reveal-stagger>
-        @for (ed of ediciones(); track ed.id) {
-          <li reveal>
-            <a [href]="ed.pdf_url" target="_blank" rel="noopener">
-              <figure>
-                <img [src]="ed.portada_url" [alt]="ed.titulo" />
-                <figcaption>Abrir PDF</figcaption>
-              </figure>
-              <span class="titulo-edicion">{{ ed.titulo }}</span>
-              <span class="temporada">{{ nombreTemporada(ed.temporada) }} {{ ed.anio }}</span>
-            </a>
-          </li>
-        } @empty {
-          <li class="indice-vacio">Todavía no hay ediciones publicadas.</li>
-        }
-      </ul>
-      }
-    </section>
-  `,
+  templateUrl: './revistas.html',
+  styleUrl: './revistas.scss',
 })
 export class Revistas implements OnInit {
   private readonly srv = inject(EdicionesService);

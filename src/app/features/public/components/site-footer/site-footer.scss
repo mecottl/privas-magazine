@@ -101,6 +101,43 @@
   color: var(--on-brand-dim);
 }
 
+/* Variante compacta de app-newsletter-form dentro del pie. ::ng-deep para
+   alcanzar el markup proyectado del componente hijo. */
+.foot-col--news ::ng-deep {
+  .newsletter {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    gap: 0;
+  }
+  .newsletter-copy { display: none; }
+  .newsletter form { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+  .newsletter input {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    padding: 0.62rem 0.95rem;
+    background: rgba(251, 247, 238, 0.1);
+    border-color: var(--line-brand);
+    color: var(--on-brand);
+    border-radius: var(--r-pill);
+  }
+  .newsletter input::placeholder { color: var(--on-brand-dim); }
+  .newsletter button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.62rem 1.2rem;
+    background: var(--cream);
+    color: var(--brand);
+    border-color: var(--cream);
+    border-radius: var(--r-pill);
+  }
+  .newsletter button:hover:not(:disabled) { background: var(--white); border-color: var(--white); transform: translateY(-1px); }
+  .newsletter .ok { color: var(--on-brand); font-size: var(--fs-xs); }
+  .newsletter .error { color: #ffd9d0; }
+}
+
 /* --- Barra inferior: dos niveles con aire, no todo en una línea --- */
 .site-foot__base {
   background: rgba(12, 40, 54, 0.35);

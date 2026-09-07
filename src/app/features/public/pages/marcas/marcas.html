@@ -1,0 +1,46 @@
+<section class="page">
+  <div class="inicio-encabezado" reveal>
+    <p class="eyebrow">El grupo</p>
+    <h1>Nuestras Marcas</h1>
+    <p>Las marcas del grupo PRIVAS y dónde seguirlas.</p>
+  </div>
+  @if (error()) { <p class="error">{{ error() }}</p> }
+
+  @if (cargando()) {
+    <ul class="marcas-fichas" aria-hidden="true">
+      @for (n of [1, 2, 3]; track n) {
+        <li class="marca-ficha">
+          <div class="sk" style="width:64px;height:64px;border-radius:12px"></div>
+          <div class="sk sk--line" style="width:55%;margin-top:.7rem"></div>
+          <div class="sk sk--line" style="width:80%"></div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <ul class="marcas-fichas">
+      @for (m of marcas(); track m.id) {
+        <li class="marca-ficha" reveal>
+          @if (m.logo_url) { <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" /> }
+          <h2>{{ m.nombre }}</h2>
+          @if (m.descripcion) { <p>{{ m.descripcion }}</p> }
+
+          @if (m.sitio_web_url) {
+            <a class="marca-cta" [href]="m.sitio_web_url" target="_blank" rel="noopener">
+              Visitar sitio →
+            </a>
+          }
+
+          @if (enlaces(m).length) {
+            <div class="marca-redes">
+              @for (e of enlaces(m); track e.url) {
+                <a [href]="e.url" target="_blank" rel="noopener">{{ etiqueta(e) }}</a>
+              }
+            </div>
+          }
+        </li>
+      } @empty {
+        <li class="indice-vacio">Aún no hay marcas para mostrar.</li>
+      }
+    </ul>
+  }
+</section>

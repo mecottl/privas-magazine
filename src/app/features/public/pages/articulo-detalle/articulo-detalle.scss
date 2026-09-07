@@ -1,6 +1,5 @@
-/* =============================================================================
-   DETALLE DE ARTÍCULO
-   ========================================================================= */
+/* Detalle de artículo. La cabecera (.page) y utilidades (.sk, .meta, .leer)
+   son globales; aquí van .articulo y el cuerpo del contenido. */
 
 .articulo-volver {
   display: inline-block;

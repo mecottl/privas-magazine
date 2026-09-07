@@ -5,12 +5,7 @@ import { NewsletterService } from '../../../../core/services/newsletter.service'
 @Component({
   selector: 'app-cancelar-suscripcion',
   standalone: true,
-  template: `
-    <section class="page">
-      <h1>Cancelar suscripción</h1>
-      <p>{{ mensaje() }}</p>
-    </section>
-  `,
+  templateUrl: './cancelar-suscripcion.html',
 })
 export class CancelarSuscripcion implements OnInit {
   private readonly route = inject(ActivatedRoute);

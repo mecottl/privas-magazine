@@ -8,46 +8,8 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   selector: 'app-newsletter-form',
   standalone: true,
   imports: [FormsModule],
-  template: `
-    <div class="newsletter">
-      <div class="newsletter-copy">
-        <strong>Recibe lo nuevo</strong>
-        <span>Un aviso cuando publicamos un artículo o sale una nueva edición.</span>
-      </div>
-
-      @if (ok()) {
-        <p class="ok newsletter-exito">{{ msg() }}</p>
-      } @else {
-        <form (ngSubmit)="enviar()" novalidate>
-          <input
-            type="email"
-            name="email"
-            [(ngModel)]="email"
-            (blur)="tocado.set(true)"
-            placeholder="tu@correo.com"
-            aria-label="Correo electrónico"
-            autocomplete="email"
-            [attr.aria-invalid]="mostrarError() ? 'true' : null"
-            required
-          />
-          <button type="submit" [disabled]="enviando() || !emailValido()">
-            {{ enviando() ? 'Enviando…' : 'Suscribirme' }}
-          </button>
-          @if (mostrarError()) {
-            <p class="error" role="alert">Escribe un correo válido.</p>
-          } @else if (msg()) {
-            <p class="error" role="alert">{{ msg() }}</p>
-          }
-        </form>
-      }
-    </div>
-  `,
-  styles: `
-    .newsletter-exito {
-      margin: 0;
-      font-weight: 500;
-    }
-  `,
+  templateUrl: './newsletter-form.html',
+  styleUrl: './newsletter-form.scss',
 })
 export class NewsletterForm {
   private readonly srv = inject(NewsletterService);

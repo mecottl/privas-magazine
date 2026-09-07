@@ -1,22 +1,15 @@
 /* =============================================================================
    PRIVAS MAGAZINE — hoja global
-   El sistema de diseño (tokens), el reset, los keyframes de movimiento y las
-   primitivas compartidas viven aquí. El resto está partido por pieza en
-   src/styles/_*.scss; a medida que cada bloque se mude a su componente
-   (site-header, site-footer, landing…) su @use correspondiente desaparece.
-   Ver docs/DISENO_LANDING.MD.
+   Solo lo verdaderamente compartido. El CSS propio de cada componente vive
+   junto a su .ts/.html (site-header/, landing/, articulo-detalle/…).
+   Ver docs/DISENO_LANDING.MD § "Organización del CSS".
    ========================================================================= */
 
-@use './styles/tokens';
-@use './styles/reset';
-@use './styles/motion';
-@use './styles/primitives';
-@use './styles/secciones';
-@use './styles/paginas';
-@use './styles/articulo-detalle';
-@use './styles/revistas';
-@use './styles/marcas';
-@use './styles/newsletter';
-@use './styles/skeletons';
-@use './styles/not-found';
-@use './styles/admin';
+@use './styles/tokens';       // :root — colores, tipografía, espaciado, radios
+@use './styles/reset';        // reset + elementos base (h1-4, p, a, img…)
+@use './styles/motion';       // @keyframes + .reveal + prefers-reduced-motion
+@use './styles/primitives';   // .btn .eyebrow .categoria-tag .meta .leer .wrap …
+@use './styles/secciones';    // .hero + .franja (portada y categorías)
+@use './styles/paginas';      // .page + .inicio-encabezado (páginas de texto)
+@use './styles/skeletons';    // .sk .sk--line .sk--title .sk--img
+@use './styles/admin';        // sistema visual del panel /gestion-privas

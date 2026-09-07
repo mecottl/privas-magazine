@@ -5,12 +5,7 @@ import { NewsletterService } from '../../../../core/services/newsletter.service'
 @Component({
   selector: 'app-confirmar-suscripcion',
   standalone: true,
-  template: `
-    <section class="page">
-      <h1>Confirmar suscripción</h1>
-      <p>{{ mensaje() }}</p>
-    </section>
-  `,
+  templateUrl: './confirmar-suscripcion.html',
 })
 export class ConfirmarSuscripcion implements OnInit {
   private readonly route = inject(ActivatedRoute);

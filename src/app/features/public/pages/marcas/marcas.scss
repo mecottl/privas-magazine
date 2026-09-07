@@ -1,0 +1,69 @@
+/* Nuestras Marcas. .page / .inicio-encabezado / .eyebrow / .sk son globales. */
+
+.marcas-fichas {
+  list-style: none;
+  margin: var(--space-lg) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-md);
+}
+.marcas-fichas .indice-vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--ink-55);
+  padding: var(--space-2xl) 0;
+}
+
+.marca-ficha {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: var(--space-md);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--cream);
+  transition: transform var(--t), box-shadow var(--t);
+}
+.marca-ficha:hover { transform: translateY(-4px); box-shadow: var(--sombra-2); }
+.marca-ficha img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 0.2rem;
+}
+.marca-ficha h2 {
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--brand);
+  margin: 0;
+}
+.marca-ficha p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--ink-55);
+}
+
+.marca-cta {
+  margin-top: 0.4rem;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  color: var(--brand);
+  border-bottom: 2px solid var(--brand);
+  padding-bottom: 1px;
+}
+.marca-cta:hover { color: var(--brand-hi); }
+
+.marca-redes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  margin-top: 0.4rem;
+}
+.marca-redes a {
+  font-size: var(--fs-xs);
+  text-transform: capitalize;
+  color: var(--ink-55);
+}
+.marca-redes a:hover { color: var(--brand); }
