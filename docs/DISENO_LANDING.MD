@@ -125,12 +125,17 @@ tagline + `__redes-list`), columnas `.foot-col`, y `__base`/`__base-row`
 
 ## Organización del CSS (issue #28)
 
-- `src/styles.scss` importa con `@use` solo lo global: `_tokens` `_reset`
-  `_motion` (keyframes + `.reveal`) `_primitives` (`.btn`, `.eyebrow`…)
-  `_secciones` (hero + franja) `_paginas` (`.page`, `.inicio-encabezado`)
-  `_newsletter` `_skeletons` `_not-found` `_admin`.
-- Cada componente lleva su `.scss` scoped: `site-header/` `site-footer/`
-  `articulo-card/`, y las páginas `landing/` y `articulos/`.
+- `src/styles.scss` importa con `@use` **solo lo global** (8 partials):
+  `_tokens` `_reset` `_motion` (keyframes + `.reveal`) `_primitives`
+  (`.btn`, `.eyebrow`, `.meta`, `.leer`…) `_secciones` (hero + franja)
+  `_paginas` (`.page`, `.inicio-encabezado`) `_skeletons` (`.sk*`)
+  `_admin` (kit de UI compartido por las páginas del panel).
+- **Cada componente = su carpeta con `.ts` + `.html` + `.scss`.** El `.scss`
+  solo existe si el componente tiene estilos propios; si solo usa clases
+  globales (p. ej. `aviso-privacidad`, las páginas de confirmación) no
+  lleva `.scss`. Nada de plantillas ni estilos embebidos en el `.ts`.
+- La variante compacta de `app-newsletter-form` dentro del pie vive en
+  `site-footer.scss` con `::ng-deep`.
 - Tarjeta de artículo reutilizable: `<app-articulo-card [articulo]>`.
 - Imágenes de hero por categoría: `public/categorias/<slug>.jpg`
   (+ `archivo.jpg` para "Todas"). Hoy son copias del hero; se reemplazan
