@@ -99,7 +99,9 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
             buttonContent: 'Seleccionar imagen',
             uploader: {
               uploadByFile: async (file: File) => {
-                const url = await this.uploads.subir(file, 'articulo-portada');
+                // subir() devuelve { url, path, target }; Editor.js espera
+                // file.url como STRING — hay que sacar solo la url.
+                const { url } = await this.uploads.subir(file, 'articulo-portada');
                 return { success: 1, file: { url } };
               },
             },

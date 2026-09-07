@@ -28,30 +28,29 @@ interface HeroSeccion {
   img: string;
 }
 
-/** Copia del hero por categoría. La imagen vive en `public/categorias/`. */
 const HERO_CATEGORIA: Record<string, Omit<HeroSeccion, 'img' | 'eyebrow'>> = {
   turismo: {
     titulo: 'Turismo',
     texto:
-      'Rincones, rutas y escapadas para descubrir la península de Yucatán a tu ritmo.',
+      'Artículos con todo lo especial de viajar.',
   },
   gastronomia: {
     titulo: 'Gastronomía',
     texto:
-      'Cocinas de humo, mercados y sobremesas: los sabores que cuentan la región.',
+      'Viajar por el mundo, con comida.',
   },
   cultura: {
     titulo: 'Cultura',
     texto:
-      'Tradiciones vivas, comunidades y el pulso cotidiano de los pueblos mayas y coloniales.',
+      'Viajar por el mundo, con cultura.',
   },
   arte: {
     titulo: 'Arte',
-    texto: 'Talleres, oficios y creadores que le ponen color a la península.',
+    texto: 'Viajar por el mundo, con arte.',
   },
   entretenimiento: {
     titulo: 'Entretenimiento',
-    texto: 'Agenda, música y planes para vivir la península cuando cae el sol.',
+    texto: 'Viajar por el mundo, con entretenimiento.',
   },
 };
 
@@ -59,14 +58,9 @@ const HERO_ARCHIVO: Omit<HeroSeccion, 'img'> = {
   eyebrow: 'El archivo completo',
   titulo: 'Artículos',
   texto:
-    'Todo lo que hemos publicado sobre la península: turismo, gastronomía, cultura, arte y entretenimiento.',
+    'Todo lo que hemos publicado: turismo, gastronomía, cultura, arte y entretenimiento.',
 };
 
-/**
- * Página de artículos / categorías (`/articulos`, `/articulos?categoria=slug`).
- * Misma estructura que la portada: hero a sangre con copia de la categoría +
- * franja teal con los filtros y la rejilla de tarjetas (app-articulo-card).
- */
 @Component({
   selector: 'app-articulos',
   standalone: true,
@@ -85,9 +79,7 @@ export class Articulos implements OnInit {
   readonly categorias = signal<Categoria[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
-  /** slug de categoría activo; '' = todas. Refleja el query param `categoria`. */
   readonly categoria = signal('');
-  /** Expuesto al template para resaltar la píldora activa sin depender de acentos. */
   readonly mismoSlug = mismoSlug;
   readonly skeletons = [0, 1, 2, 3, 4, 5];
 
@@ -107,16 +99,13 @@ export class Articulos implements OnInit {
 
   async ngOnInit() {
     const cats = await this.catSrv.listar().catch(() => []);
-    // Mismo orden que la navegación del header (secciones editoriales primero).
     cats.sort(
       (a, b) =>
         ordenSeccion(a.slug) - ordenSeccion(b.slug) ||
         a.nombre.localeCompare(b.nombre, 'es'),
     );
     this.categorias.set(cats);
-
-    // El filtro se toma de la URL (?categoria=slug) para que los enlaces del
-    // header funcionen aunque ya estemos en /articulos.
+  
     this.route.queryParamMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((pm) => {
@@ -125,7 +114,6 @@ export class Articulos implements OnInit {
       });
   }
 
-  /** Cambia el filtro escribiéndolo en la URL (una sola fuente de verdad). */
   filtrar(slug: string) {
     this.router.navigate([], {
       relativeTo: this.route,
