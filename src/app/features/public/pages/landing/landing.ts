@@ -42,9 +42,10 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
         </h1>
       </div>
 
-      <a href="#articulos" class="hero__cue" aria-label="Ver más">
+      <a href="#articulos" class="hero__cue" aria-label="Desliza para ver más">
+        <span>Desliza</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M5 8l7 7 7-7M5 14l7 7 7-7" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </a>
     </section>
