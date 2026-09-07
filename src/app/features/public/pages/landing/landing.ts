@@ -7,11 +7,11 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, EdicionRevista } from '../../../../core/models';
 
@@ -22,161 +22,14 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 
 /**
  * Portada de PRIVAS Magazine (ruta `/`).
- * Hero a sangre → "Artículos del mes" (carrusel) → "Ediciones".
+ * Hero a sangre → "Últimos artículos" (carrusel) → "Ediciones".
  */
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, DatePipe, RevealDirective],
-  template: `
-    <!-- ===================== HERO ===================== -->
-    <section class="hero">
-      <div class="hero__media hero__media--vacio">
-        <img [src]="heroImg" alt="" fetchpriority="high" />
-      </div>
-
-      <div class="hero__inner">
-        <span class="hero__eyebrow">Grupo Privas</span>
-        <h1 class="hero__title">
-          Una revista para los <em>amantes</em> a los viajes
-        </h1>
-      </div>
-
-      <a href="#articulos" class="hero__cue" aria-label="Desliza para ver más">
-        <span>Desliza</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M5 8l7 7 7-7M5 14l7 7 7-7" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </a>
-    </section>
-
-    <!-- ================ ARTÍCULOS DEL MES ================ -->
-    <section class="franja" id="articulos">
-      <div class="franja__wrap">
-        <div class="seccion-head" reveal>
-          <h2>Últimos Artículos</h2>
-          <a routerLink="/articulos" class="ver-todo">Ver todos los artículos</a>
-        </div>
-
-        @if (error()) { <p class="error" style="color:var(--on-brand)">{{ error() }}</p> }
-
-        <div class="carrusel" reveal>
-          <button
-            type="button"
-            class="carrusel__flecha carrusel__flecha--prev"
-            (click)="mover(-1)"
-            [disabled]="!puedePrev()"
-            aria-label="Anterior"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </button>
-
-          <div class="carrusel__pista" #pista (scroll)="alScroll()">
-            @if (cargando()) {
-              @for (n of [1, 2, 3]; track n) {
-                <article class="art-card">
-                  <div class="sk sk--img" style="aspect-ratio:16/10"></div>
-                  <div class="art-card__body">
-                    <div class="sk sk--line" style="width:45%"></div>
-                    <div class="sk sk--title"></div>
-                    <div class="sk sk--line" style="width:80%"></div>
-                  </div>
-                </article>
-              }
-            } @else {
-              @for (a of carrusel(); track a.id; let i = $index) {
-                <a class="art-card" [style.--i]="i" [routerLink]="['/articulos', a.slug]">
-                  @if (a.imagen_portada_url) {
-                    <img class="art-card__img" [src]="a.imagen_portada_url" [alt]="a.titulo" loading="lazy" decoding="async" />
-                  } @else {
-                    <div class="art-card__img" aria-hidden="true"></div>
-                  }
-                  <div class="art-card__body">
-                    <div class="art-card__top">
-                      <time [attr.datetime]="a.fecha_publicacion">
-                        {{ a.fecha_publicacion | date: 'dd MMM. y' }}
-                      </time>
-                      <span>{{ a.categorias?.[0]?.nombre ?? '' }}</span>
-                    </div>
-                    <h3 class="art-card__titulo">{{ a.titulo }}</h3>
-                    <p class="art-card__extracto">{{ a.extracto }}</p>
-                    <span class="art-card__mas">Leer más
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </span>
-                  </div>
-                </a>
-              } @empty {
-                <article class="art-card art-card--vacio">
-                  Aún no hay artículos publicados. Vuelve pronto.
-                </article>
-              }
-            }
-          </div>
-
-          <button
-            type="button"
-            class="carrusel__flecha carrusel__flecha--next"
-            (click)="mover(1)"
-            [disabled]="!puedeNext()"
-            aria-label="Siguiente"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== EDICIONES ==================== -->
-    <section
-      class="franja franja--foto franja--fin"
-      [style.--franja-bg]="fondoEdiciones"
-    >
-      <div class="franja__wrap">
-        <div class="ediciones-head" reveal>
-          <h2>Ediciones</h2>
-          <a routerLink="/revistas" class="ediciones-buscar">
-            Buscar por ediciones
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
-              <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
-        </div>
-
-        <div class="ediciones-grid" reveal>
-          @for (slot of slotsEdiciones(); track $index; let i = $index) {
-            @if (slot; as e) {
-              <article class="edicion-card" [style.--i]="i">
-                <span class="edicion-card__temporada">{{ nombreTemporada(e.temporada) }}</span>
-                <img class="edicion-card__portada" [src]="e.portada_url" [alt]="'Portada — ' + e.titulo" loading="lazy" />
-                <span class="edicion-card__num">Edición 0{{ i + 1 }}</span>
-                <a class="btn btn--primario btn--sm" [href]="e.pdf_url" target="_blank" rel="noopener">
-                  Ver
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </a>
-              </article>
-            } @else {
-              <article class="edicion-card edicion-card--proxima" [style.--i]="i">
-                <span class="edicion-card__temporada">{{ temporadaSlot(i) }}</span>
-                <p class="edicion-card__proximamente">
-                  <span>Próximamente</span>
-                  <span>Próximamente</span>
-                </p>
-                <span class="edicion-card__num">Edición 0{{ i + 1 }}</span>
-              </article>
-            }
-          }
-        </div>
-      </div>
-    </section>
-  `,
+  imports: [RouterLink, RevealDirective, ArticuloCard],
+  templateUrl: './landing.html',
+  styleUrl: './landing.scss',
 })
 export class Landing implements OnInit {
   private readonly artSrv = inject(ArticulosService);
@@ -221,7 +74,7 @@ export class Landing implements OnInit {
   mover(dir: -1 | 1) {
     const el = this.pista()?.nativeElement;
     if (!el) return;
-    const card = el.querySelector<HTMLElement>('.art-card');
+    const card = el.querySelector<HTMLElement>('app-articulo-card, .art-card');
     const paso = card ? card.offsetWidth + 24 : el.clientWidth * 0.85;
     el.scrollBy({ left: dir * paso, behavior: 'smooth' });
   }

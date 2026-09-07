@@ -148,26 +148,3 @@ code {
   padding: 0.1em 0.35em;
   border-radius: 4px;
 }
-
-/* Encabezado de sección (usado dentro de los paneles teal) */
-.seccion-head {
-  text-align: center;
-  margin-bottom: var(--space-md);
-}
-.seccion-head h2 {
-  margin: 0;
-  color: var(--on-brand);
-  font-weight: 500;
-}
-.seccion-head .ver-todo {
-  display: inline-block;
-  margin-top: 0.6rem;
-  font-family: var(--sans);
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  color: var(--on-brand);
-  border-bottom: 2px solid var(--on-brand-dim);
-  padding-bottom: 2px;
-  transition: border-color var(--t);
-}
-.seccion-head .ver-todo:hover { border-color: var(--on-brand); }
