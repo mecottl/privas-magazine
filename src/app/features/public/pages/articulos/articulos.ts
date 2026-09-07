@@ -14,7 +14,7 @@ import { RevealDirective } from '../../../../shared/directives/reveal.directive'
 import { ListaSkeleton } from '../../../../shared/components/lista-skeleton';
 import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
 import { mensajeError } from '../../../../core/services/errores';
-import { ordenSeccion, type Articulo, type Categoria } from '../../../../core/models';
+import { mismoSlug, ordenSeccion, type Articulo, type Categoria } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulos',
@@ -33,7 +33,7 @@ import { ordenSeccion, type Articulo, type Categoria } from '../../../../core/mo
         @for (c of categorias(); track c.id) {
           <button
             type="button"
-            [class.activa]="categoria() === c.slug"
+            [class.activa]="mismoSlug(categoria(), c.slug)"
             (click)="filtrar(c.slug)"
           >
             {{ c.nombre }}
@@ -104,6 +104,8 @@ export class Articulos implements OnInit {
   readonly cargando = signal(true);
   /** slug de categoría activo; '' = todas. Refleja el query param `categoria`. */
   readonly categoria = signal('');
+  /** Expuesto al template para resaltar la píldora activa sin depender de acentos. */
+  readonly mismoSlug = mismoSlug;
 
   async ngOnInit() {
     const cats = await this.catSrv.listar().catch(() => []);

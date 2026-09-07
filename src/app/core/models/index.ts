@@ -46,11 +46,33 @@ export const SECCIONES: Seccion[] = [
 ];
 
 /**
+ * Normaliza un slug para comparar sin depender de acentos ni mayúsculas.
+ * En la BD hay slugs con diacríticos (p. ej. "gastronomía"); la navegación y
+ * los filtros usan la forma ASCII. Comparar normalizado evita el desajuste.
+ */
+export function normalizarSlug(slug: string | null | undefined): string {
+  return (slug ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+/** `true` si dos slugs designan la misma sección (ignorando acentos/caso). */
+export function mismoSlug(
+  a: string | null | undefined,
+  b: string | null | undefined,
+): boolean {
+  return normalizarSlug(a) === normalizarSlug(b);
+}
+
+/**
  * Índice de una categoría en el orden editorial (por slug).
  * Las categorías que no forman parte de las secciones oficiales van al final.
  */
 export function ordenSeccion(slug: string): number {
-  const i = SECCIONES.findIndex((s) => s.slug === slug);
+  const objetivo = normalizarSlug(slug);
+  const i = SECCIONES.findIndex((s) => normalizarSlug(s.slug) === objetivo);
   return i === -1 ? SECCIONES.length : i;
 }
 

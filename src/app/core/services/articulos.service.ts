@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.client';
-import type { Articulo, EstadoPublicacion } from '../models';
+import { mismoSlug, type Articulo, type EstadoPublicacion } from '../models';
 
 /**
  * Embebe las categorías por el join M2M nombrando explícitamente la tabla
@@ -50,7 +50,7 @@ export class ArticulosService {
     let arts = data as unknown as Articulo[];
     if (categoriaSlug) {
       arts = arts.filter((a) =>
-        (a.categorias ?? []).some((c) => c.slug === categoriaSlug),
+        (a.categorias ?? []).some((c) => mismoSlug(c.slug, categoriaSlug)),
       );
     }
     return arts;
