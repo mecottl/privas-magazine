@@ -50,7 +50,16 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(to top, rgba(12, 40, 54, 0.62) 0%, rgba(12, 40, 54, 0.14) 34%, rgba(12, 40, 54, 0.08) 55%, rgba(12, 40, 54, 0.42) 100%),
+    /* La foto se disuelve en el teal de la franja: el borde inferior del hero
+       ya es el color de marca, así el cambio de sección no es un corte seco. */
+    linear-gradient(
+      to bottom,
+      transparent 58%,
+      rgba(37, 101, 133, 0.28) 78%,
+      rgba(37, 101, 133, 0.72) 92%,
+      var(--brand) 100%
+    ),
+    linear-gradient(to top, rgba(12, 40, 54, 0.6) 0%, rgba(12, 40, 54, 0.14) 34%, rgba(12, 40, 54, 0.08) 55%, rgba(12, 40, 54, 0.42) 100%),
     radial-gradient(80% 55% at 50% 52%, rgba(12, 40, 54, 0.4), transparent 72%);
 }
 
