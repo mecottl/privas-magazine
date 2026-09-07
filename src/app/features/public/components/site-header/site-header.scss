@@ -91,36 +91,25 @@
 
 .brand {
   display: flex;
-  flex-direction: column;
-  line-height: 0.86;
-  color: var(--on-brand);
+  align-items: center;
   flex: none;
 }
-/* Sombra sutil: mantiene legible el texto blanco sobre foto y sobre el cristal */
-.brand,
+.brand__logo {
+  display: block;
+  height: clamp(1.9rem, 1.4rem + 1.5vw, 2.7rem);
+  width: auto;
+  /* El logo es blanco: una sombra tenue lo mantiene legible sobre foto y cristal. */
+  filter: drop-shadow(0 1px 10px rgba(11, 37, 48, 0.5));
+}
+.site-head.is-solid .brand__logo { filter: none; }
+
+/* Sombra sutil para el texto blanco de la navegación sobre foto/cristal */
 .site-nav__link,
 .nav-toggle {
   text-shadow: 0 1px 12px rgba(11, 37, 48, 0.55), 0 0 2px rgba(11, 37, 48, 0.35);
 }
-.site-head.is-solid .brand,
 .site-head.is-solid .site-nav__link,
 .site-head.is-solid .nav-toggle { text-shadow: none; }
-.brand__word {
-  font-family: var(--serif);
-  font-weight: 700;
-  font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
-  letter-spacing: 0.06em;
-}
-.brand__sub {
-  align-self: flex-end;
-  margin-top: 0.1rem;
-  font-family: var(--display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
-  opacity: 0.9;
-}
 
 .site-nav {
   margin-left: auto;

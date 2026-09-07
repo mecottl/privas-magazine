@@ -1,10 +1,5 @@
-/* =============================================================================
-   PRIVAS MAGAZINE — hoja global
-   Solo lo verdaderamente compartido. El CSS propio de cada componente vive
-   junto a su .ts/.html (site-header/, landing/, articulo-detalle/…).
-   Ver docs/DISENO_LANDING.MD § "Organización del CSS".
-   ========================================================================= */
-
+// PRIVAS Magazine — hoja global: solo lo compartido. El CSS de cada
+// componente vive junto a su .ts/.html. Ver docs/DISENO_LANDING.MD.
 @use './styles/tokens';       // :root — colores, tipografía, espaciado, radios
 @use './styles/reset';        // reset + elementos base (h1-4, p, a, img…)
 @use './styles/motion';       // @keyframes + .reveal + prefers-reduced-motion
