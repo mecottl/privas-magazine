@@ -72,9 +72,11 @@ import type { EnlaceMarca, Marca } from '../../../../core/models';
       gap: 0.4rem;
       padding: var(--space-md);
       border: 1px solid var(--line);
-      border-radius: var(--radio, 4px);
-      background: var(--paper-2, #fff);
+      border-radius: var(--r-card, 20px);
+      background: var(--cream, #f7f2e7);
+      transition: transform var(--t), box-shadow var(--t);
     }
+    .marca-ficha:hover { transform: translateY(-4px); box-shadow: var(--sombra-2); }
     .marca-ficha img {
       width: 64px; height: 64px;
       object-fit: contain;
@@ -83,6 +85,7 @@ import type { EnlaceMarca, Marca } from '../../../../core/models';
     .marca-ficha h2 {
       font-size: var(--fs-lg);
       font-weight: 500;
+      color: var(--brand);
       margin: 0;
     }
     .marca-ficha p {
@@ -91,13 +94,14 @@ import type { EnlaceMarca, Marca } from '../../../../core/models';
       color: var(--ink-55);
     }
     .marca-cta {
-      margin-top: 0.3rem;
-      font-weight: 600;
+      margin-top: 0.4rem;
+      font-weight: 700;
       font-size: var(--fs-sm);
-      border-bottom: 1px solid var(--teal);
+      color: var(--brand);
+      border-bottom: 2px solid var(--brand);
       padding-bottom: 1px;
     }
-    .marca-cta:hover { color: var(--teal-ink); }
+    .marca-cta:hover { color: var(--brand-hi); }
     .marca-redes {
       display: flex;
       flex-wrap: wrap;
@@ -109,7 +113,7 @@ import type { EnlaceMarca, Marca } from '../../../../core/models';
       text-transform: capitalize;
       color: var(--ink-55);
     }
-    .marca-redes a:hover { color: var(--teal-ink); }
+    .marca-redes a:hover { color: var(--brand); }
   `,
 })
 export class Marcas implements OnInit {
