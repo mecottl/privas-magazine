@@ -108,7 +108,7 @@ import { SECCIONES } from '../../../core/models';
           <a routerLink="/articulos">Artículos</a>
           <a routerLink="/revistas">Ediciones de la revista</a>
           <a href="mailto:hola@privasmagazine.com">Directorio y sobre nosotros</a>
-          <a href="mailto:hola@privasmagazine.com">Socios y colaboradores</a>
+          <a href="mailto:hola@privasmagazine.com">Anúnciate con nosotros</a>
         </nav>
 
         <div class="foot-col foot-col--news">
@@ -119,18 +119,19 @@ import { SECCIONES } from '../../../core/models';
       </div>
 
       <div class="site-foot__base">
-        <span class="site-foot__grupo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-            <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke-linejoin="round" />
-          </svg>
-          Grupo Privas
-        </span>
-        <span class="site-foot__base-links">
-          <a routerLink="/aviso-de-privacidad">Aviso de privacidad</a>
-          <a routerLink="/aviso-de-privacidad">Términos y condiciones</a>
-          <a href="mailto:hola@privasmagazine.com">Anúnciate con nosotros</a>
-        </span>
-        <span class="site-foot__copy">© {{ anio }} <b>PRIVAS Magazine</b> · Todos los derechos reservados</span>
+        <div class="site-foot__base-row">
+          <span class="site-foot__grupo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke-linejoin="round" />
+            </svg>
+            Grupo Privas
+          </span>
+          <nav class="site-foot__base-links" aria-label="Legal">
+            <a routerLink="/aviso-de-privacidad">Aviso de privacidad</a>
+            <a routerLink="/aviso-de-privacidad">Términos y condiciones</a>
+          </nav>
+        </div>
+        <p class="site-foot__copy">© {{ anio }} <b>PRIVAS Magazine</b> · Todos los derechos reservados</p>
       </div>
     </footer>
   `,
