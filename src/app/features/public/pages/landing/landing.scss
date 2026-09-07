@@ -31,31 +31,71 @@
 
 .carrusel {
   display: flex;
-  align-items: stretch;
-  gap: clamp(0.4rem, 1.6vw, 1rem);
+  flex-direction: column;
+  gap: clamp(1rem, 2.4vw, 1.6rem);
 }
+.carrusel__fila {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.8vw, 1.1rem);
+}
+
 .carrusel__pista {
   flex: 1;
   min-width: 0;
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: min(78vw, 300px);
-  gap: clamp(0.8rem, 2vw, 1.4rem);
+  grid-auto-columns: clamp(17rem, 76vw, 21rem);
+  gap: clamp(0.9rem, 2vw, 1.5rem);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
-  padding-bottom: 0.4rem;
+  scroll-padding-inline: 0;
+  /* Solo padding vertical: deja aire al lift/sombra de las tarjetas sin
+     desplazar el scrollLeft de la primera. */
+  padding: 0.5rem 0 0.75rem;
   scrollbar-width: none;
+  cursor: grab;
+  /* Los cantos se disuelven en vez de cortar la última tarjeta en seco. */
+  --fade: clamp(1.25rem, 5vw, 3.25rem);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
+  transition: mask-image 0.25s ease, -webkit-mask-image 0.25s ease;
 }
 .carrusel__pista::-webkit-scrollbar { display: none; }
 .carrusel__pista > * { scroll-snap-align: start; }
 
+/* Sin desvanecer el borde que ya está pegado al principio / al final. */
+.carrusel.is-inicio .carrusel__pista {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent 100%);
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent 100%);
+}
+.carrusel.is-fin .carrusel__pista {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade));
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--fade));
+}
+.carrusel.is-inicio.is-fin .carrusel__pista {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* Durante el arrastre: sin snap, cursor de agarre y las tarjetas no navegan. */
+.carrusel__pista.arrastrando {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+.carrusel__pista.arrastrando app-articulo-card,
+.carrusel__pista.arrastrando .art-card {
+  pointer-events: none;
+}
+
 .carrusel__flecha {
-  align-self: center;
   flex: none;
   display: grid;
   place-items: center;
-  width: 2.8rem;
-  height: 2.8rem;
+  width: 2.9rem;
+  height: 2.9rem;
   border-radius: var(--r-pill);
   border: none;
   background: rgba(255, 255, 255, 0.08);
@@ -66,9 +106,38 @@
   cursor: pointer;
   transition: background var(--t), transform var(--t), opacity var(--t), color var(--t);
 }
-.carrusel__flecha:hover { background: var(--cream); color: var(--brand); transform: scale(1.08); }
-.carrusel__flecha:disabled { opacity: 0.28; cursor: default; transform: none; }
-.carrusel__flecha svg { width: 1.1rem; height: 1.1rem; }
+.carrusel__flecha:hover:not(:disabled) {
+  background: var(--cream);
+  color: var(--brand);
+  transform: scale(1.09);
+}
+.carrusel__flecha:active:not(:disabled) { transform: scale(0.96); }
+.carrusel__flecha:disabled {
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+}
+.carrusel__flecha svg { width: 1.15rem; height: 1.15rem; }
+
+/* --- Barra de progreso --- */
+.carrusel__barra {
+  position: relative;
+  align-self: center;
+  width: min(100%, 22rem);
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: rgba(251, 247, 238, 0.16);
+  overflow: hidden;
+}
+.carrusel__barra-pulgar {
+  position: absolute;
+  inset-block: 0;
+  left: 0;          /* width y left los fija el componente (%) */
+  width: 100%;
+  border-radius: inherit;
+  background: var(--cream);
+  transition: left 0.14s linear, width 0.2s ease;
+}
 
 /* La ficha real es <app-articulo-card>; esta clase solo la usan el esqueleto
    de carga y el estado vacío del carrusel. */
@@ -110,8 +179,10 @@
 
 @media (max-width: 620px) {
   .carrusel__flecha { display: none; }
-  .carrusel { gap: 0; }
-  .carrusel__pista { grid-auto-columns: 82vw; }
+  .carrusel__pista { grid-auto-columns: min(82vw, 20rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .carrusel__pista { scroll-behavior: auto; }
 }
 
 .ediciones-head {

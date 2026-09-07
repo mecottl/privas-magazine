@@ -29,53 +29,76 @@
 
     @if (error()) { <p class="error" style="color:var(--on-brand)">{{ error() }}</p> }
 
-    <div class="carrusel" reveal>
-      <button
-        type="button"
-        class="carrusel__flecha carrusel__flecha--prev"
-        (click)="mover(-1)"
-        [disabled]="!puedePrev()"
-        aria-label="Anterior"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
+    <div
+      class="carrusel"
+      [class.is-inicio]="enInicio()"
+      [class.is-fin]="enFin()"
+      reveal
+    >
+      <div class="carrusel__fila">
+        <button
+          type="button"
+          class="carrusel__flecha carrusel__flecha--prev"
+          (click)="mover(-1)"
+          [disabled]="enInicio()"
+          aria-label="Artículos anteriores"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
 
-      <div class="carrusel__pista" #pista (scroll)="alScroll()">
-        @if (cargando()) {
-          @for (n of [1, 2, 3]; track n) {
-            <article class="art-card">
-              <div class="sk sk--img" style="aspect-ratio:16/10"></div>
-              <div class="art-card__body">
-                <div class="sk sk--line" style="width:45%"></div>
-                <div class="sk sk--title"></div>
-                <div class="sk sk--line" style="width:80%"></div>
-              </div>
-            </article>
+        <div
+          class="carrusel__pista"
+          #pista
+          [class.arrastrando]="arrastrando()"
+          (scroll)="alScroll()"
+          (pointerdown)="alBajar($event)"
+        >
+          @if (cargando()) {
+            @for (n of [1, 2, 3, 4]; track n) {
+              <article class="art-card">
+                <div class="sk sk--img" style="aspect-ratio:16/10"></div>
+                <div class="art-card__body">
+                  <div class="sk sk--line" style="width:45%"></div>
+                  <div class="sk sk--title"></div>
+                  <div class="sk sk--line" style="width:80%"></div>
+                </div>
+              </article>
+            }
+          } @else {
+            @for (a of carrusel(); track a.id; let i = $index) {
+              <app-articulo-card [articulo]="a" [style.--i]="i" />
+            } @empty {
+              <article class="art-card art-card--vacio">
+                Aún no hay artículos publicados. Vuelve pronto.
+              </article>
+            }
           }
-        } @else {
-          @for (a of carrusel(); track a.id; let i = $index) {
-            <app-articulo-card [articulo]="a" [style.--i]="i" />
-          } @empty {
-            <article class="art-card art-card--vacio">
-              Aún no hay artículos publicados. Vuelve pronto.
-            </article>
-          }
-        }
+        </div>
+
+        <button
+          type="button"
+          class="carrusel__flecha carrusel__flecha--next"
+          (click)="mover(1)"
+          [disabled]="enFin()"
+          aria-label="Más artículos"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
       </div>
 
-      <button
-        type="button"
-        class="carrusel__flecha carrusel__flecha--next"
-        (click)="mover(1)"
-        [disabled]="!puedeNext()"
-        aria-label="Siguiente"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
+      @if (!cargando() && carrusel().length > 1) {
+        <div class="carrusel__barra" aria-hidden="true">
+          <span
+            class="carrusel__barra-pulgar"
+            [style.width.%]="pulgarAncho() * 100"
+            [style.left.%]="pulgarPos() * (1 - pulgarAncho()) * 100"
+          ></span>
+        </div>
+      }
     </div>
   </div>
 </section>
