@@ -7,15 +7,22 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  NavigationEnd,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { filter } from 'rxjs';
 import { SiteHeader } from '../components/site-header/site-header';
 import { SiteFooter } from '../components/site-footer/site-footer';
 
 /**
  * Cascarón del sitio público: header fijo (`app-site-header`), contenido
- * enrutado y pie (`app-site-footer`). Solo se ocupa de saber si la ruta
- * actual es la portada (el hero va a sangre y el header arranca transparente).
+ * enrutado y pie (`app-site-footer`). Su única responsabilidad es saber si la
+ * ruta actual dibuja un hero a sangre (`data.hero` en las rutas): en ese caso
+ * el contenido va bajo el header y éste arranca transparente / cristal; si no,
+ * el header es teal sólido y el contenido deja hueco para él.
  */
 @Component({
   selector: 'app-public-layout',
@@ -29,7 +36,8 @@ export class PublicLayout {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly esPortada = signal(this.calcPortada(this.router.url));
+  /** La ruta activa dibuja un hero a sangre detrás del header. */
+  readonly conHero = signal(this.rutaConHero());
   private primeraCarga = true;
 
   constructor() {
@@ -38,11 +46,17 @@ export class PublicLayout {
         filter((e): e is NavigationEnd => e instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((e) => this.esPortada.set(this.calcPortada(e.urlAfterRedirects)));
+      .subscribe(() => this.conHero.set(this.rutaConHero()));
   }
 
-  private calcPortada(url: string): boolean {
-    return url === '/' || url.startsWith('/?') || url.startsWith('/#');
+  /** ¿Hay `data: { hero: true }` en algún tramo de la ruta activa? */
+  private rutaConHero(): boolean {
+    let r: ActivatedRouteSnapshot | undefined = this.router.routerState.snapshot.root;
+    while (r) {
+      if (r.data?.['hero']) return true;
+      r = r.firstChild ?? undefined;
+    }
+    return false;
   }
 
   alActivarRuta() {

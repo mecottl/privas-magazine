@@ -14,8 +14,10 @@ import { SECCIONES } from '../../../../core/models';
 
 /**
  * Header fijo del sitio público + menú móvil. Se renderiza una vez desde
- * `PublicLayout`, que le pasa si la ruta actual es la portada (para decidir
- * entre el modo transparente/cristal y el teal sólido de páginas interiores).
+ * `PublicLayout`, que le pasa si la ruta actual dibuja un hero a sangre:
+ *  - con hero, sin scroll → transparente sobre la foto
+ *  - con hero, tras bajar → cristal líquido (`.is-glass`)
+ *  - sin hero (páginas de texto) → teal sólido (`.is-solid`)
  */
 @Component({
   selector: 'app-site-header',
@@ -29,15 +31,15 @@ export class SiteHeader {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  /** La ruta actual es la portada (`/`). La decide `PublicLayout`. */
-  readonly esPortada = input.required<boolean>();
+  /** La ruta activa dibuja un hero a sangre detrás del header. Lo decide `PublicLayout`. */
+  readonly conHero = input.required<boolean>();
 
   readonly secciones = SECCIONES;
   readonly menuAbierto = signal(false);
-  /** Se ha bajado un poco: dispara el modo cristal líquido en la portada. */
+  /** Se ha bajado un poco: dispara el modo cristal líquido. */
   private readonly scrolled = signal(false);
-  /** En la portada, en cuanto se baja: header de cristal líquido. */
-  readonly glass = computed(() => this.esPortada() && this.scrolled());
+  /** Sobre un hero, en cuanto se baja: header de cristal líquido. */
+  readonly glass = computed(() => this.conHero() && this.scrolled());
 
   constructor() {
     this.router.events

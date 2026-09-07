@@ -9,12 +9,14 @@ export const PUBLIC_ROUTES: Routes = [
     children: [
       {
         path: '',
+        data: { hero: true },
         loadComponent: () =>
           import('./pages/landing/landing').then((m) => m.Landing),
       },
       {
         path: 'articulos',
         title: 'Artículos',
+        data: { hero: true },
         loadComponent: () =>
           import('./pages/articulos/articulos').then((m) => m.Articulos),
       },
