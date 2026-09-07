@@ -1,0 +1,44 @@
+<header class="site-head" [class.is-glass]="glass()" [class.is-solid]="!esPortada()">
+  <div class="site-head__inner">
+    <a routerLink="/" class="brand" (click)="cerrarMenu()" aria-label="PRIVAS Magazine — inicio">
+      <span class="brand__word">PRIVAS</span>
+      <span class="brand__sub">magazine</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Secciones">
+      @for (s of secciones; track s.slug) {
+        <a
+          class="site-nav__link"
+          routerLink="/articulos"
+          [queryParams]="{ categoria: s.slug }"
+          routerLinkActive="is-active"
+        >{{ s.nombre }}</a>
+      }
+      <a class="site-nav__revista" routerLink="/revistas" routerLinkActive="is-active">La revista</a>
+    </nav>
+
+    <button
+      type="button"
+      class="nav-toggle"
+      (click)="menuAbierto.set(!menuAbierto())"
+      [attr.aria-expanded]="menuAbierto()"
+      aria-label="Abrir menú"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        @if (menuAbierto()) {
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        } @else {
+          <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+        }
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="nav-sheet" [class.is-open]="menuAbierto()">
+  @for (s of secciones; track s.slug) {
+    <a routerLink="/articulos" [queryParams]="{ categoria: s.slug }" (click)="cerrarMenu()">{{ s.nombre }}</a>
+  }
+  <a routerLink="/revistas" (click)="cerrarMenu()">La revista</a>
+  <a class="btn btn--crema nav-sheet__revista" routerLink="/" (click)="cerrarMenu()">Ir al inicio</a>
+</div>

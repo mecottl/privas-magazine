@@ -1,0 +1,8 @@
+/* Cascarón del sitio público: header fijo + contenido + pie.
+   El header y el pie son componentes propios (app-site-header / app-site-footer);
+   aquí solo queda el contenedor del contenido. */
+
+.site-main { display: block; }
+.site-main:focus { outline: none; }
+/* Deja sitio al header fijo salvo en la portada, donde el hero va a sangre. */
+.site-main:not(.site-main--flush) { padding-top: var(--head-h); }

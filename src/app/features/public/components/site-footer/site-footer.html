@@ -1,0 +1,55 @@
+<footer class="site-foot">
+  <div class="site-foot__grid">
+    <div class="site-foot__brand">
+      <p class="site-foot__word">PRIVAS<span>magazine</span></p>
+      <p class="site-foot__tag">Una revista para los amantes de los viajes.</p>
+      <div class="site-foot__redes-list">
+        @for (r of redes; track r.nombre) {
+          <a [href]="r.url" target="_blank" rel="noopener" [attr.aria-label]="r.nombre">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path [attr.d]="r.icono" />
+            </svg>
+          </a>
+        }
+      </div>
+    </div>
+
+    <nav class="foot-col" aria-label="Contacto">
+      <span class="foot-col__label">Contacto</span>
+      <a href="mailto:hola@privasmagazine.com">hola&#64;privasmagazine.com</a>
+      <a href="tel:+529991067711">+52 999 106 7711</a>
+      <a href="https://t.me/PRIVAS_MAGAZINE" target="_blank" rel="noopener">Telegram · PRIVAS_MAGAZINE</a>
+      <a href="https://wa.me/529991067711" target="_blank" rel="noopener">WhatsApp</a>
+    </nav>
+
+    <nav class="foot-col" aria-label="Enlaces">
+      <span class="foot-col__label">Explora</span>
+      <a routerLink="/articulos">Artículos</a>
+      <a routerLink="/revistas">Ediciones de la revista</a>
+      <a href="mailto:hola@privasmagazine.com">Directorio y sobre nosotros</a>
+      <a href="mailto:hola@privasmagazine.com">Anúnciate con nosotros</a>
+    </nav>
+
+    <div class="foot-col foot-col--news">
+      <span class="foot-col__label">Boletín</span>
+      <p class="foot-col__news-copy">Un aviso cuando publicamos algo nuevo.</p>
+      <app-newsletter-form />
+    </div>
+  </div>
+
+  <div class="site-foot__base">
+    <div class="site-foot__base-row">
+      <span class="site-foot__grupo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke-linejoin="round" />
+        </svg>
+        Grupo Privas
+      </span>
+      <nav class="site-foot__base-links" aria-label="Legal">
+        <a routerLink="/aviso-de-privacidad">Aviso de privacidad</a>
+        <a routerLink="/aviso-de-privacidad">Términos y condiciones</a>
+      </nav>
+    </div>
+    <p class="site-foot__copy">© {{ anio }} <b>PRIVAS Magazine</b> · Todos los derechos reservados</p>
+  </div>
+</footer>

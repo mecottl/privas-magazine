@@ -1,6 +1,11 @@
-/* =============================================================================
-   HEADER  (fijo, transparente sobre el hero → teal al hacer scroll)
-   ========================================================================= */
+/* Header fijo del sitio público. Tres estados:
+   - portada, sin scroll  → transparente con un velo para leer sobre la foto
+   - portada, tras bajar  → "liquid glass" (.is-glass)
+   - páginas interiores    → teal sólido (.is-solid)
+   Incluye el menú móvil a pantalla completa (.nav-sheet). */
+
+/* El header y el menú van en position:fixed, así que el host no ocupa caja. */
+:host { display: block; }
 
 .site-head {
   position: fixed;
