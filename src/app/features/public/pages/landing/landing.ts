@@ -9,15 +9,26 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
+import { MarcasService } from '../../../../core/services/marcas.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
 import { mensajeError } from '../../../../core/services/errores';
-import type { Articulo, EdicionRevista } from '../../../../core/models';
+import { SECCIONES, type Articulo, type EdicionRevista, type Marca } from '../../../../core/models';
+
+/** Foto de cada categoría (variantes en public/img/, ver optimize-logos.mjs). */
+const IMG_CATEGORIA: Record<string, string> = {
+  turismo: 'cat-turismo',
+  gastronomia: 'cat-gastronomia',
+  cultura: 'cat-cultura',
+  arte: 'cat-arte',
+  entretenimiento: 'cat-entretenimiento',
+};
 
 const NOMBRE_TEMPORADA: Record<string, string> = {
   'primavera-verano': 'Primavera · Verano',
@@ -31,13 +42,14 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, RevealDirective, ArticuloCard, EdicionCard, HeroMedia],
+  imports: [RouterLink, RevealDirective, ArticuloCard, EdicionCard, HeroMedia, DatePipe],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
 })
 export class Landing implements OnInit {
   private readonly artSrv = inject(ArticulosService);
   private readonly edSrv = inject(EdicionesService);
+  private readonly marcasSrv = inject(MarcasService);
   private readonly zone = inject(NgZone);
   private readonly pista = viewChild<ElementRef<HTMLElement>>('pista');
 
@@ -47,8 +59,31 @@ export class Landing implements OnInit {
 
   readonly articulos = signal<Articulo[]>([]);
   readonly ediciones = signal<EdicionRevista[]>([]);
+  readonly marcas = signal<Marca[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
+
+  /* ===== DEMO issue #45 — portada dinámica ============================= */
+
+  /** Artículo de portada: el más reciente. Si aún no cargó → hero de marca. */
+  readonly destacado = computed<Articulo | null>(() => this.articulos()[0] ?? null);
+
+  /** "Elección del editor": 2º artículo (con #44 sería el flag `destacado`). */
+  readonly eleccion = computed<Articulo | null>(
+    () => this.articulos()[1] ?? this.articulos()[0] ?? null,
+  );
+
+  /** Secciones con su foto — rejilla de categorías. */
+  readonly categorias = SECCIONES.map((s) => ({
+    ...s,
+    media: IMG_CATEGORIA[s.slug] ?? 'cat-archivo',
+  }));
+
+  /** Mosaico de Instagram (MAQUETA — pendiente del feed/token reales). */
+  readonly instagram = SECCIONES.map((s) => IMG_CATEGORIA[s.slug]).concat('cat-archivo');
+  readonly instagramUrl = 'https://instagram.com/privasmagazine';
+
+  /* ==================================================================== */
 
   /** Estado del carrusel: en qué extremo está, cuánto se ha recorrido y el
    *  tamaño relativo del "pulgar" de la barra de progreso (visible / total). */
@@ -61,7 +96,15 @@ export class Landing implements OnInit {
   readonly arrastrando = signal(false);
   private arrastre = { activo: false, movio: false, x0: 0, scroll0: 0 };
 
-  readonly carrusel = computed(() => this.articulos().slice(0, 9));
+  readonly carrusel = computed(() => {
+    const arts = this.articulos();
+    // El destacado y la elección del editor ya salen arriba: no repetir.
+    return arts.length > 4 ? arts.slice(2, 11) : arts.slice(0, 9);
+  });
+  /** Puntos del carrusel (páginas) para móvil. */
+  readonly paginas = signal(1);
+  readonly paginaActual = signal(0);
+  readonly puntos = computed(() => Array.from({ length: this.paginas() }, (_, i) => i));
   /** Fondo de la franja "Ediciones": AVIF/WebP con JPG de reserva. */
   readonly fondoEdiciones =
     'image-set(' +
@@ -121,6 +164,15 @@ export class Landing implements OnInit {
         ? Math.min(1, Math.max(0.16, el.clientWidth / el.scrollWidth))
         : 1,
     );
+    const paso = this.paso(el) || el.clientWidth;
+    this.paginas.set(Math.max(1, Math.ceil((max + el.clientWidth) / paso)));
+    this.paginaActual.set(Math.round(el.scrollLeft / paso));
+  }
+
+  irAPagina(i: number) {
+    const el = this.pista()?.nativeElement;
+    if (!el) return;
+    el.scrollTo({ left: i * this.paso(el), behavior: 'smooth' });
   }
 
   // --- Arrastrar para desplazar (pointer). Los listeners de move/up se
@@ -170,6 +222,11 @@ export class Landing implements OnInit {
       this.ediciones.set(await this.edSrv.listarPublicas());
     } catch {
       /* la sección de ediciones tolera no tener datos */
+    }
+    try {
+      this.marcas.set(await this.marcasSrv.listar());
+    } catch {
+      /* el teaser de marcas tolera no tener datos */
     }
     // Deja que el @for pinte las tarjetas antes de medir la pista.
     setTimeout(() => this.alScroll(), 60);

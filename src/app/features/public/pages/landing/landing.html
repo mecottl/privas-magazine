@@ -1,13 +1,34 @@
-<!-- ===================== HERO ===================== -->
-<section class="hero hero--full">
-  <app-hero-media class="hero__media" nombre="hero" alt="" [prioridad]="true" />
+<!-- ===================== HERO — ARTÍCULO DESTACADO ===================== -->
+<section class="hero hero--full" [class.hero--articulo]="destacado()">
+  @if (destacado(); as d) {
+    @if (d.imagen_portada_url) {
+      <div class="hero__media">
+        <img [src]="d.imagen_portada_url" alt="" fetchpriority="high" />
+      </div>
+    } @else {
+      <app-hero-media class="hero__media" nombre="hero" alt="" [prioridad]="true" />
+    }
 
-  <div class="hero__inner">
-    <span class="hero__eyebrow">Grupo Privas</span>
-    <h1 class="hero__title">
-      Una revista para los <em>amantes</em> a los viajes
-    </h1>
-  </div>
+    <div class="hero__inner">
+      <span class="hero__eyebrow">
+        @if (d.categorias?.[0]?.nombre; as c) { {{ c }} — } En portada
+      </span>
+      <h1 class="hero__title">{{ d.titulo }}</h1>
+      @if (d.extracto) { <p class="hero__texto">{{ d.extracto }}</p> }
+      <a class="hero__cta" [routerLink]="['/articulos', d.slug]">
+        Leer el artículo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+  } @else {
+    <app-hero-media class="hero__media" nombre="hero" alt="" [prioridad]="true" />
+    <div class="hero__inner">
+      <span class="hero__eyebrow">Grupo Privas</span>
+      <h1 class="hero__title">Una revista para los <em>amantes</em> a los viajes</h1>
+    </div>
+  }
 
   <a href="#articulos" class="hero__cue" aria-label="Desliza para ver más">
     <span>Desliza</span>
@@ -96,7 +117,129 @@
             [style.left.%]="pulgarPos() * (1 - pulgarAncho()) * 100"
           ></span>
         </div>
+
+        <!-- DEMO #45 — puntos de página (visibles en móvil) -->
+        @if (paginas() > 1) {
+          <div class="carrusel__puntos" role="tablist" aria-label="Páginas del carrusel">
+            @for (p of puntos(); track p) {
+              <button
+                type="button"
+                class="carrusel__punto"
+                [class.activo]="p === paginaActual()"
+                (click)="irAPagina(p)"
+                [attr.aria-label]="'Página ' + (p + 1)"
+                [attr.aria-selected]="p === paginaActual()"
+              ></button>
+            }
+          </div>
+        }
       }
+    </div>
+  </div>
+</section>
+
+<!-- ================ DEMO #45 — REJILLA DE CATEGORÍAS ================ -->
+<section class="franja seccion-cats">
+  <div class="franja__wrap">
+    <div class="seccion-head" reveal>
+      <h2>Explora por sección</h2>
+    </div>
+    <div class="cats-mosaico" reveal>
+      @for (c of categorias; track c.slug; let i = $index) {
+        <a
+          class="cat-tile"
+          [class.cat-tile--ancho]="i === 0"
+          [routerLink]="['/articulos']"
+          [queryParams]="{ categoria: c.slug }"
+          [style.--i]="i"
+        >
+          <app-hero-media class="cat-tile__media" [nombre]="c.media" [anchos]="[800]" sizes="(max-width: 700px) 100vw, 33vw" [alt]="c.nombre" />
+          <span class="cat-tile__nombre">{{ c.nombre }}</span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ================ DEMO #45 — ELECCIÓN DEL EDITOR ================ -->
+@if (eleccion(); as e) {
+  <section class="franja seccion-eleccion">
+    <div class="franja__wrap">
+      <div class="eleccion" reveal>
+        <a class="eleccion__foto" [routerLink]="['/articulos', e.slug]">
+          @if (e.imagen_portada_url) {
+            <img [src]="e.imagen_portada_url" [alt]="e.titulo" loading="lazy" decoding="async" />
+          } @else {
+            <span class="eleccion__foto--vacia" aria-hidden="true"></span>
+          }
+        </a>
+        <div class="eleccion__texto">
+          <span class="eleccion__eyebrow">Elección del editor</span>
+          <h3 class="eleccion__titulo">
+            <a [routerLink]="['/articulos', e.slug]">{{ e.titulo }}</a>
+          </h3>
+          @if (e.extracto) { <p class="eleccion__extracto">{{ e.extracto }}</p> }
+          <p class="eleccion__firma">
+            {{ e.autor_texto || 'Redacción PRIVAS' }}
+            @if (e.fecha_publicacion) {
+              <span aria-hidden="true">·</span> {{ e.fecha_publicacion | date: 'longDate' }}
+            }
+          </p>
+          <a class="eleccion__cta" [routerLink]="['/articulos', e.slug]">Leer el artículo →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ================ DEMO #45 — TEASER NUESTRAS MARCAS ================ -->
+@if (marcas().length) {
+  <section class="franja seccion-marcas">
+    <div class="franja__wrap">
+      <div class="marcas-teaser" reveal>
+        <div class="marcas-teaser__intro">
+          <span class="marcas-teaser__eyebrow">Grupo Privas</span>
+          <h2>Nuestras marcas</h2>
+          <p>Los proyectos de la casa: viajes, medios y más.</p>
+          <a routerLink="/marcas" class="marcas-teaser__cta">Conócelas todas →</a>
+        </div>
+        <ul class="marcas-teaser__lista">
+          @for (m of marcas(); track m.id) {
+            <li>
+              <a [href]="m.sitio_web_url || '/marcas'" [attr.target]="m.sitio_web_url ? '_blank' : null" rel="noopener">
+                @if (m.logo_url) {
+                  <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
+                } @else {
+                  <span>{{ m.nombre }}</span>
+                }
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ================ DEMO #45 — INSTAGRAM (MAQUETA) ================ -->
+<section class="franja seccion-ig">
+  <div class="franja__wrap">
+    <div class="ig" reveal>
+      <div class="ig__head">
+        <h2>@privasmagazine</h2>
+        <a [href]="instagramUrl" target="_blank" rel="noopener" class="ig__seguir">Seguir en Instagram</a>
+      </div>
+      <div class="ig__grid">
+        @for (foto of instagram; track $index) {
+          <a [href]="instagramUrl" target="_blank" rel="noopener" class="ig__celda">
+            <app-hero-media [nombre]="foto" [anchos]="[800]" sizes="(max-width: 700px) 33vw, 16vw" alt="" />
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5Zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5Zm4.75-3a1.25 1.25 0 1 1-1.25 1.25A1.25 1.25 0 0 1 16.75 6.5Z" />
+            </svg>
+          </a>
+        }
+      </div>
+      <p class="ig__nota">Maqueta — el feed real necesita la cuenta y el token de Instagram (issue #45).</p>
     </div>
   </div>
 </section>
