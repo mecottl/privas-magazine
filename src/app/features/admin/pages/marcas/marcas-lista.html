@@ -38,6 +38,17 @@
       }
       <button type="button" class="secundario" (click)="agregarEnlace(nueva)">+ Red social</button>
 
+      <p class="lado-titulo">Últimas publicaciones (linktree)</p>
+      @for (p of nueva.publicaciones; track $index) {
+        <div class="pub-row">
+          <input [(ngModel)]="p.imagen_url" [name]="'n-pub-img-' + $index" placeholder="URL de la imagen" />
+          <input [(ngModel)]="p.enlace" [name]="'n-pub-url-' + $index" placeholder="Enlace a la publicación" />
+          <input [(ngModel)]="p.texto" [name]="'n-pub-txt-' + $index" placeholder="Texto alt (opcional)" />
+          <button type="button" class="secundario peligro" (click)="quitarPublicacion(nueva, $index)">Quitar</button>
+        </div>
+      }
+      <button type="button" class="secundario" (click)="agregarPublicacion(nueva)">+ Publicación</button>
+
       <div class="marca-form__pie">
         <button type="button" (click)="crear()">Agregar marca</button>
       </div>
@@ -77,6 +88,19 @@
           <p class="hint">Sin redes sociales.</p>
         }
         <button type="button" class="secundario" (click)="agregarEnlace(m)">+ Red social</button>
+
+        <p class="lado-titulo">Últimas publicaciones (linktree)</p>
+        @for (p of m.publicaciones; track $index) {
+          <div class="pub-row">
+            <input [(ngModel)]="p.imagen_url" [name]="'pub-img-' + m.id + '-' + $index" placeholder="URL de la imagen" />
+            <input [(ngModel)]="p.enlace" [name]="'pub-url-' + m.id + '-' + $index" placeholder="Enlace a la publicación" />
+            <input [(ngModel)]="p.texto" [name]="'pub-txt-' + m.id + '-' + $index" placeholder="Texto alt (opcional)" />
+            <button type="button" class="secundario peligro" (click)="quitarPublicacion(m, $index)">Quitar</button>
+          </div>
+        } @empty {
+          <p class="hint">Sin publicaciones. Se llenan a mano (imagen + enlace).</p>
+        }
+        <button type="button" class="secundario" (click)="agregarPublicacion(m)">+ Publicación</button>
 
         <div class="marca-form__pie">
           <button type="button" class="secundario" (click)="guardar(m)">Guardar cambios</button>

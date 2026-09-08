@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.client';
-import type { EnlaceMarca, Marca } from '../models';
+import type { EnlaceMarca, Marca, PublicacionMarca } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class MarcasService {
@@ -47,6 +47,8 @@ export class MarcasService {
     if (m.logo_url !== undefined) out['logo_url'] = m.logo_url?.trim() || null;
     if (m.orden !== undefined) out['orden'] = m.orden ?? 0;
     if (m.enlaces !== undefined) out['enlaces'] = this.limpiarEnlaces(m.enlaces);
+    if (m.publicaciones !== undefined)
+      out['publicaciones'] = this.limpiarPublicaciones(m.publicaciones);
     return out;
   }
 
@@ -56,12 +58,25 @@ export class MarcasService {
       .filter((e) => e.url.length > 0);
   }
 
+  private limpiarPublicaciones(
+    pubs: PublicacionMarca[] | undefined,
+  ): PublicacionMarca[] {
+    return (pubs ?? [])
+      .map((p) => ({
+        imagen_url: (p.imagen_url ?? '').trim(),
+        enlace: (p.enlace ?? '').trim(),
+        texto: (p.texto ?? '').trim() || undefined,
+      }))
+      .filter((p) => p.imagen_url.length > 0 && p.enlace.length > 0);
+  }
+
   /** `enlaces` siempre array; migra `red_social_url` sola a un enlace si hace falta. */
   private normalizarFila(m: Marca): Marca {
     const enlaces = Array.isArray(m.enlaces) ? m.enlaces : [];
     if (!enlaces.length && m.red_social_url) {
       enlaces.push({ tipo: 'otro', url: m.red_social_url });
     }
-    return { ...m, enlaces };
+    const publicaciones = Array.isArray(m.publicaciones) ? m.publicaciones : [];
+    return { ...m, enlaces, publicaciones };
   }
 }

@@ -37,6 +37,7 @@ export const PUBLIC_ROUTES: Routes = [
       {
         path: 'marcas',
         title: 'Nuestras Marcas',
+        data: { hero: true },
         loadComponent: () => import('./pages/marcas/marcas').then((m) => m.Marcas),
       },
       {

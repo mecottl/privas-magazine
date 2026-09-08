@@ -1,46 +1,131 @@
-<section class="page">
-  <div class="inicio-encabezado" reveal>
-    <p class="eyebrow">El grupo</p>
-    <h1>Nuestras Marcas</h1>
-    <p>Las marcas del grupo PRIVAS y dónde seguirlas.</p>
+<!-- ===================== HERO ===================== -->
+<section class="hero hero--seccion">
+  <app-hero-media class="hero__media" nombre="cat-archivo" alt="" [prioridad]="true" />
+
+  <div class="hero__inner">
+    <span class="hero__eyebrow">El grupo</span>
+    <h1 class="hero__title">Nuestras marcas</h1>
+    <p class="hero__texto">
+      Los proyectos de Grupo Privas y dónde seguirlos. Toca una marca para ver
+      todos sus enlaces.
+    </p>
   </div>
-  @if (error()) { <p class="error">{{ error() }}</p> }
 
-  @if (cargando()) {
-    <ul class="marcas-fichas" aria-hidden="true">
-      @for (n of [1, 2, 3]; track n) {
-        <li class="marca-ficha">
-          <div class="sk" style="width:64px;height:64px;border-radius:12px"></div>
-          <div class="sk sk--line" style="width:55%;margin-top:.7rem"></div>
-          <div class="sk sk--line" style="width:80%"></div>
-        </li>
-      }
-    </ul>
-  } @else {
-    <ul class="marcas-fichas">
-      @for (m of marcas(); track m.id) {
-        <li class="marca-ficha" reveal>
-          @if (m.logo_url) { <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" /> }
-          <h2>{{ m.nombre }}</h2>
-          @if (m.descripcion) { <p>{{ m.descripcion }}</p> }
-
-          @if (m.sitio_web_url) {
-            <a class="marca-cta" [href]="m.sitio_web_url" target="_blank" rel="noopener">
-              Visitar sitio →
-            </a>
-          }
-
-          @if (enlaces(m).length) {
-            <div class="marca-redes">
-              @for (e of enlaces(m); track e.url) {
-                <a [href]="e.url" target="_blank" rel="noopener">{{ etiqueta(e) }}</a>
-              }
-            </div>
-          }
-        </li>
-      } @empty {
-        <li class="indice-vacio">Aún no hay marcas para mostrar.</li>
-      }
-    </ul>
-  }
+  <a href="#marcas" class="hero__cue" aria-label="Ver las marcas">
+    <span>Explora</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M5 8l7 7 7-7M5 14l7 7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </a>
 </section>
+
+<!-- ===================== REJILLA ===================== -->
+<section class="franja franja--fin" id="marcas">
+  <div class="franja__wrap">
+    @if (error()) {
+      <p class="marca-aviso error">{{ error() }}</p>
+    } @else if (cargando()) {
+      <div class="marcas-grid">
+        @for (s of skeletons; track s) {
+          <div class="marca-skel">
+            <div class="sk marca-skel__logo"></div>
+            <div class="sk sk--line" style="width:55%"></div>
+            <div class="sk sk--line" style="width:85%"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="marcas-grid" reveal>
+        @for (m of marcas(); track m.id; let i = $index) {
+          <button type="button" class="marca-card" (click)="abrir(m)" [style.--i]="i">
+            <span class="marca-card__logo">
+              @if (m.logo_url) {
+                <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
+              } @else {
+                <span class="marca-card__inicial">{{ m.nombre.charAt(0) }}</span>
+              }
+            </span>
+            <span class="marca-card__nombre">{{ m.nombre }}</span>
+            @if (m.descripcion) {
+              <span class="marca-card__desc">{{ m.descripcion }}</span>
+            }
+            <span class="marca-card__cta">
+              Ver enlaces
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </button>
+        } @empty {
+          <p class="marca-aviso">Aún no hay marcas para mostrar.</p>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ===================== LINKTREE (modal) ===================== -->
+@if (abierta(); as m) {
+  <div class="lt-overlay" (click)="cerrar()">
+    <div
+      class="lt-panel"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="'Enlaces de ' + m.nombre"
+      (click)="$event.stopPropagation()"
+    >
+      <button type="button" class="lt-cerrar" (click)="cerrar()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <div class="lt-head">
+        <span class="lt-logo">
+          @if (m.logo_url) {
+            <img [src]="m.logo_url" [alt]="m.nombre" />
+          } @else {
+            <span class="lt-inicial">{{ m.nombre.charAt(0) }}</span>
+          }
+        </span>
+        <h2 class="lt-nombre">{{ m.nombre }}</h2>
+        @if (m.descripcion) { <p class="lt-bio">{{ m.descripcion }}</p> }
+      </div>
+
+      <div class="lt-links">
+        @if (m.sitio_web_url) {
+          <a class="lt-link lt-link--primario" [href]="m.sitio_web_url" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
+            </svg>
+            Sitio web
+          </a>
+        }
+        @for (e of enlaces(m); track e.url) {
+          <a class="lt-link" [href]="e.url" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path [attr.d]="meta(e.tipo).icono" />
+            </svg>
+            {{ meta(e.tipo).label }}
+          </a>
+        }
+        @if (!m.sitio_web_url && !enlaces(m).length) {
+          <p class="lt-vacio">Esta marca todavía no tiene enlaces.</p>
+        }
+      </div>
+
+      @if (publicaciones(m).length) {
+        <div class="lt-pubs">
+          <span class="lt-pubs__titulo">Últimas publicaciones</span>
+          <div class="lt-pubs__grid">
+            @for (p of publicaciones(m); track p.enlace) {
+              <a [href]="p.enlace" target="_blank" rel="noopener" [attr.aria-label]="p.texto || 'Ver publicación'">
+                <img [src]="p.imagen_url" [alt]="p.texto || ''" loading="lazy" />
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
