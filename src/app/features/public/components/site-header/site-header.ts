@@ -52,7 +52,7 @@ export class SiteHeader {
     if (typeof window !== 'undefined') {
       // Comparación barata + signal con igualdad → sin rAF (que se pausa si la
       // pestaña está en segundo plano y dejaría el header pegado).
-      const onScroll = () => this.scrolled.set(window.scrollY > 32);
+      const onScroll = () => this.scrolled.set(window.scrollY > 6);
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
       this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));

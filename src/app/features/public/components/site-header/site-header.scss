@@ -14,11 +14,11 @@
   animation: head-drop 0.7s var(--ease) both;
   border-bottom: 1px solid transparent;
   transition:
-    background 240ms ease,
-    -webkit-backdrop-filter 240ms ease,
-    backdrop-filter 240ms ease,
-    box-shadow 240ms ease,
-    border-color 240ms ease;
+    background 160ms ease,
+    -webkit-backdrop-filter 160ms ease,
+    backdrop-filter 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
 }
 /* Portada arriba (primeros px): sólo un velo para leer sobre la foto.
    El velo lo pinta un ::after que rebasa el borde inferior y se desvanece
@@ -82,7 +82,7 @@
   display: flex;
   align-items: center;
   gap: clamp(1rem, 4vw, 2.5rem);
-  transition: height var(--t-slow);
+  transition: height 220ms var(--ease);
 }
 /* La barra solo se encoge al bajar en la portada (efecto de scroll).
    En páginas interiores mantiene la altura completa del hero para que
