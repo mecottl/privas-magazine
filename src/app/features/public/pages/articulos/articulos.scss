@@ -2,6 +2,67 @@
    compartidos (src/styles/_secciones.scss); aquí solo van los filtros
    sobre teal y la rejilla de tarjetas. */
 
+/* --- Buscador (sobre la franja teal) --- */
+.cat-buscar {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: min(100%, 30rem);
+  margin: 0 auto clamp(1rem, 3vw, 1.6rem);
+  padding: 0.15rem 0.5rem 0.15rem 0.95rem;
+  border-radius: var(--r-pill);
+  background:
+    linear-gradient(180deg, rgba(9, 30, 40, 0.24), rgba(9, 30, 40, 0.1)),
+    rgba(255, 255, 255, 0.09);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur-refract);
+  box-shadow: var(--glass-edge), var(--glass-drop);
+}
+.cat-buscar__lupa {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  color: var(--on-brand-dim);
+}
+.cat-buscar__campo {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: var(--fs-sm);
+  color: var(--on-brand);
+}
+.cat-buscar__campo::placeholder { color: var(--on-brand-dim); }
+.cat-buscar__campo:focus { outline: none; }
+.cat-buscar__campo::-webkit-search-cancel-button { display: none; }
+.cat-buscar__limpiar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--r-pill);
+  background: rgba(251, 247, 238, 0.12);
+  color: var(--on-brand);
+  cursor: pointer;
+  transition: background var(--t), transform var(--t);
+}
+.cat-buscar__limpiar:hover { background: rgba(251, 247, 238, 0.22); transform: scale(1.05); }
+.cat-buscar__limpiar svg { width: 0.9rem; height: 0.9rem; }
+
+.cat-conteo {
+  margin: 0 0 clamp(1rem, 3vw, 1.6rem);
+  text-align: center;
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--on-brand-dim);
+}
+
 /* --- Filtros de categoría (sobre la franja teal) --- */
 .cat-filtros {
   display: flex;

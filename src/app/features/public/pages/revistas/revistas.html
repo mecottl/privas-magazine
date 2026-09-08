@@ -1,8 +1,12 @@
 <!-- ===================== HERO ===================== -->
 <section class="hero hero--seccion">
-  <div class="hero__media">
-    <img [src]="heroImg" alt="" fetchpriority="high" />
-  </div>
+  <app-hero-media
+    class="hero__media"
+    nombre="ediciones-bg"
+    alt=""
+    [anchos]="[1400]"
+    [prioridad]="true"
+  />
 
   <div class="hero__inner">
     <span class="hero__eyebrow">La biblioteca</span>

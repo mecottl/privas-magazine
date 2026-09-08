@@ -1,8 +1,11 @@
 <!-- ===================== HERO DE CATEGORÍA ===================== -->
 <section class="hero hero--seccion">
-  <div class="hero__media">
-    <img [src]="hero().img" [alt]="hero().titulo" fetchpriority="high" />
-  </div>
+  <app-hero-media
+    class="hero__media"
+    [nombre]="hero().media"
+    [alt]="hero().titulo"
+    [prioridad]="true"
+  />
 
   <div class="hero__inner">
     <span class="hero__eyebrow">{{ hero().eyebrow }}</span>
@@ -21,18 +24,43 @@
 <!-- ===================== ARCHIVO ===================== -->
 <section class="franja franja--fin" id="archivo">
   <div class="franja__wrap">
-    <nav class="cat-filtros" reveal aria-label="Filtrar por categoría">
-      <button type="button" [class.activa]="!categoria()" (click)="filtrar('')">Todas</button>
-      @for (c of categorias(); track c.id) {
-        <button
-          type="button"
-          [class.activa]="mismoSlug(categoria(), c.slug)"
-          (click)="filtrar(c.slug)"
-        >
-          {{ c.nombre }}
+    <div class="cat-buscar" reveal>
+      <svg class="cat-buscar__lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M20 20l-3.5-3.5" stroke-linecap="round" />
+      </svg>
+      <input
+        type="search"
+        class="cat-buscar__campo"
+        placeholder="Buscar artículos…"
+        aria-label="Buscar artículos"
+        [value]="texto()"
+        (input)="alEscribir($any($event.target).value)"
+        (search)="alEscribir($any($event.target).value)"
+      />
+      @if (texto()) {
+        <button type="button" class="cat-buscar__limpiar" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+          </svg>
         </button>
       }
-    </nav>
+    </div>
+
+    @if (!q()) {
+      <nav class="cat-filtros" reveal aria-label="Filtrar por categoría">
+        <button type="button" [class.activa]="!categoria()" (click)="filtrar('')">Todas</button>
+        @for (c of categorias(); track c.id) {
+          <button
+            type="button"
+            [class.activa]="mismoSlug(categoria(), c.slug)"
+            (click)="filtrar(c.slug)"
+          >
+            {{ c.nombre }}
+          </button>
+        }
+      </nav>
+    }
 
     @if (error()) {
       <p class="cat-aviso error">{{ error() }}</p>
@@ -50,12 +78,23 @@
         }
       </div>
     } @else {
+      @if (q()) {
+        <p class="cat-conteo">
+          {{ visibles().length }}
+          {{ visibles().length === 1 ? 'resultado' : 'resultados' }} para «{{ q() }}»
+        </p>
+      }
       <div class="cat-grid" [class.cat-grid--cargando]="cargando()" reveal>
-        @for (a of articulos(); track a.id; let i = $index) {
+        @for (a of visibles(); track a.id; let i = $index) {
           <app-articulo-card [articulo]="a" [style.--i]="i" />
         } @empty {
           <p class="cat-aviso">
-            @if (categoria()) {
+            @if (q()) {
+              No encontramos artículos para «{{ q() }}».
+              <button type="button" class="cat-aviso__enlace" (click)="limpiarBusqueda()">
+                Ver todos los artículos
+              </button>
+            } @else if (categoria()) {
               Todavía no hay artículos publicados en esta sección.
               <button type="button" class="cat-aviso__enlace" (click)="filtrar('')">
                 Ver todos los artículos

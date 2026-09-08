@@ -59,6 +59,10 @@ export function normalizarSlug(slug: string | null | undefined): string {
 }
 
 /** `true` si dos slugs designan la misma sección (ignorando acentos/caso). */
+/** Igual que `normalizarSlug`, con nombre propio para comparar texto libre
+ *  (búsqueda de artículos): quita acentos, baja a minúsculas y recorta. */
+export const normalizarTexto = normalizarSlug;
+
 export function mismoSlug(
   a: string | null | undefined,
   b: string | null | undefined,

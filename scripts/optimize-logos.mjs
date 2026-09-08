@@ -9,7 +9,7 @@
  *   public/categorias/<slug>.jpg reescaladas y recomprimidas.
  */
 import sharp from 'sharp';
-import { statSync, writeFileSync } from 'node:fs';
+import { statSync, writeFileSync, mkdirSync } from 'node:fs';
 
 const JOBS = [
   // logo de "PRIVAS magazine" — header y columna de marca del pie
@@ -102,4 +102,70 @@ for (const { src, out, height } of JOBS) {
     const m = await sharp(`public/categorias/${slug}.jpg`).metadata();
     console.log(`public/categorias/${slug}.jpg  ${m.width}x${m.height}  ${(statSync(`public/categorias/${slug}.jpg`).size / 1024).toFixed(0)} KB`);
   }
+}
+
+/* --- Fotos grandes: variantes responsive AVIF/WebP + LQIP -----------------
+ * Para cada foto a sangre (hero de portada, fondo de Ediciones y heroes de
+ * categoría) generamos:
+ *   public/img/<clave>-<w>.avif  y  .webp   (varios anchos → srcset)
+ *   un LQIP (placeholder borroso ~24px) en src/app/shared/lqip.generated.ts
+ * El JPG original se queda como último recurso (<img src>). Lo consume el
+ * componente app-hero-media.
+ */
+{
+  mkdirSync('public/img', { recursive: true });
+
+  // clave → archivo original. `cat-*` sale de public/categorias/.
+  const FOTOS = {
+    hero: 'public/hero.jpg',
+    'ediciones-bg': 'public/ediciones-bg.jpg',
+    'cat-archivo': 'public/categorias/archivo.jpg',
+    'cat-turismo': 'public/categorias/turismo.jpg',
+    'cat-gastronomia': 'public/categorias/gastronomia.jpg',
+    'cat-cultura': 'public/categorias/cultura.jpg',
+    'cat-arte': 'public/categorias/arte.jpg',
+    'cat-entretenimiento': 'public/categorias/entretenimiento.jpg',
+  };
+  // `ediciones-bg` va detrás de las tarjetas y ya viene desenfocada → un solo
+  // ancho basta. El resto son LCP: tres anchos.
+  const ANCHOS = { 'ediciones-bg': [1400] };
+  const ANCHOS_DEF = [800, 1400, 2000];
+
+  const lqip = {};
+  for (const [clave, src] of Object.entries(FOTOS)) {
+    try {
+      statSync(src);
+    } catch {
+      continue;
+    }
+    const anchos = ANCHOS[clave] ?? ANCHOS_DEF;
+    for (const w of anchos) {
+      for (const fmt of ['avif', 'webp']) {
+        const out = `public/img/${clave}-${w}.${fmt}`;
+        const pipe = sharp(src).resize({ width: w, withoutEnlargement: true });
+        await (fmt === 'avif'
+          ? pipe.avif({ quality: 50 })
+          : pipe.webp({ quality: 66 })
+        ).toFile(out);
+        console.log(`${out}  ${(statSync(out).size / 1024).toFixed(0)} KB`);
+      }
+    }
+    // LQIP: 24px, un pelín de desenfoque → data URI diminuto
+    const tiny = await sharp(src)
+      .resize({ width: 24 })
+      .blur(1)
+      .jpeg({ quality: 40 })
+      .toBuffer();
+    lqip[clave] = `data:image/jpeg;base64,${tiny.toString('base64')}`;
+  }
+
+  const ts =
+    '/* Generado por scripts/optimize-logos.mjs — no editar a mano. */\n' +
+    'export const LQIP: Record<string, string> = ' +
+    JSON.stringify(lqip, null, 2) +
+    ';\n';
+  writeFileSync('src/app/shared/lqip.generated.ts', ts);
+  console.log(
+    `src/app/shared/lqip.generated.ts  ${Object.keys(lqip).length} claves  ${(statSync('src/app/shared/lqip.generated.ts').size / 1024).toFixed(1)} KB`,
+  );
 }

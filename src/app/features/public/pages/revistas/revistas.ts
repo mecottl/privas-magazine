@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
+import { HeroMedia } from '../../components/hero-media/hero-media';
 import { mensajeError } from '../../../../core/services/errores';
 import type { EdicionRevista } from '../../../../core/models';
 
@@ -13,7 +14,7 @@ import type { EdicionRevista } from '../../../../core/models';
 @Component({
   selector: 'app-revistas',
   standalone: true,
-  imports: [RevealDirective, EdicionCard],
+  imports: [RevealDirective, EdicionCard, HeroMedia],
   templateUrl: './revistas.html',
   styleUrl: './revistas.scss',
 })
@@ -23,7 +24,6 @@ export class Revistas implements OnInit {
   readonly ediciones = signal<EdicionRevista[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
-  readonly heroImg = '/ediciones-bg.jpg';
   readonly skeletons = [0, 1, 2, 3];
 
   async ngOnInit() {

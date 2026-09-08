@@ -1,0 +1,20 @@
+<span
+  class="hero-media__lqip"
+  [class.hero-media__lqip--fuera]="cargada()"
+  [style.background-image]="lqip() ? 'url(' + lqip() + ')' : null"
+  aria-hidden="true"
+></span>
+
+<picture class="hero-media__pic">
+  <source type="image/avif" [srcset]="srcset('avif')" [attr.sizes]="sizes()" />
+  <source type="image/webp" [srcset]="srcset('webp')" [attr.sizes]="sizes()" />
+  <img
+    class="hero-media__img"
+    [src]="fallback()"
+    [alt]="alt()"
+    [attr.fetchpriority]="prioridad() ? 'high' : null"
+    [attr.loading]="prioridad() ? null : 'lazy'"
+    decoding="async"
+    (load)="cargada.set(true)"
+  />
+</picture>

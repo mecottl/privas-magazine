@@ -142,6 +142,21 @@
 .site-nav__link:hover::after,
 .site-nav__link.is-active::after { transform: scaleX(1); }
 
+.site-nav__buscar {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: var(--r-pill);
+  color: var(--on-brand);
+  transition: background var(--t), transform var(--t);
+}
+.site-nav__buscar:hover {
+  background: rgba(251, 247, 238, 0.12);
+  transform: scale(1.06);
+}
+.site-nav__buscar svg { width: 1.05rem; height: 1.05rem; }
+
 .site-nav__revista {
   display: inline-flex;
   align-items: center;

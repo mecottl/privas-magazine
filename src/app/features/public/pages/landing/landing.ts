@@ -15,6 +15,7 @@ import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
+import { HeroMedia } from '../../components/hero-media/hero-media';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, EdicionRevista } from '../../../../core/models';
 
@@ -30,7 +31,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, RevealDirective, ArticuloCard, EdicionCard],
+  imports: [RouterLink, RevealDirective, ArticuloCard, EdicionCard, HeroMedia],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
 })
@@ -61,9 +62,12 @@ export class Landing implements OnInit {
   private arrastre = { activo: false, movio: false, x0: 0, scroll0: 0 };
 
   readonly carrusel = computed(() => this.articulos().slice(0, 9));
-  /** Fotos fijas en `public/`. Si fallan, quedan los degradados de marca. */
-  readonly heroImg = '/hero.jpg';
-  readonly fondoEdiciones = 'url("/ediciones-bg.jpg")';
+  /** Fondo de la franja "Ediciones": AVIF/WebP con JPG de reserva. */
+  readonly fondoEdiciones =
+    'image-set(' +
+    'url("/img/ediciones-bg-1400.avif") type("image/avif"),' +
+    'url("/img/ediciones-bg-1400.webp") type("image/webp"),' +
+    'url("/ediciones-bg.jpg") type("image/jpeg"))';
   /** Dos huecos: edición existente o `null` para "Próximamente". */
   readonly slotsEdiciones = computed<(EdicionRevista | null)[]>(() => {
     const eds = this.ediciones();

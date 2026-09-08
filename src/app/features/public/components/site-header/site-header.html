@@ -13,6 +13,17 @@
           routerLinkActive="is-active"
         >{{ s.nombre }}</a>
       }
+      <a
+        class="site-nav__buscar"
+        routerLink="/articulos"
+        aria-label="Buscar artículos"
+        (click)="cerrarMenu()"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-3.5-3.5" stroke-linecap="round" />
+        </svg>
+      </a>
       <a class="site-nav__revista" routerLink="/revistas" routerLinkActive="is-active">La revista</a>
     </nav>
 
@@ -39,5 +50,6 @@
     <a routerLink="/articulos" [queryParams]="{ categoria: s.slug }" (click)="cerrarMenu()">{{ s.nombre }}</a>
   }
   <a routerLink="/revistas" (click)="cerrarMenu()">La revista</a>
+  <a routerLink="/articulos" (click)="cerrarMenu()">Buscar</a>
   <a class="btn btn--crema nav-sheet__revista" routerLink="/" (click)="cerrarMenu()">Ir al inicio</a>
 </div>
