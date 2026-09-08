@@ -108,18 +108,22 @@
   }
   .newsletter-copy { display: none; }
   .newsletter form { flex-direction: column; align-items: stretch; gap: 0.5rem; }
-  .newsletter input {
+  /* `form input` (no solo `input`) para ganarle en especificidad a la regla
+     base del componente — si no, el input se queda con fondo blanco y el
+     placeholder claro encima queda invisible. */
+  .newsletter form input {
     flex: none;
     width: 100%;
     min-width: 0;
     padding: 0.62rem 0.95rem;
-    background: rgba(251, 247, 238, 0.1);
-    border-color: var(--line-brand);
+    background: rgba(251, 247, 238, 0.12);
+    border: 1.5px solid var(--line-brand);
     color: var(--on-brand);
     border-radius: var(--r-pill);
   }
-  .newsletter input::placeholder { color: var(--on-brand-dim); }
-  .newsletter button {
+  .newsletter form input::placeholder { color: rgba(251, 247, 238, 0.6); }
+  .newsletter form input:focus-visible { border-color: var(--on-brand-dim); }
+  .newsletter form button {
     width: 100%;
     justify-content: center;
     padding: 0.62rem 1.2rem;
@@ -128,7 +132,7 @@
     border-color: var(--cream);
     border-radius: var(--r-pill);
   }
-  .newsletter button:hover:not(:disabled) { background: var(--white); border-color: var(--white); transform: translateY(-1px); }
+  .newsletter form button:hover:not(:disabled) { background: var(--white); border-color: var(--white); transform: translateY(-1px); }
   .newsletter .ok { color: var(--on-brand); font-size: var(--fs-xs); }
   .newsletter .error { color: #ffd9d0; }
 }

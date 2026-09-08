@@ -38,7 +38,7 @@
     } @else {
       <div class="revistas-grid" reveal>
         @for (ed of ediciones(); track ed.id; let i = $index) {
-          <app-edicion-card [edicion]="ed" [numero]="i + 1" [style.--i]="i" />
+          <app-edicion-card [edicion]="ed" [numero]="i + 1" [mostrarTitulo]="true" [style.--i]="i" />
         } @empty {
           <p class="rev-aviso">Todavía no hay ediciones publicadas. Vuelve pronto.</p>
         }

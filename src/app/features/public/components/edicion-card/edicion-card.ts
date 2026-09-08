@@ -25,6 +25,8 @@ export class EdicionCard {
   readonly numero = input.required<number>();
   readonly temporadaEsperada = input('');
   readonly anioEsperado = input<number | null>(null);
+  /** Muestra el título de la revista y oculta el sello «Edición 0X». */
+  readonly mostrarTitulo = input(false);
 
   /** Etiqueta «Temporada Año» en mayúsculas. */
   readonly etiqueta = computed(() => {

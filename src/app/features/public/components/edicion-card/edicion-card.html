@@ -1,6 +1,7 @@
 @if (edicion(); as e) {
   <a
     class="edicion-card__link"
+    [class.edicion-card__link--titulo]="mostrarTitulo()"
     [href]="e.pdf_url"
     target="_blank"
     rel="noopener"
@@ -8,15 +9,22 @@
   >
     <span class="edicion-card__marco">
       <img class="edicion-card__portada" [src]="e.portada_url" [alt]="'Portada — ' + e.titulo" loading="lazy" />
-      <span class="edicion-card__num">{{ sello() }}</span>
+      @if (!mostrarTitulo()) {
+        <span class="edicion-card__num">{{ sello() }}</span>
+      }
     </span>
     <span class="edicion-card__pie">
-      <span class="edicion-card__label">{{ etiqueta() }}</span>
-      <span class="edicion-card__cta">
-        Ver PDF
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
+      @if (mostrarTitulo()) {
+        <span class="edicion-card__titulo">{{ e.titulo }}</span>
+      }
+      <span class="edicion-card__meta">
+        <span class="edicion-card__label">{{ etiqueta() }}</span>
+        <span class="edicion-card__cta">
+          Ver PDF
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
       </span>
     </span>
   </a>
@@ -24,10 +32,14 @@
   <div class="edicion-card__link edicion-card__link--proxima">
     <span class="edicion-card__marco edicion-card__marco--vacio">
       <span>Próximamente</span>
-      <span class="edicion-card__num">{{ sello() }}</span>
+      @if (!mostrarTitulo()) {
+        <span class="edicion-card__num">{{ sello() }}</span>
+      }
     </span>
     <span class="edicion-card__pie">
-      <span class="edicion-card__label">{{ etiqueta() }}</span>
+      <span class="edicion-card__meta">
+        <span class="edicion-card__label">{{ etiqueta() }}</span>
+      </span>
     </span>
   </div>
 }
