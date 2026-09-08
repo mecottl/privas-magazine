@@ -1,0 +1,68 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <div>
+      <a routerLink=".." class="volver">← Marcas</a>
+      <h1>{{ id ? 'Editar marca' : 'Nueva marca' }}</h1>
+    </div>
+  </div>
+
+  <div class="admin-page__scroll">
+    @if (error()) { <p class="error">{{ error() }}</p> }
+    @if (ok()) { <p class="ok">{{ ok() }}</p> }
+
+    <div class="mc-grid">
+      <section class="panel mc-datos">
+        <input
+          class="mc-titulo"
+          name="nombre"
+          placeholder="Nombre de la marca"
+          [(ngModel)]="m.nombre"
+          required
+        />
+
+        <div class="campos-grid">
+          <label>Orden
+            <input type="number" [(ngModel)]="m.orden" name="orden" />
+          </label>
+          <label>Sitio web propio (CTA)
+            <input [(ngModel)]="m.sitio_web_url" name="web" placeholder="https://…" />
+          </label>
+          <label class="mc-ancho">Descripción
+            <input [(ngModel)]="m.descripcion" name="desc" placeholder="Una línea sobre la marca (opcional)" />
+          </label>
+          <label class="mc-ancho">URL del logo
+            <input [(ngModel)]="m.logo_url" name="logo" placeholder="https://… (opcional)" />
+          </label>
+        </div>
+
+        <p class="lado-titulo">Redes sociales</p>
+        @for (e of m.enlaces; track $index) {
+          <div class="mc-enlace">
+            <select [(ngModel)]="e.tipo" [name]="'tipo-' + $index" aria-label="Tipo de red">
+              @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+            <input [(ngModel)]="e.url" [name]="'url-' + $index" placeholder="https://instagram.com/…" />
+            <button type="button" class="secundario peligro" (click)="quitarEnlace($index)">Quitar</button>
+          </div>
+        } @empty {
+          <p class="hint">Sin redes sociales.</p>
+        }
+        <button type="button" class="secundario" (click)="agregarEnlace()">+ Red social</button>
+      </section>
+
+      <aside class="mc-lado">
+        <div class="panel">
+          <p class="lado-titulo">Acciones</p>
+          <div class="mc-acciones">
+            <button type="button" (click)="guardar()" [disabled]="guardando()">
+              {{ guardando() ? 'Guardando…' : (id ? 'Guardar cambios' : 'Crear marca') }}
+            </button>
+            @if (id) {
+              <button type="button" class="secundario peligro" (click)="eliminar()">Eliminar</button>
+            }
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

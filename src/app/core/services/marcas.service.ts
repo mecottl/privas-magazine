@@ -15,6 +15,16 @@ export class MarcasService {
     return (data as Marca[]).map((m) => this.normalizarFila(m));
   }
 
+  async obtener(id: string): Promise<Marca> {
+    const { data, error } = await this.sb
+      .from('marcas')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) throw error;
+    return this.normalizarFila(data as Marca);
+  }
+
   async crear(m: Partial<Marca>): Promise<Marca> {
     const { data, error } = await this.sb
       .from('marcas')

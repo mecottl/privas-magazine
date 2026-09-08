@@ -12,7 +12,7 @@
   background:
     radial-gradient(90% 60% at 82% 8%, rgba(92, 168, 202, 0.4), transparent 60%),
     radial-gradient(120% 90% at 8% 100%, var(--brand-lo), transparent 55%),
-    linear-gradient(155deg, var(--brand-hi) 0%, var(--brand) 42%, var(--brand-ink) 100%);
+    linear-gradient(155deg, var(--brand-hi) 0%, var(--brand) 50%, var(--brand-lo) 100%);
 }
 
 .login__panel {
@@ -45,7 +45,7 @@
   font-weight: 500;
   font-size: 1.7rem;
   line-height: 1.15;
-  color: var(--brand-ink);
+  color: var(--brand);
 }
 .login__sub {
   margin: 0.35rem 0 1.5rem;

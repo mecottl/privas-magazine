@@ -75,9 +75,21 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'marcas',
-    title: 'Marcas · Gestión',
+        title: 'Marcas · Gestión',
         loadComponent: () =>
           import('./pages/marcas/marcas-lista').then((m) => m.MarcasLista),
+      },
+      {
+        path: 'marcas/nuevo',
+        title: 'Nueva marca · Gestión',
+        loadComponent: () =>
+          import('./pages/marcas/marca-editar').then((m) => m.MarcaEditar),
+      },
+      {
+        path: 'marcas/:id',
+        title: 'Editar marca · Gestión',
+        loadComponent: () =>
+          import('./pages/marcas/marca-editar').then((m) => m.MarcaEditar),
       },
       {
         path: 'administradores',
