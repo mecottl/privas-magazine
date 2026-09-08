@@ -6,21 +6,35 @@
 }
 .mk-ayuda span { color: var(--brand); font-weight: 700; }
 
-.mk-col-drag {
-  width: 2.2rem;
-  padding-right: 0 !important;
+/* La 1ª celda es solo el asa de arrastre: anula el ancho / hueco que el kit
+   global (.admin-main td:first-child) le da a la primera columna. El
+   selector con .tabla-wrap gana en especificidad. */
+.tabla-wrap th.mk-col-drag,
+.tabla-wrap td.mk-col-drag {
+  width: 2.4rem;
+  min-width: 2.4rem;
+  max-width: 2.4rem;
+  padding: 0.7rem 0.3rem 0.7rem 0.7rem;
+  white-space: nowrap;
 }
+/* Ahora la columna del nombre es la 2ª. */
+.tabla-wrap td:nth-child(2) {
+  min-width: 11rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .mk-handle {
-  display: grid;
-  place-items: center;
+  display: inline-flex;
   color: var(--ink-35);
   cursor: grab;
+  vertical-align: middle;
 }
-.mk-handle svg { width: 1.1rem; height: 1.1rem; }
+.mk-handle svg { width: 1.05rem; height: 1.05rem; display: block; }
+
 tr[draggable='true'] { cursor: grab; }
 tr[draggable='true']:active { cursor: grabbing; }
+tr[draggable='true']:hover .mk-handle { color: var(--brand); }
 
-.mk-arrastrando {
-  opacity: 0.45;
-  background: var(--teal-wash) !important;
-}
+tr.mk-arrastrando { opacity: 0.4; }
+tr.mk-arrastrando td { background: var(--teal-wash); }
