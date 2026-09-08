@@ -143,6 +143,13 @@ export class Landing implements OnInit {
     el.scrollBy({ left: dir * this.paso(el), behavior: 'smooth' });
   }
 
+  /** Indicador de scroll del hero → baja a "Últimos Artículos". */
+  bajarAArticulos() {
+    document
+      .getElementById('articulos')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   alScroll() {
     const el = this.pista()?.nativeElement;
     if (!el) return;
