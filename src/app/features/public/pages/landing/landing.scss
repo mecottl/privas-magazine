@@ -323,6 +323,17 @@
 }
 
 /* ================ TEASER DE NUESTRAS MARCAS ================ */
+/* Última franja antes del pie: degradado azul que baja hacia el navy del
+   footer para que se lean como una sola pieza. */
+.seccion-marcas {
+  background: linear-gradient(
+    180deg,
+    var(--brand) 0%,
+    var(--brand-lo) 42%,
+    var(--brand-ink) 100%
+  );
+}
+
 .marcas-teaser {
   display: grid;
   grid-template-columns: minmax(0, 22rem) 1fr;

@@ -132,9 +132,40 @@
   </div>
 </section>
 
+<!-- ==================== EDICIONES ==================== -->
+<section
+  class="franja franja--foto"
+  [style.--franja-bg]="fondoEdiciones"
+>
+  <div class="franja__wrap">
+    <div class="ediciones-head" reveal>
+      <h2>Ediciones</h2>
+      <a routerLink="/revistas" class="ediciones-buscar">
+        Buscar por ediciones
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="ediciones-grid" reveal>
+      @for (slot of slotsEdiciones(); track $index; let i = $index) {
+        <app-edicion-card
+          [edicion]="slot"
+          [numero]="i + 1"
+          [mostrarTitulo]="true"
+          [temporadaEsperada]="temporadaSlot(i)"
+          [anioEsperado]="anioSlot()"
+          [style.--i]="i"
+        />
+      }
+    </div>
+  </div>
+</section>
+
 <!-- ================ NUESTRAS MARCAS ================ -->
 @if (marcas().length) {
-  <section class="franja seccion-marcas">
+  <section class="franja seccion-marcas franja--fin">
     <div class="franja__wrap">
       <div class="marcas-teaser" reveal>
         <div class="marcas-teaser__intro">
@@ -164,34 +195,3 @@
 @if (marcaAbierta(); as m) {
   <app-marca-linktree [marca]="m" (cerrar)="marcaAbierta.set(null)" />
 }
-
-<!-- ==================== EDICIONES ==================== -->
-<section
-  class="franja franja--foto franja--fin"
-  [style.--franja-bg]="fondoEdiciones"
->
-  <div class="franja__wrap">
-    <div class="ediciones-head" reveal>
-      <h2>Ediciones</h2>
-      <a routerLink="/revistas" class="ediciones-buscar">
-        Buscar por ediciones
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </a>
-    </div>
-
-    <div class="ediciones-grid" reveal>
-      @for (slot of slotsEdiciones(); track $index; let i = $index) {
-        <app-edicion-card
-          [edicion]="slot"
-          [numero]="i + 1"
-          [mostrarTitulo]="true"
-          [temporadaEsperada]="temporadaSlot(i)"
-          [anioEsperado]="anioSlot()"
-          [style.--i]="i"
-        />
-      }
-    </div>
-  </div>
-</section>
