@@ -10,6 +10,7 @@
   display: grid;
   gap: var(--space-md);
 }
+
 .newsletter-copy strong {
   display: block;
   font-family: var(--display);
@@ -19,8 +20,18 @@
   color: var(--brand);
   margin-bottom: 0.2rem;
 }
-.newsletter-copy span { font-size: var(--fs-sm); color: var(--ink-55); }
-.newsletter form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+.newsletter-copy span {
+  font-size: var(--fs-sm);
+  color: var(--ink-55);
+}
+
+.newsletter form {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .newsletter input {
   font: inherit;
   flex: 1;
@@ -31,7 +42,12 @@
   background: var(--white);
   color: var(--ink);
 }
-.newsletter input:focus-visible { outline-offset: 1px; border-color: var(--brand); }
+
+.newsletter input:focus-visible {
+  outline-offset: 1px;
+  border-color: var(--brand);
+}
+
 .newsletter button {
   font: inherit;
   font-weight: 700;
@@ -44,7 +60,23 @@
   cursor: pointer;
   transition: background var(--t), border-color var(--t), transform var(--t);
 }
-.newsletter button:hover:not(:disabled) { background: var(--brand-hi); border-color: var(--brand-hi); transform: translateY(-2px); }
-.newsletter button:disabled { opacity: 0.5; cursor: default; }
-.newsletter p { margin: 0; }
-.newsletter-exito { margin: 0; font-weight: 500; }
+
+.newsletter button:hover:not(:disabled) {
+  background: var(--brand-hi);
+  border-color: var(--brand-hi);
+  transform: translateY(-2px);
+}
+
+.newsletter button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.newsletter p {
+  margin: 0;
+}
+
+.newsletter-exito {
+  margin: 0;
+  font-weight: 500;
+}

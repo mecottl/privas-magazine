@@ -26,9 +26,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       withComponentInputBinding(),
-      // Al navegar: subir al inicio (salvo volver atrás) y permitir #anclas.
+      // El scroll lo gobierna `App` a mano (ver app.ts): sube al inicio solo
+      // cuando cambia la página de verdad, no cuando solo cambia el
+      // ?categoria= de /articulos. Aquí solo dejamos vivo el saltar a #anclas.
       withInMemoryScrolling({
-        scrollPositionRestoration: 'enabled',
+        scrollPositionRestoration: 'disabled',
         anchorScrolling: 'enabled',
       }),
     ),

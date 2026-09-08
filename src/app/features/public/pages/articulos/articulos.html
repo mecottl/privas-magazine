@@ -36,7 +36,7 @@
 
     @if (error()) {
       <p class="cat-aviso error">{{ error() }}</p>
-    } @else if (cargando()) {
+    } @else if (cargando() && primeraCarga()) {
       <div class="cat-grid">
         @for (s of skeletons; track s) {
           <div class="cat-skel">
@@ -50,7 +50,7 @@
         }
       </div>
     } @else {
-      <div class="cat-grid" reveal>
+      <div class="cat-grid" [class.cat-grid--cargando]="cargando()" reveal>
         @for (a of articulos(); track a.id; let i = $index) {
           <app-articulo-card [articulo]="a" [style.--i]="i" />
         } @empty {

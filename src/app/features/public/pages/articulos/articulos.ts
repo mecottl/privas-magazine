@@ -79,6 +79,9 @@ export class Articulos implements OnInit {
   readonly categorias = signal<Categoria[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
+  /** Solo la primera vez enseñamos esqueletos; al filtrar dejamos la rejilla
+   *  anterior a la vista y la atenuamos mientras llega la nueva. */
+  readonly primeraCarga = signal(true);
   readonly categoria = signal('');
   readonly mismoSlug = mismoSlug;
   readonly skeletons = [0, 1, 2, 3, 4, 5];
@@ -124,6 +127,7 @@ export class Articulos implements OnInit {
 
   async cargar() {
     this.error.set('');
+    this.cargando.set(true);
     try {
       this.articulos.set(
         await this.srv.listarPublicos(this.categoria() || undefined),
@@ -132,6 +136,7 @@ export class Articulos implements OnInit {
       this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
+      this.primeraCarga.set(false);
     }
   }
 }
