@@ -25,7 +25,7 @@
 }
 :host(:hover) .art-card__link {
   transform: translateY(-6px);
-  box-shadow: var(--glass-edge), 0 20px 48px rgba(9, 28, 38, 0.42);
+  box-shadow: var(--glass-edge), var(--glass-drop-hover, 0 20px 48px rgba(9, 28, 38, 0.42));
 }
 :host(:active) .art-card__link { transform: translateY(-2px) scale(0.995); }
 @media (prefers-reduced-motion: reduce) {

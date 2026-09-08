@@ -53,9 +53,40 @@
   gap: clamp(0.5rem, 1.8vw, 1.1rem);
 }
 
-.carrusel__pista {
+/* Marco relativo alrededor de la pista: sostiene los degradados de los
+   cantos (::before / ::after) sin tocar el contenedor con scroll — así el
+   scroll no crea una "caja" que corte el cristal ni las sombras. */
+.carrusel__marco {
+  position: relative;
   flex: 1;
   min-width: 0;
+  --fade: clamp(1.25rem, 5vw, 3.25rem);
+}
+.carrusel__marco::before,
+.carrusel__marco::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--fade);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+.carrusel__marco::before {
+  left: 0;
+  background: linear-gradient(to right, var(--brand), transparent);
+}
+.carrusel__marco::after {
+  right: 0;
+  background: linear-gradient(to left, var(--brand), transparent);
+}
+/* No difuminar el canto que ya está pegado al principio / al final. */
+.carrusel.is-inicio .carrusel__marco::before,
+.carrusel.is-fin .carrusel__marco::after { opacity: 0; }
+
+.carrusel__pista {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: clamp(17rem, 76vw, 21rem);
@@ -64,33 +95,19 @@
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: 0;
-  /* Solo padding vertical: deja aire al lift/sombra de las tarjetas sin
-     desplazar el scrollLeft de la primera. */
-  padding: 0.5rem 0 0.75rem;
+  /* El scroll horizontal recorta también en vertical; con padding + margen
+     negativo iguales, la caja es más alta que las tarjetas (la sombra y el
+     lift no se cortan en seco) sin ocupar más alto en la página. Y una
+     sombra de tarjeta más contenida para que quepa. */
+  --glass-drop: 0 8px 20px rgba(9, 28, 38, 0.26);
+  --glass-drop-hover: 0 16px 34px rgba(9, 28, 38, 0.4);
+  padding-block: 2rem;
+  margin-block: -2rem;
   scrollbar-width: none;
   cursor: grab;
-  /* Los cantos se disuelven en vez de cortar la última tarjeta en seco. */
-  --fade: clamp(1.25rem, 5vw, 3.25rem);
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0, #000 var(--fade), #000 calc(100% - var(--fade)), transparent 100%);
-  transition: mask-image 0.25s ease, -webkit-mask-image 0.25s ease;
 }
 .carrusel__pista::-webkit-scrollbar { display: none; }
 .carrusel__pista > * { scroll-snap-align: start; }
-
-/* Sin desvanecer el borde que ya está pegado al principio / al final. */
-.carrusel.is-inicio .carrusel__pista {
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent 100%);
-  mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent 100%);
-}
-.carrusel.is-fin .carrusel__pista {
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade));
-  mask-image: linear-gradient(to right, transparent 0, #000 var(--fade));
-}
-.carrusel.is-inicio.is-fin .carrusel__pista {
-  -webkit-mask-image: none;
-  mask-image: none;
-}
 
 /* Durante el arrastre: sin snap, cursor de agarre y las tarjetas no navegan. */
 .carrusel__pista.arrastrando {
