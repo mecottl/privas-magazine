@@ -5,7 +5,12 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
@@ -18,6 +23,7 @@ import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm
 })
 export class AdminLayout {
   readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly main = viewChild<ElementRef<HTMLElement>>('main');
   private primeraCarga = true;
 
@@ -29,8 +35,9 @@ export class AdminLayout {
   readonly inicial = computed(() => this.nombre().charAt(0).toUpperCase());
   readonly correo = computed(() => this.auth.user()?.email ?? '');
 
-  salir() {
-    void this.auth.cerrarSesion();
+  async salir() {
+    await this.auth.cerrarSesion();
+    this.router.navigate(['/gestion-privas/login']);
   }
 
   alActivarRuta() {
