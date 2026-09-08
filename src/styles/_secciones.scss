@@ -157,29 +157,6 @@
   z-index: 2;
 }
 .franja + .franja { margin-top: 0; border-radius: 0; }
-/* Franja que se alza como panel propio sobre la anterior: esquinas
-   redondeadas, se solapa unos px y proyecta sombra hacia arriba + un filo
-   de luz superior. Sustituye el "degradado simple" entre secciones por una
-   pieza que claramente monta sobre la de arriba. */
-.franja + .franja--montada {
-  margin-top: clamp(-76px, -7vw, -44px);
-  border-radius: var(--r-panel) var(--r-panel) 0 0;
-  box-shadow:
-    0 -30px 72px -34px rgba(5, 18, 26, 0.78),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
-}
-/* Tirador central: hairline luminosa que marca la costura del panel. */
-.franja--montada > .franja__wrap::before {
-  content: '';
-  position: absolute;
-  top: calc(var(--r-panel) * -0.5);
-  left: 50%;
-  translate: -50% 0;
-  width: clamp(3rem, 12vw, 6rem);
-  height: 3px;
-  border-radius: var(--r-pill);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-}
 /* La 1ª franja arranca justo al terminar el hero: éste ocupa su alto completo
    y la siguiente sección no se asoma al cargar. */
 .hero + .franja { margin-top: 0; border-radius: 0; }
@@ -196,33 +173,24 @@
   position: absolute;
   inset: -8%;
   z-index: 0;
-  background-size: 200px 200px, cover;
-  background-position: center, center;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E"),
-    var(--franja-bg, none);
+  background-size: cover;
+  background-position: center;
+  background-image: var(--franja-bg, none);
   filter: saturate(1.1);
-  opacity: 0.92;
+  opacity: 0.9;
   animation: drift 30s ease-in-out infinite alternate;
 }
-/* Velo del panel-foto: en vez de un degradado vertical plano, una luz
-   radial detrás de las tarjetas + un grado suave hacia los bordes. Da
-   profundidad y foco sin el look "foto oscurecida" de siempre. */
 .franja--foto::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
-  background:
-    radial-gradient(115% 78% at 50% 30%, rgba(70, 140, 172, 0.28) 0%, transparent 58%),
-    radial-gradient(150% 120% at 50% 100%, rgba(9, 30, 40, 0.55) 0%, transparent 60%),
-    linear-gradient(180deg,
-      var(--brand) 0%,
-      rgba(37, 101, 133, 0.78) 12%,
-      rgba(28, 74, 96, 0.6) 46%,
-      rgba(15, 48, 62, 0.82) 100%);
-}
-@media (prefers-reduced-motion: reduce) {
-  .franja--foto::before { animation: none; }
+  background: linear-gradient(
+    180deg,
+    var(--brand) 0%,
+    rgba(37, 101, 133, 0.6) 22%,
+    rgba(30, 82, 104, 0.62) 55%,
+    rgba(16, 52, 66, 0.86) 100%
+  );
 }
 .franja--foto > .franja__wrap { position: relative; z-index: 1; }
