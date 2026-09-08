@@ -14,6 +14,7 @@ import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
+import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, EdicionRevista } from '../../../../core/models';
 
@@ -29,7 +30,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, RevealDirective, ArticuloCard],
+  imports: [RouterLink, RevealDirective, ArticuloCard, EdicionCard],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
 })
@@ -68,10 +69,6 @@ export class Landing implements OnInit {
     const eds = this.ediciones();
     return [eds[0] ?? null, eds[1] ?? null];
   });
-
-  nombreTemporada(t: string): string {
-    return NOMBRE_TEMPORADA[t] ?? t;
-  }
 
   readonly anioActual = new Date().getFullYear();
 

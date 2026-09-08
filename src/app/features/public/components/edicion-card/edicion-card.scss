@@ -1,0 +1,128 @@
+/* Ficha de edición: cristal líquido, portada 4:5, sello "Edición 0X" y una
+   etiqueta «Temporada Año». Toda la ficha es el enlace al PDF (pestaña nueva). */
+
+:host { display: block; }
+
+.edicion-card__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.6rem;
+  border-radius: 20px;
+  text-decoration: none;
+  color: var(--on-brand);
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(9, 30, 40, 0.24), rgba(9, 30, 40, 0.1)),
+    rgba(255, 255, 255, 0.09);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur-refract);
+  box-shadow: var(--glass-edge), var(--glass-drop);
+  transition: transform var(--t-slow), box-shadow var(--t-slow);
+}
+.edicion-card__link:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--glass-edge), 0 20px 48px rgba(9, 28, 38, 0.42);
+}
+.edicion-card__link:active { transform: translateY(-2px) scale(0.995); }
+
+.edicion-card__marco {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 14px 30px -12px rgba(9, 28, 38, 0.6);
+}
+.edicion-card__portada {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform var(--t-slow);
+}
+.edicion-card__link:hover .edicion-card__portada { transform: scale(1.05); }
+@media (prefers-reduced-motion: reduce) {
+  .edicion-card__link:hover .edicion-card__portada { transform: none; }
+}
+
+/* "Edición 01" como sello sobre la esquina de la portada */
+.edicion-card__num {
+  position: absolute;
+  left: 0.65rem;
+  top: 0.65rem;
+  padding: 0.28rem 0.62rem;
+  border-radius: var(--r-pill);
+  font-family: var(--sans);
+  font-size: var(--fs-3xs);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--on-brand);
+  background: rgba(9, 28, 38, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.edicion-card__marco--vacio {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  background:
+    repeating-linear-gradient(-45deg, rgba(251, 247, 238, 0.03) 0 12px, transparent 12px 24px),
+    rgba(7, 22, 30, 0.32);
+}
+.edicion-card__marco--vacio > span:first-child {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  color: rgba(251, 247, 238, 0.5);
+}
+
+.edicion-card__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem 0.75rem;
+  padding: 0.1rem 0.4rem 0.3rem;
+}
+.edicion-card__label {
+  font-family: var(--sans);
+  font-size: var(--fs-3xs);
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--on-brand);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 6px rgba(9, 28, 38, 0.4);
+}
+.edicion-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  flex: none;
+  font-family: var(--sans);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  color: var(--on-brand-dim);
+}
+.edicion-card__cta svg { width: 0.9em; height: 0.9em; transition: transform var(--t); }
+.edicion-card__link:hover .edicion-card__cta { color: var(--on-brand); }
+.edicion-card__link:hover .edicion-card__cta svg { transform: translateX(3px); }
+
+.edicion-card__link--proxima {
+  cursor: default;
+  background:
+    linear-gradient(180deg, rgba(7, 22, 30, 0.42), rgba(7, 22, 30, 0.28)),
+    rgba(255, 255, 255, 0.04);
+  color: var(--on-brand-dim);
+}
+.edicion-card__link--proxima .edicion-card__num {
+  color: var(--on-brand-dim);
+  background: rgba(9, 28, 38, 0.4);
+}
+.edicion-card__link--proxima .edicion-card__pie { justify-content: center; }

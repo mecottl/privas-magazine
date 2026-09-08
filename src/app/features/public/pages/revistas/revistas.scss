@@ -1,46 +1,46 @@
-/* Biblioteca de revistas. .page/.inicio-encabezado/.eyebrow/.sk son globales. */
+/* Biblioteca de ediciones. Hero y franja: patrones compartidos
+   (src/styles/_secciones.scss). La ficha es <app-edicion-card>. */
 
-.revistas {
-  list-style: none;
-  margin: 0;
-  padding: var(--space-md) 0 0;
+.revistas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-lg) var(--space-md);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  justify-content: center;
+  gap: clamp(1.25rem, 3vw, 2rem);
 }
-.revistas > li.indice-vacio { grid-column: 1 / -1; text-align: center; color: var(--ink-55); padding: var(--space-2xl) 0; }
-.revistas a { display: block; }
-.revistas figure {
-  margin: 0 0 0.8rem;
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--r-card);
-  box-shadow: var(--shadow-card);
-  transition: box-shadow var(--t-slow), transform var(--t-slow);
+
+/* Entrada escalonada al revelarse la rejilla */
+.revistas-grid.reveal--visible > app-edicion-card {
+  animation: fade-up 0.55s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
 }
-.revistas a:hover figure { box-shadow: var(--shadow-lift); transform: translateY(-6px); }
-.revistas img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
-.revistas figcaption {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 0.9rem;
-  background: linear-gradient(to top, rgba(12, 40, 54, 0.85), transparent);
-  color: var(--on-brand);
-  font-family: var(--sans);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity var(--t);
+@media (prefers-reduced-motion: reduce) {
+  .revistas-grid.reveal--visible > app-edicion-card { animation: none; }
 }
-.revistas a:hover figcaption,
-.revistas a:focus-visible figcaption { opacity: 1; }
-.revistas .titulo-edicion {
-  display: block;
+
+.rev-aviso {
+  grid-column: 1 / -1;
+  margin: clamp(1.5rem, 5vw, 3rem) auto;
+  max-width: 34ch;
+  text-align: center;
   font-family: var(--display);
-  font-weight: 500;
-  font-size: 1.1rem;
-  color: var(--brand);
+  font-style: italic;
+  font-size: var(--fs-md);
+  color: var(--on-brand-dim);
 }
-.revistas .temporada { display: block; font-size: var(--fs-xs); color: var(--ink-55); }
+.rev-aviso.error {
+  font-family: var(--sans);
+  font-style: normal;
+  color: #ffd9d0;
+}
+
+/* Esqueleto de carga */
+.rev-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.6rem;
+  border-radius: 20px;
+  background: rgba(251, 247, 238, 0.06);
+}
+.rev-skel__img { aspect-ratio: 4 / 5; width: 100%; border-radius: 14px; }
+.rev-skel .sk { --sk-a: rgba(251, 247, 238, 0.14); --sk-b: rgba(251, 247, 238, 0.24); }

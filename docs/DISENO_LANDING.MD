@@ -136,7 +136,13 @@ tagline + `__redes-list`), columnas `.foot-col`, y `__base`/`__base-row`
   lleva `.scss`. Nada de plantillas ni estilos embebidos en el `.ts`.
 - La variante compacta de `app-newsletter-form` dentro del pie vive en
   `site-footer.scss` con `::ng-deep`.
-- Tarjeta de artículo reutilizable: `<app-articulo-card [articulo]>`.
+- Tarjetas reutilizables: `<app-articulo-card [articulo]>` y
+  `<app-edicion-card [edicion] [numero]>` (cristal líquido, portada 4:5,
+  sello "Edición 0X" + etiqueta «Temporada Año»; `edicion` en `null` →
+  hueco "Próximamente").
+- Páginas con hero + franja: portada (`hero--full`), `/articulos` y
+  `/revistas` (`hero--seccion`). La ruta marca `data: { hero: true }` para
+  que el header vaya transparente/cristal y el contenido bajo él.
 - Imágenes de hero por categoría: `public/categorias/<slug>.jpg`
   (+ `archivo.jpg` para "Todas"). Hoy son copias del hero; se reemplazan
   archivo por archivo.

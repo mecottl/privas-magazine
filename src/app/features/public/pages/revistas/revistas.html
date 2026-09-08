@@ -1,38 +1,48 @@
-<section class="page">
-  <div class="inicio-encabezado" reveal>
-    <p class="eyebrow">La biblioteca</p>
-    <h1>Ediciones de la revista</h1>
-    <p>El catálogo completo de PRIVAS Magazine, dos ediciones al año.</p>
+<!-- ===================== HERO ===================== -->
+<section class="hero hero--seccion">
+  <div class="hero__media">
+    <img [src]="heroImg" alt="" fetchpriority="high" />
   </div>
 
-  @if (error()) { <p class="error">{{ error() }}</p> }
+  <div class="hero__inner">
+    <span class="hero__eyebrow">La biblioteca</span>
+    <h1 class="hero__title">Ediciones de la revista</h1>
+    <p class="hero__texto">
+      Dos ediciones al año. Aquí está el catálogo completo de PRIVAS Magazine,
+      listo para leer y descargar.
+    </p>
+  </div>
 
-  @if (cargando()) {
-    <ul class="revistas" aria-hidden="true">
-      @for (n of [1, 2, 3, 4]; track n) {
-        <li>
-          <div class="sk sk--img" style="aspect-ratio:3/4"></div>
-          <div class="sk sk--line" style="width:80%;margin-top:.6rem"></div>
-          <div class="sk sk--line" style="width:50%"></div>
-        </li>
-      }
-    </ul>
-  } @else {
-    <ul class="revistas">
-      @for (ed of ediciones(); track ed.id) {
-        <li reveal>
-          <a [href]="ed.pdf_url" target="_blank" rel="noopener">
-            <figure>
-              <img [src]="ed.portada_url" [alt]="ed.titulo" />
-              <figcaption>Abrir PDF</figcaption>
-            </figure>
-            <span class="titulo-edicion">{{ ed.titulo }}</span>
-            <span class="temporada">{{ nombreTemporada(ed.temporada) }} {{ ed.anio }}</span>
-          </a>
-        </li>
-      } @empty {
-        <li class="indice-vacio">Todavía no hay ediciones publicadas.</li>
-      }
-    </ul>
-  }
+  <a href="#archivo" class="hero__cue" aria-label="Ver las ediciones">
+    <span>Explora</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M5 8l7 7 7-7M5 14l7 7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </a>
+</section>
+
+<!-- ===================== ARCHIVO ===================== -->
+<section class="franja franja--fin" id="archivo">
+  <div class="franja__wrap">
+    @if (error()) {
+      <p class="rev-aviso error">{{ error() }}</p>
+    } @else if (cargando()) {
+      <div class="revistas-grid">
+        @for (s of skeletons; track s) {
+          <div class="rev-skel">
+            <div class="sk rev-skel__img"></div>
+            <div class="sk sk--line" style="width:70%"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="revistas-grid" reveal>
+        @for (ed of ediciones(); track ed.id; let i = $index) {
+          <app-edicion-card [edicion]="ed" [numero]="i + 1" [style.--i]="i" />
+        } @empty {
+          <p class="rev-aviso">Todavía no hay ediciones publicadas. Vuelve pronto.</p>
+        }
+      </div>
+    }
+  </div>
 </section>

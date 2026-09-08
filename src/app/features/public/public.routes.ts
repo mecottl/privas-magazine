@@ -30,6 +30,7 @@ export const PUBLIC_ROUTES: Routes = [
       {
         path: 'revistas',
         title: 'Ediciones de la revista',
+        data: { hero: true },
         loadComponent: () =>
           import('./pages/revistas/revistas').then((m) => m.Revistas),
       },

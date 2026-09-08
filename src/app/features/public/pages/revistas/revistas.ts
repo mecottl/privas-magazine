@@ -1,30 +1,30 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { mensajeError } from '../../../../core/services/errores';
 import type { EdicionRevista } from '../../../../core/models';
 
-const NOMBRE_TEMPORADA: Record<string, string> = {
-  'primavera-verano': 'Primavera-Verano',
-  'otono-invierno': 'Otoño-Invierno',
-};
-
+/**
+ * Biblioteca de ediciones de la revista (`/revistas`).
+ * Misma estructura que la portada / categorías: hero a sangre + franja teal
+ * con la rejilla de fichas (app-edicion-card).
+ */
 @Component({
   selector: 'app-revistas',
   standalone: true,
-  imports: [RevealDirective],
+  imports: [RevealDirective, EdicionCard],
   templateUrl: './revistas.html',
   styleUrl: './revistas.scss',
 })
 export class Revistas implements OnInit {
   private readonly srv = inject(EdicionesService);
+
   readonly ediciones = signal<EdicionRevista[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
-
-  nombreTemporada(t: string): string {
-    return NOMBRE_TEMPORADA[t] ?? t;
-  }
+  readonly heroImg = '/ediciones-bg.jpg';
+  readonly skeletons = [0, 1, 2, 3];
 
   async ngOnInit() {
     try {

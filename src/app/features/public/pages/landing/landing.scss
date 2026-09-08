@@ -171,13 +171,13 @@
 
 /* Entrada escalonada de las tarjetas al revelarse su bloque */
 .carrusel.reveal--visible app-articulo-card,
-.ediciones-grid.reveal--visible .edicion-card {
+.ediciones-grid.reveal--visible app-edicion-card {
   animation: fade-up 0.6s var(--ease) both;
   animation-delay: calc(var(--i, 0) * 90ms + 100ms);
 }
 @media (prefers-reduced-motion: reduce) {
   .carrusel.reveal--visible app-articulo-card,
-  .ediciones-grid.reveal--visible .edicion-card { animation: none; }
+  .ediciones-grid.reveal--visible app-edicion-card { animation: none; }
 }
 
 .art-card--vacio {
@@ -234,129 +234,6 @@
   justify-content: center;
   gap: clamp(1.25rem, 3.5vw, 2.25rem);
 }
-
-/* Ficha de edición: cristal líquido, portada 4:5 (menos alta), y un pie de
-   una sola línea — etiqueta "Temporada Año" + "Ver PDF →". Toda la ficha es
-   el enlace al PDF (se abre en pestaña nueva). */
-.edicion-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  padding: 0.6rem;
-  border-radius: 20px;
-  text-decoration: none;
-  color: var(--on-brand);
-  cursor: pointer;
-  background:
-    linear-gradient(180deg, rgba(9, 30, 40, 0.24), rgba(9, 30, 40, 0.1)),
-    rgba(255, 255, 255, 0.09);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur-refract);
-  box-shadow: var(--glass-edge), var(--glass-drop);
-  transition: transform var(--t-slow), box-shadow var(--t-slow);
-}
-.edicion-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--glass-edge), 0 20px 48px rgba(9, 28, 38, 0.42);
-}
-.edicion-card:active { transform: translateY(-2px) scale(0.995); }
-
-.edicion-card__marco {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  border-radius: 14px;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    0 14px 30px -12px rgba(9, 28, 38, 0.6);
-}
-.edicion-card__portada {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  transition: transform var(--t-slow);
-}
-.edicion-card:hover .edicion-card__portada { transform: scale(1.05); }
-
-/* "Edición 01" como sello sobre la esquina de la portada */
-.edicion-card__num {
-  position: absolute;
-  left: 0.65rem;
-  top: 0.65rem;
-  padding: 0.28rem 0.62rem;
-  border-radius: var(--r-pill);
-  font-family: var(--sans);
-  font-size: var(--fs-3xs);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--on-brand);
-  background: rgba(9, 28, 38, 0.5);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-}
-
-.edicion-card__marco--vacio {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 4 / 5;
-  border-radius: 14px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-  background:
-    repeating-linear-gradient(-45deg, rgba(251, 247, 238, 0.03) 0 12px, transparent 12px 24px),
-    rgba(7, 22, 30, 0.32);
-}
-.edicion-card__marco--vacio > span:first-child {
-  font-family: var(--display);
-  font-style: italic;
-  font-size: clamp(1rem, 3vw, 1.35rem);
-  color: rgba(251, 247, 238, 0.5);
-}
-
-.edicion-card__pie {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.1rem 0.4rem 0.3rem;
-}
-.edicion-card__label {
-  font-family: var(--sans);
-  font-size: var(--fs-3xs);
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--on-brand);
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 1px 6px rgba(9, 28, 38, 0.4);
-}
-.edicion-card__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.28rem;
-  flex: none;
-  font-family: var(--sans);
-  font-size: var(--fs-2xs);
-  font-weight: 700;
-  color: var(--on-brand-dim);
-}
-.edicion-card__cta svg { width: 0.9em; height: 0.9em; transition: transform var(--t); }
-.edicion-card:hover .edicion-card__cta { color: var(--on-brand); }
-.edicion-card:hover .edicion-card__cta svg { transform: translateX(3px); }
-
-.edicion-card--proxima {
-  cursor: default;
-  background:
-    linear-gradient(180deg, rgba(7, 22, 30, 0.42), rgba(7, 22, 30, 0.28)),
-    rgba(255, 255, 255, 0.04);
-  color: var(--on-brand-dim);
-}
-.edicion-card--proxima .edicion-card__num {
-  color: var(--on-brand-dim);
-  background: rgba(9, 28, 38, 0.4);
-}
-.edicion-card--proxima .edicion-card__pie { justify-content: center; }
 
 @media (max-width: 640px) {
   .ediciones-grid { grid-template-columns: minmax(0, 20rem); }
