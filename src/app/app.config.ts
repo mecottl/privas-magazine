@@ -1,8 +1,6 @@
 import {
   ApplicationConfig,
   LOCALE_ID,
-  inject,
-  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
@@ -14,7 +12,6 @@ import {
 } from '@angular/router';
 import { TitleStrategy } from '@angular/router';
 import { routes } from './app.routes';
-import { AuthService } from './core/auth/auth.service';
 import { PrivasTitleStrategy } from './core/title-strategy';
 
 registerLocaleData(localeEs, 'es');
@@ -35,6 +32,8 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     { provide: TitleStrategy, useClass: PrivasTitleStrategy },
-    provideAppInitializer(() => inject(AuthService).init()),
+    // Sin app initializer de auth: el sitio público no necesita Supabase al
+    // arrancar (así queda fuera del bundle inicial). `adminGuard` ya llama a
+    // `AuthService.init()` —idempotente— antes de activar el panel.
   ],
 };

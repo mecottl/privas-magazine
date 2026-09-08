@@ -52,8 +52,9 @@
   --estado-despublicado: #9a958c;
 
   /* ---- Tipografía --------------------------------------------------- */
-  --display: 'Fraunces', 'Libre Bodoni', Georgia, 'Times New Roman', serif;
-  --serif: 'Libre Bodoni', Georgia, 'Times New Roman', serif; /* wordmark + admin */
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  /* Serif secundaria (solo panel de admin): sin webfont propia, usa Georgia. */
+  --serif: Georgia, 'Times New Roman', serif;
   --sans: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   --fs-3xs: 0.6875rem; /* 11 */
