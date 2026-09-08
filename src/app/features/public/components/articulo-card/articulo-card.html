@@ -1,23 +1,25 @@
 <a class="art-card__link" [routerLink]="['/articulos', articulo().slug]">
-  @if (articulo().imagen_portada_url) {
-    <img
-      class="art-card__img"
-      [src]="articulo().imagen_portada_url"
-      [alt]="articulo().titulo"
-      loading="lazy"
-      decoding="async"
-    />
-  } @else {
-    <div class="art-card__img" aria-hidden="true"></div>
-  }
+  <span class="art-card__marco">
+    @if (articulo().imagen_portada_url) {
+      <img
+        class="art-card__img"
+        [src]="articulo().imagen_portada_url"
+        [alt]="articulo().titulo"
+        loading="lazy"
+        decoding="async"
+      />
+    } @else {
+      <span class="art-card__img art-card__img--vacio" aria-hidden="true"></span>
+    }
+    @if (articulo().categorias?.[0]?.nombre; as cat) {
+      <span class="art-card__cat">{{ cat }}</span>
+    }
+  </span>
 
-  <div class="art-card__body">
-    <div class="art-card__top">
-      <time [attr.datetime]="articulo().fecha_publicacion">
-        {{ articulo().fecha_publicacion | date: 'dd MMM. y' }}
-      </time>
-      <span>{{ articulo().categorias?.[0]?.nombre ?? '' }}</span>
-    </div>
+  <span class="art-card__body">
+    <time class="art-card__fecha" [attr.datetime]="articulo().fecha_publicacion">
+      {{ articulo().fecha_publicacion | date: 'dd MMM. y' }}
+    </time>
     <h3 class="art-card__titulo">{{ articulo().titulo }}</h3>
     <p class="art-card__extracto">{{ articulo().extracto }}</p>
     <span class="art-card__mas">
@@ -26,5 +28,5 @@
         <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     </span>
-  </div>
+  </span>
 </a>

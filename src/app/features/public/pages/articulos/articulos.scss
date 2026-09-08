@@ -83,16 +83,18 @@
 }
 .cat-aviso__enlace:hover { border-color: var(--on-brand); }
 
-/* --- Esqueleto de carga --- */
+/* --- Esqueleto de carga (a juego con la ficha de cristal) --- */
 .cat-skel {
-  --sk-a: rgba(251, 247, 238, 0.14);
-  --sk-b: rgba(251, 247, 238, 0.22);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background: rgba(251, 247, 238, 0.06);
-  border-radius: var(--r-card);
+  gap: 0.6rem;
+  padding: 0.6rem;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(9, 30, 40, 0.22), rgba(9, 30, 40, 0.1)),
+    rgba(255, 255, 255, 0.06);
+  box-shadow: var(--glass-edge), var(--glass-drop);
 }
-.cat-skel__img { aspect-ratio: 16 / 10; width: 100%; border-radius: 0; }
-.cat-skel__body { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.9rem 1rem 1.1rem; }
-.cat-skel .sk { --sk-a: rgba(251, 247, 238, 0.14); --sk-b: rgba(251, 247, 238, 0.24); }
+.cat-skel__img { aspect-ratio: 16 / 10; width: 100%; border-radius: 14px; }
+.cat-skel__body { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.2rem 0.4rem 0.35rem; }
+.cat-skel .sk { --sk-a: rgba(251, 247, 238, 0.12); --sk-b: rgba(251, 247, 238, 0.22); }
