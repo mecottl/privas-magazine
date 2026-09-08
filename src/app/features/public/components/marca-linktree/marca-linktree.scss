@@ -5,7 +5,7 @@
 .lt-overlay {
   position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: 1000;
   display: grid;
   place-items: end center;
   padding: clamp(0.5rem, 3vw, 2rem);

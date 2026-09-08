@@ -1,12 +1,15 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
   OnDestroy,
-  OnInit,
   computed,
+  inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import type { EnlaceMarca, Marca } from '../../../../core/models';
 
@@ -53,6 +56,14 @@ const ENLACE_META: Record<string, { label: string; icono: string }> = {
   },
 };
 
+/**
+ * Panel modal con el "linktree" de una marca: logo, nombre, bio y enlaces.
+ * Lo montan la portada y `/marcas`; emite `(cerrar)` con backdrop, Esc o la X.
+ *
+ * El overlay se traslada a `<body>` al abrir para que quede por encima de
+ * todo (header fijo, pie, franjas con z-index propio) sin depender del
+ * contexto de apilamiento de quien lo monte.
+ */
 @Component({
   selector: 'app-marca-linktree',
   standalone: true,
@@ -60,9 +71,13 @@ const ENLACE_META: Record<string, { label: string; icono: string }> = {
   styleUrl: './marca-linktree.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MarcaLinktree implements OnInit, OnDestroy {
+export class MarcaLinktree implements AfterViewInit, OnDestroy {
   readonly marca = input.required<Marca>();
   readonly cerrar = output<void>();
+
+  private readonly overlayRef =
+    viewChild.required<ElementRef<HTMLElement>>('overlay');
+  private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly enlaces = computed<EnlaceMarca[]>(() =>
     (this.marca().enlaces ?? []).filter((e) => e.url),
@@ -77,11 +92,14 @@ export class MarcaLinktree implements OnInit, OnDestroy {
     this.cerrar.emit();
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    document.body.appendChild(this.overlayRef().nativeElement);
     document.body.style.overflow = 'hidden';
   }
 
   ngOnDestroy() {
+    // Devolver el nodo a su sitio original para que Angular lo destruya limpio.
+    this.host.nativeElement.appendChild(this.overlayRef().nativeElement);
     document.body.style.overflow = '';
   }
 }
