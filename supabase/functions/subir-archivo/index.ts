@@ -32,7 +32,11 @@ import { Buffer } from 'node:buffer';
 import { corsHeaders, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
-type TipoArchivo = 'articulo-portada' | 'revista-pdf' | 'revista-portada';
+type TipoArchivo =
+  | 'articulo-portada'
+  | 'revista-pdf'
+  | 'revista-portada'
+  | 'marca-logo';
 
 interface ReglaTipo {
   /** Tamaño máximo en bytes. */
@@ -54,6 +58,11 @@ const REGLAS: Record<TipoArchivo, ReglaTipo> = {
     maxBytes: 8 * MB,
     mimes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
     carpeta: 'revistas',
+  },
+  'marca-logo': {
+    maxBytes: 2 * MB,
+    mimes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
+    carpeta: 'marcas',
   },
   'revista-pdf': {
     // Tope absoluto (rama FTP). Con UPLOAD_TARGET=supabase se recorta a 45 MB

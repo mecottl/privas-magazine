@@ -26,6 +26,30 @@
 
 .campos-grid .mc-ancho { grid-column: 1 / -1; }
 
+.mc-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: var(--space-sm);
+}
+.mc-logo > input { margin-top: 0; }
+.mc-logo__subir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.mc-logo__subir app-campo-archivo { flex: 1; min-width: 12rem; }
+.mc-logo__quitar { flex: none; height: 2.1rem; }
+
+.mc-nota {
+  margin: 0.7rem 0 0;
+  font-family: var(--sans);
+  font-size: var(--fs-2xs);
+  color: var(--ink-55);
+  line-height: 1.4;
+}
+
 .mc-datos .lado-titulo {
   margin: var(--space-sm) 0 0.5rem;
   font-family: var(--sans);

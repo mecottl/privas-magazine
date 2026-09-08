@@ -4,7 +4,8 @@ import { SupabaseService } from '../supabase/supabase.client';
 export type TipoArchivo =
   | 'articulo-portada'
   | 'revista-pdf'
-  | 'revista-portada';
+  | 'revista-portada'
+  | 'marca-logo';
 
 export type DestinoArchivo = 'supabase' | 'ftp';
 

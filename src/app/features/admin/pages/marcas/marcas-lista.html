@@ -8,12 +8,17 @@
 
   <div class="admin-page__fill">
     @if (error()) { <p class="error">{{ error() }}</p> }
+    <p class="mk-ayuda">
+      Arrastra las filas para cambiar el orden en que se muestran en el sitio.
+      @if (guardandoOrden()) { <span> · guardando…</span> }
+    </p>
 
     <div class="tabla-wrap">
       <table>
         <thead>
           <tr>
-            <th>Nombre</th><th>Sitio web</th><th>Redes</th><th>Orden</th>
+            <th class="mk-col-drag" aria-hidden="true"></th>
+            <th>Nombre</th><th>Sitio web</th><th>Redes</th>
             <th class="col-acciones">Acciones</th>
           </tr>
         </thead>
@@ -21,12 +26,23 @@
           @if (cargando()) {
             <tr><td colspan="5"><div class="admin-cargando">Cargando…</div></td></tr>
           } @else {
-            @for (m of marcas(); track m.id) {
-              <tr>
+            @for (m of marcas(); track m.id; let i = $index) {
+              <tr
+                draggable="true"
+                [class.mk-arrastrando]="arrastrado() === i"
+                (dragstart)="alArrastrar(i)"
+                (dragover)="$event.preventDefault()"
+                (drop)="alSoltarEn(i)"
+                (dragend)="alFinArrastre()"
+              >
+                <td class="mk-col-drag">
+                  <span class="mk-handle" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                  </span>
+                </td>
                 <td><a [routerLink]="[m.id]">{{ m.nombre }}</a></td>
                 <td>{{ m.sitio_web_url || '—' }}</td>
-                <td>{{ (m.enlaces?.length || 0) }}</td>
-                <td>{{ m.orden }}</td>
+                <td>{{ m.enlaces?.length || 0 }}</td>
                 <td class="col-acciones">
                   <div class="acciones">
                     <a [routerLink]="[m.id]"><button class="secundario">Editar</button></a>

@@ -21,18 +21,32 @@
         />
 
         <div class="campos-grid">
-          <label>Orden
-            <input type="number" [(ngModel)]="m.orden" name="orden" />
-          </label>
-          <label>Sitio web propio (CTA)
+          <label class="mc-ancho">Sitio web propio (CTA)
             <input [(ngModel)]="m.sitio_web_url" name="web" placeholder="https://…" />
           </label>
           <label class="mc-ancho">Descripción
             <input [(ngModel)]="m.descripcion" name="desc" placeholder="Una línea sobre la marca (opcional)" />
           </label>
-          <label class="mc-ancho">URL del logo
-            <input [(ngModel)]="m.logo_url" name="logo" placeholder="https://… (opcional)" />
-          </label>
+        </div>
+
+        <p class="lado-titulo">Logo</p>
+        <div class="mc-logo">
+          <input [(ngModel)]="m.logo_url" name="logo" placeholder="Pega una URL de imagen…" />
+          <div class="mc-logo__subir">
+            <app-campo-archivo
+              [url]="m.logo_url || null"
+              [imagen]="true"
+              accept="image/*"
+              etiqueta="…o subir imagen"
+              [subiendo]="subiendoLogo()"
+              (elegido)="subirLogo($event)"
+            />
+            @if (m.logo_url) {
+              <button type="button" class="secundario peligro mc-logo__quitar" (click)="quitarLogo()">
+                Quitar logo
+              </button>
+            }
+          </div>
         </div>
 
         <p class="lado-titulo">Redes sociales</p>
@@ -41,7 +55,7 @@
             <select [(ngModel)]="e.tipo" [name]="'tipo-' + $index" aria-label="Tipo de red">
               @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
             </select>
-            <input [(ngModel)]="e.url" [name]="'url-' + $index" placeholder="https://instagram.com/…" />
+            <input [(ngModel)]="e.url" [name]="'url-' + $index" [placeholder]="ph(e.tipo)" />
             <button type="button" class="secundario peligro" (click)="quitarEnlace($index)">Quitar</button>
           </div>
         } @empty {
@@ -61,6 +75,7 @@
               <button type="button" class="secundario peligro" (click)="eliminar()">Eliminar</button>
             }
           </div>
+          <p class="mc-nota">El orden en el sitio se cambia arrastrando las filas en la lista de marcas.</p>
         </div>
       </aside>
     </div>

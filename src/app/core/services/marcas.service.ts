@@ -26,13 +26,33 @@ export class MarcasService {
   }
 
   async crear(m: Partial<Marca>): Promise<Marca> {
+    // Orden nuevo = al final (el orden se reordena luego con drag&drop).
+    const payload = this.payload(m);
+    if (payload['orden'] === undefined || payload['orden'] === 0) {
+      const { data: ultima } = await this.sb
+        .from('marcas')
+        .select('orden')
+        .order('orden', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      payload['orden'] = ((ultima as { orden?: number } | null)?.orden ?? 0) + 1;
+    }
     const { data, error } = await this.sb
       .from('marcas')
-      .insert(this.payload(m))
+      .insert(payload)
       .select()
       .single();
     if (error) throw error;
     return this.normalizarFila(data as Marca);
+  }
+
+  /** Persiste el nuevo orden: cada marca recibe `orden = índice`. */
+  async reordenar(idsEnOrden: string[]): Promise<void> {
+    await Promise.all(
+      idsEnOrden.map((id, orden) =>
+        this.sb.from('marcas').update({ orden }).eq('id', id),
+      ),
+    );
   }
 
   async actualizar(id: string, m: Partial<Marca>): Promise<void> {

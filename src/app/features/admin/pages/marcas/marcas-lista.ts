@@ -10,6 +10,7 @@ import type { Marca } from '../../../../core/models';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './marcas-lista.html',
+  styleUrl: './marcas-lista.scss',
 })
 export class MarcasLista implements OnInit {
   private readonly srv = inject(MarcasService);
@@ -18,6 +19,9 @@ export class MarcasLista implements OnInit {
   readonly marcas = signal<Marca[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
+  readonly guardandoOrden = signal(false);
+  /** Índice de la fila que se está arrastrando. */
+  readonly arrastrado = signal<number | null>(null);
 
   ngOnInit() {
     this.cargar();
@@ -31,6 +35,37 @@ export class MarcasLista implements OnInit {
       this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
+    }
+  }
+
+  // --- Reordenar por arrastre ---
+  alArrastrar(i: number) {
+    this.arrastrado.set(i);
+  }
+  alSoltarEn(i: number) {
+    const desde = this.arrastrado();
+    this.arrastrado.set(null);
+    if (desde === null || desde === i) return;
+    const arr = [...this.marcas()];
+    const [m] = arr.splice(desde, 1);
+    arr.splice(i, 0, m);
+    this.marcas.set(arr);
+    void this.persistirOrden(arr);
+  }
+  alFinArrastre() {
+    this.arrastrado.set(null);
+  }
+
+  private async persistirOrden(arr: Marca[]) {
+    this.guardandoOrden.set(true);
+    this.error.set('');
+    try {
+      await this.srv.reordenar(arr.map((m) => m.id));
+    } catch (e) {
+      this.error.set(mensajeError(e));
+      await this.cargar();
+    } finally {
+      this.guardandoOrden.set(false);
     }
   }
 

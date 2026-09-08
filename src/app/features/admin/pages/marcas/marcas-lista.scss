@@ -1,0 +1,26 @@
+.mk-ayuda {
+  margin: 0 0 var(--space-2xs);
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+  color: var(--ink-55);
+}
+.mk-ayuda span { color: var(--brand); font-weight: 700; }
+
+.mk-col-drag {
+  width: 2.2rem;
+  padding-right: 0 !important;
+}
+.mk-handle {
+  display: grid;
+  place-items: center;
+  color: var(--ink-35);
+  cursor: grab;
+}
+.mk-handle svg { width: 1.1rem; height: 1.1rem; }
+tr[draggable='true'] { cursor: grab; }
+tr[draggable='true']:active { cursor: grabbing; }
+
+.mk-arrastrando {
+  opacity: 0.45;
+  background: var(--teal-wash) !important;
+}
