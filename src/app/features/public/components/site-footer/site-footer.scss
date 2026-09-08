@@ -6,13 +6,19 @@
   display: block;
   position: relative;
   z-index: 2;
-  margin-top: clamp(-60px, -6vw, -30px);
+  margin-top: clamp(-72px, -7vw, -40px);
 }
 
+/* Teal profundo (más oscuro que la franja de las tarjetas) para que el pie
+   se lea como una pieza propia y se vea el panel "montando" sobre la sección
+   previa, no como un solo bloque de color. */
 .site-foot {
-  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-lo) 100%);
+  background: linear-gradient(180deg, var(--brand-ink) 0%, var(--navy) 100%);
   color: var(--on-brand);
   border-radius: var(--r-panel) var(--r-panel) 0 0;
+  box-shadow:
+    0 -20px 44px -26px rgba(6, 20, 28, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .site-foot a { color: var(--on-brand); text-decoration: none; }
 
@@ -129,7 +135,8 @@
 
 /* --- Barra inferior: dos niveles con aire, no todo en una línea --- */
 .site-foot__base {
-  background: rgba(12, 40, 54, 0.35);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.18);
   padding: clamp(1.1rem, 2.6vw, 1.6rem) clamp(1.1rem, 4vw, 3rem);
   display: flex;
   flex-direction: column;
