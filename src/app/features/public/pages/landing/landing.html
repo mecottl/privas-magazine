@@ -122,26 +122,38 @@
     <div class="ediciones-grid" reveal>
       @for (slot of slotsEdiciones(); track $index; let i = $index) {
         @if (slot; as e) {
-          <article class="edicion-card" [style.--i]="i">
-            <span class="edicion-card__temporada">{{ nombreTemporada(e.temporada) }}</span>
-            <img class="edicion-card__portada" [src]="e.portada_url" [alt]="'Portada — ' + e.titulo" loading="lazy" />
-            <span class="edicion-card__num">Edición 0{{ i + 1 }}</span>
-            <a class="btn btn--primario btn--sm" [href]="e.pdf_url" target="_blank" rel="noopener">
-              Ver
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </a>
-          </article>
+          <a
+            class="edicion-card"
+            [style.--i]="i"
+            [href]="e.pdf_url"
+            target="_blank"
+            rel="noopener"
+            [attr.aria-label]="'Ver PDF — ' + e.titulo"
+          >
+            <span class="edicion-card__marco">
+              <img class="edicion-card__portada" [src]="e.portada_url" [alt]="'Portada — ' + e.titulo" loading="lazy" />
+              <span class="edicion-card__num">Edición 0{{ i + 1 }}</span>
+            </span>
+            <span class="edicion-card__pie">
+              <span class="edicion-card__label">{{ nombreTemporada(e.temporada) }} {{ e.anio }}</span>
+              <span class="edicion-card__cta">
+                Ver PDF
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </span>
+          </a>
         } @else {
-          <article class="edicion-card edicion-card--proxima" [style.--i]="i">
-            <span class="edicion-card__temporada">{{ temporadaSlot(i) }}</span>
-            <p class="edicion-card__proximamente">
+          <div class="edicion-card edicion-card--proxima" [style.--i]="i">
+            <span class="edicion-card__marco edicion-card__marco--vacio">
               <span>Próximamente</span>
-              <span>Próximamente</span>
-            </p>
-            <span class="edicion-card__num">Edición 0{{ i + 1 }}</span>
-          </article>
+              <span class="edicion-card__num">Edición 0{{ i + 1 }}</span>
+            </span>
+            <span class="edicion-card__pie">
+              <span class="edicion-card__label">{{ temporadaSlot(i) }} {{ anioSlot() }}</span>
+            </span>
+          </div>
         }
       }
     </div>

@@ -73,6 +73,13 @@ export class Landing implements OnInit {
     return NOMBRE_TEMPORADA[t] ?? t;
   }
 
+  readonly anioActual = new Date().getFullYear();
+
+  /** Año esperado para un hueco vacío: el de la edición vigente o el actual. */
+  anioSlot(): number {
+    return this.ediciones()[0]?.anio ?? this.anioActual;
+  }
+
   /** Etiqueta de temporada esperada para un hueco vacío (alterna las dos). */
   temporadaSlot(i: number): string {
     const usada = this.ediciones()[0]?.temporada;
