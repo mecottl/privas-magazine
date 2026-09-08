@@ -1,6 +1,6 @@
 <aside class="admin-sidebar">
   <div class="admin-sidebar__brand">
-    <strong>PRIVAS</strong>
+    <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
     <span>Gestión</span>
   </div>
 
@@ -32,8 +32,19 @@
   </nav>
 
   <div class="admin-sidebar__foot">
-    <p>{{ auth.perfil()?.nombre_visible || auth.user()?.email }}</p>
-    <button type="button" class="secundario" (click)="salir()">Cerrar sesión</button>
+    <div class="admin-sidebar__user">
+      <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
+      <p>
+        {{ nombre() }}
+        @if (correo() && correo() !== nombre()) { <small>{{ correo() }}</small> }
+      </p>
+    </div>
+    <button type="button" class="admin-sidebar__salir" (click)="salir()">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M9 5H5v14h4M15 8l4 4-4 4M19 12H9" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Cerrar sesión
+    </button>
   </div>
 </aside>
 

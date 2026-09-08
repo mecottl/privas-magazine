@@ -16,7 +16,6 @@ import {
   standalone: true,
   imports: [FormsModule, DatePipe],
   templateUrl: './administradores-lista.html',
-  styleUrl: './administradores-lista.scss',
 })
 export class AdministradoresLista implements OnInit {
   private readonly srv = inject(AdminsService);

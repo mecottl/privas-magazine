@@ -120,6 +120,9 @@
 
 /* --- Tokens del panel de administración --- */
 :root {
-  --admin-sidebar-w: 232px;
-  --admin-gutter: clamp(1.1rem, 0.6rem + 1.4vw, 2rem);
+  --admin-sidebar-w: 244px;
+  --admin-gutter: clamp(1.1rem, 0.6rem + 1.4vw, 2.25rem);
+  --admin-radio: 10px; /* esquinas del panel — más suaves que --radio */
+  --admin-radio-sm: 8px; /* inputs y botones */
+  --admin-bg: #f1ede3; /* fondo del área de contenido (papel un pelín más cálido) */
 }

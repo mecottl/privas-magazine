@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ArticulosService } from '../../../../core/services/articulos.service';
@@ -12,9 +19,10 @@ import type { Articulo } from '../../../../core/models';
   imports: [RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard implements OnInit {
-  readonly auth = inject(AuthService);
+  private readonly auth = inject(AuthService);
   private readonly artSrv = inject(ArticulosService);
   private readonly edSrv = inject(EdicionesService);
   private readonly catSrv = inject(CategoriasService);
@@ -22,6 +30,10 @@ export class Dashboard implements OnInit {
   private readonly articulos = signal<Articulo[]>([]);
   readonly ediciones = signal(0);
   readonly categorias = signal(0);
+
+  readonly nombre = computed(
+    () => this.auth.perfil()?.nombre_visible?.split(' ')[0] || 'administrador',
+  );
 
   readonly publicados = computed(
     () => this.articulos().filter((a) => a.estado === 'publicado').length,

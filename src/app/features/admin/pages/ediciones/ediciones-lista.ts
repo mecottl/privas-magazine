@@ -18,7 +18,6 @@ type Accion = 'publicado' | 'despublicado' | 'eliminar';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './ediciones-lista.html',
-  styleUrl: './ediciones-lista.scss',
 })
 export class EdicionesLista implements OnInit {
   private readonly srv = inject(EdicionesService);

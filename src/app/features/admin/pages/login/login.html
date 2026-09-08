@@ -1,28 +1,46 @@
-<div class="auth-shell">
-  <section class="auth-box">
-    <p class="eyebrow">PRIVAS Magazine</p>
-    <h1>Acceso a gestión</h1>
-    <form (ngSubmit)="entrar()">
-      <label>
-        Correo
-        <input type="email" name="email" [(ngModel)]="email" required autocomplete="username" />
-      </label>
-      <label>
-        Contraseña
-        <input
-          type="password"
-          name="password"
-          [(ngModel)]="password"
-          required
-          autocomplete="current-password"
-        />
-      </label>
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
-      }
-      <button type="submit" [disabled]="cargando()">
-        {{ cargando() ? 'Entrando…' : 'Entrar' }}
-      </button>
-    </form>
-  </section>
+<div class="login">
+  <div class="login__panel">
+    <a routerLink="/" class="login__marca" aria-label="PRIVAS Magazine — ir al sitio">
+      <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
+    </a>
+
+    <section class="login__card">
+      <h1 class="login__titulo">Acceso a gestión</h1>
+      <p class="login__sub">Panel de administración de la revista.</p>
+
+      <form class="login__form" (ngSubmit)="entrar()">
+        <label class="login__campo">
+          <span>Correo</span>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            autocomplete="username"
+            autofocus
+          />
+        </label>
+        <label class="login__campo">
+          <span>Contraseña</span>
+          <input
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            autocomplete="current-password"
+          />
+        </label>
+
+        @if (error()) {
+          <p class="login__error" role="alert">{{ error() }}</p>
+        }
+
+        <button type="submit" class="login__enviar" [disabled]="cargando()">
+          {{ cargando() ? 'Entrando…' : 'Entrar' }}
+        </button>
+      </form>
+    </section>
+
+    <a routerLink="/" class="login__volver">← Volver al sitio</a>
+  </div>
 </div>

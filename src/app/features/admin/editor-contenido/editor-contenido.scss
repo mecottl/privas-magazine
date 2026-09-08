@@ -13,7 +13,7 @@
 .editorjs-holder .ce-toolbar__settings-btn { right: 0; }
 /* Editor.js inyecta su markup aquí; alineamos con el sistema de diseño */
 .editorjs-holder :is(h2, h3, h4) {
-  font-family: var(--serif);
+  font-family: var(--display);
 }
 .editorjs-holder .ce-block__content,
 .editorjs-holder .ce-toolbar__content {
@@ -21,7 +21,7 @@
 }
 .editorjs-holder .cdx-quote,
 .editorjs-holder .ce-header {
-  font-family: var(--serif);
+  font-family: var(--display);
 }
 .editorjs-holder ::selection {
   background: var(--teal);

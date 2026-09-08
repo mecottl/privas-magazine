@@ -4,36 +4,66 @@
   </div>
 
   <div class="admin-page__scroll">
-<div class="dash-tiles">
-  <a routerLink="../articulos" class="dash-tile">
-    <span class="dash-tile__n">{{ publicados() }}</span>
-    <span class="dash-tile__k">artículos publicados</span>
-  </a>
-  <a routerLink="../articulos" [queryParams]="{ estado: 'borrador' }" class="dash-tile">
-    <span class="dash-tile__n">{{ borradores() }}</span>
-    <span class="dash-tile__k">en borrador</span>
-  </a>
-  <a routerLink="../articulos" [queryParams]="{ estado: 'programado' }" class="dash-tile">
-    <span class="dash-tile__n">{{ programados() }}</span>
-    <span class="dash-tile__k">programados</span>
-  </a>
-  <a routerLink="../ediciones" class="dash-tile">
-    <span class="dash-tile__n">{{ ediciones() }}</span>
-    <span class="dash-tile__k">ediciones de revista</span>
-  </a>
-  <a routerLink="../categorias" class="dash-tile">
-    <span class="dash-tile__n">{{ categorias() }}</span>
-    <span class="dash-tile__k">categorías</span>
-  </a>
-</div>
+    <p class="dash-saludo">Hola, {{ nombre() }}.</p>
+
+    <div class="dash-tiles">
+      <a routerLink="../articulos" class="dash-tile dash-tile--destacada">
+        <span class="dash-tile__n">{{ publicados() }}</span>
+        <span class="dash-tile__k">artículos publicados</span>
+      </a>
+      <a
+        routerLink="../articulos"
+        [queryParams]="{ estado: 'borrador' }"
+        class="dash-tile"
+      >
+        <span class="dash-tile__n">{{ borradores() }}</span>
+        <span class="dash-tile__k">en borrador</span>
+      </a>
+      <a
+        routerLink="../articulos"
+        [queryParams]="{ estado: 'programado' }"
+        class="dash-tile"
+      >
+        <span class="dash-tile__n">{{ programados() }}</span>
+        <span class="dash-tile__k">programados</span>
+      </a>
+      <a routerLink="../ediciones" class="dash-tile">
+        <span class="dash-tile__n">{{ ediciones() }}</span>
+        <span class="dash-tile__k">ediciones de revista</span>
+      </a>
+      <a routerLink="../categorias" class="dash-tile">
+        <span class="dash-tile__n">{{ categorias() }}</span>
+        <span class="dash-tile__k">categorías</span>
+      </a>
+    </div>
 
     <div class="panel">
       <h2>Accesos rápidos</h2>
-      <div class="dash-links">
-        <a routerLink="../articulos/nuevo">Nuevo artículo →</a>
-        <a routerLink="../ediciones">Subir una edición →</a>
-        <a routerLink="../categorias">Gestionar categorías →</a>
-        <a routerLink="../administradores">Invitar administrador →</a>
+      <div class="dash-acciones">
+        <a routerLink="../articulos/nuevo" class="dash-accion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+          </svg>
+          Nuevo artículo
+        </a>
+        <a routerLink="../ediciones" class="dash-accion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M12 15V3M8 7l4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Subir una edición
+        </a>
+        <a routerLink="../categorias" class="dash-accion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round" />
+          </svg>
+          Gestionar categorías
+        </a>
+        <a routerLink="../administradores" class="dash-accion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M16 19v-2a4 4 0 0 0-8 0v2M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Invitar administrador
+        </a>
       </div>
     </div>
   </div>

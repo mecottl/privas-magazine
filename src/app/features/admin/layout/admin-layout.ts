@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  computed,
   inject,
   viewChild,
 } from '@angular/core';
@@ -19,6 +20,14 @@ export class AdminLayout {
   readonly auth = inject(AuthService);
   private readonly main = viewChild<ElementRef<HTMLElement>>('main');
   private primeraCarga = true;
+
+  /** Nombre visible del admin, o el correo si no tiene. */
+  readonly nombre = computed(
+    () => this.auth.perfil()?.nombre_visible || this.auth.user()?.email || '—',
+  );
+  /** Inicial para el avatar. */
+  readonly inicial = computed(() => this.nombre().charAt(0).toUpperCase());
+  readonly correo = computed(() => this.auth.user()?.email ?? '');
 
   salir() {
     void this.auth.cerrarSesion();
