@@ -15,6 +15,16 @@ export class EdicionesService {
     return data as EdicionRevista[];
   }
 
+  async obtener(id: string): Promise<EdicionRevista> {
+    const { data, error } = await this.sb
+      .from('ediciones_revista')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) throw error;
+    return data as EdicionRevista;
+  }
+
   async listarPublicas(): Promise<EdicionRevista[]> {
     const { data, error } = await this.sb
       .from('ediciones_revista')

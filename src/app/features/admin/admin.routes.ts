@@ -55,11 +55,23 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'ediciones',
-    title: 'Ediciones · Gestión',
+        title: 'Ediciones · Gestión',
         loadComponent: () =>
           import('./pages/ediciones/ediciones-lista').then(
             (m) => m.EdicionesLista,
           ),
+      },
+      {
+        path: 'ediciones/nuevo',
+        title: 'Nueva edición · Gestión',
+        loadComponent: () =>
+          import('./pages/ediciones/edicion-editar').then((m) => m.EdicionEditar),
+      },
+      {
+        path: 'ediciones/:id',
+        title: 'Editar edición · Gestión',
+        loadComponent: () =>
+          import('./pages/ediciones/edicion-editar').then((m) => m.EdicionEditar),
       },
       {
         path: 'marcas',

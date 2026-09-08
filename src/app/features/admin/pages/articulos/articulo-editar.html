@@ -79,11 +79,14 @@
 
         <div class="lado-panel">
           <p class="lado-titulo">Portada</p>
-          <input type="file" accept="image/*" aria-label="Imagen de portada" (change)="subirPortada($event)" />
-          @if (subiendo()) { <p class="hint">Subiendo…</p> }
-          @if (m.imagen_portada_url) {
-            <img [src]="m.imagen_portada_url" alt="Portada del artículo" class="portada-preview" />
-          }
+          <app-campo-archivo
+            [url]="m.imagen_portada_url ?? null"
+            [imagen]="true"
+            accept="image/*"
+            etiqueta="Elegir imagen"
+            [subiendo]="subiendo()"
+            (elegido)="subirPortada($event)"
+          />
         </div>
       </aside>
     </form>

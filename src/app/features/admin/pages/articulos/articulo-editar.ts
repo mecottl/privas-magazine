@@ -16,6 +16,7 @@ import { ConfirmService } from '../../../../shared/components/confirm-dialog/con
 import { slugify } from '../../../../core/services/slug';
 import { mensajeError } from '../../../../core/services/errores';
 import { EditorContenido } from '../../editor-contenido/editor-contenido';
+import { CampoArchivo } from '../../shared/campo-archivo/campo-archivo';
 import {
   type Articulo,
   type BloqueContenido,
@@ -28,7 +29,7 @@ type Modo = 'publicar' | 'programar' | 'despublicar';
 @Component({
   selector: 'app-admin-articulo-editar',
   standalone: true,
-  imports: [FormsModule, RouterLink, EditorContenido],
+  imports: [FormsModule, RouterLink, EditorContenido, CampoArchivo],
   templateUrl: './articulo-editar.html',
   styleUrl: './articulo-editar.scss',
 })
@@ -112,9 +113,7 @@ export class ArticuloEditar implements OnInit {
     this.categoriaIds.set(s);
   }
 
-  async subirPortada(ev: Event) {
-    const file = (ev.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+  async subirPortada(file: File) {
     this.subiendo.set(true);
     this.error.set('');
     try {

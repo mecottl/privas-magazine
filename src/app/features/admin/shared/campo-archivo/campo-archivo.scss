@@ -1,0 +1,95 @@
+:host { display: block; }
+
+.campo-archivo__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.campo-archivo__elegir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--teal-ink);
+  background: var(--paper-2);
+  border: 1.5px dashed var(--line-2);
+  border-radius: var(--admin-radio-sm);
+  cursor: pointer;
+  transition: background var(--t), border-color var(--t);
+}
+.campo-archivo__elegir:hover:not(:disabled) {
+  background: var(--teal-wash);
+  border-color: var(--brand);
+}
+.campo-archivo__elegir:disabled { opacity: 0.6; cursor: default; }
+.campo-archivo__elegir svg { width: 1rem; height: 1rem; }
+
+.campo-archivo__hecho {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--admin-radio-sm);
+  background: var(--paper-2);
+}
+.campo-archivo__prev {
+  width: 3rem;
+  height: 3.6rem;
+  flex: none;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+.campo-archivo__doc {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  border-radius: 6px;
+  background: var(--teal-wash);
+  color: var(--brand);
+}
+.campo-archivo__doc svg { width: 1.3rem; height: 1.3rem; }
+
+.campo-archivo__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.7rem;
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+}
+.campo-archivo__ok {
+  font-weight: 800;
+  color: var(--exito);
+}
+.campo-archivo__acciones a {
+  font-weight: 700;
+  color: var(--teal-ink);
+}
+.campo-archivo__acciones a:hover { color: var(--brand); text-decoration: underline; }
+.campo-archivo__acciones button {
+  padding: 0.28rem 0.6rem;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--teal-ink);
+  background: var(--white);
+  border: 1.5px solid var(--line-2);
+  border-radius: var(--admin-radio-sm);
+  cursor: pointer;
+}
+.campo-archivo__acciones button:hover:not(:disabled) {
+  background: var(--teal-wash);
+  border-color: var(--brand);
+}
+.campo-archivo__acciones button:disabled { opacity: 0.6; cursor: default; }

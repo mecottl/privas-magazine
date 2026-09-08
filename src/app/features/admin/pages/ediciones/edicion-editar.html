@@ -1,0 +1,107 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <div>
+      <a routerLink=".." class="volver">← Ediciones</a>
+      <h1>{{ id ? 'Editar edición' : 'Nueva edición' }}</h1>
+    </div>
+  </div>
+
+  <div class="admin-page__scroll">
+    @if (error()) { <p class="error">{{ error() }}</p> }
+    @if (ok()) { <p class="ok">{{ ok() }}</p> }
+
+    <div class="ed-grid">
+      <section class="panel ed-datos">
+        <input
+          class="ed-titulo"
+          name="titulo"
+          placeholder="Título de la edición"
+          [(ngModel)]="m.titulo"
+          required
+        />
+
+        <div class="campos-grid">
+          <label>Temporada
+            <select [(ngModel)]="m.temporada" name="temporada">
+              @for (t of temporadas; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+          </label>
+          <label>Año
+            <input type="number" [(ngModel)]="m.anio" name="anio" />
+          </label>
+        </div>
+
+        <div class="ed-archivos">
+          <div class="ed-campo">
+            <p class="lado-titulo">PDF de la revista</p>
+            <app-campo-archivo
+              [url]="m.pdf_url || null"
+              accept="application/pdf"
+              etiqueta="Elegir PDF"
+              [subiendo]="subiendoPdf()"
+              (elegido)="subirPdf($event)"
+            />
+          </div>
+          <div class="ed-campo">
+            <p class="lado-titulo">Portada</p>
+            <app-campo-archivo
+              [url]="m.portada_url || null"
+              [imagen]="true"
+              accept="image/*"
+              etiqueta="Elegir imagen"
+              [subiendo]="subiendoPortada()"
+              (elegido)="subirPortada($event)"
+            />
+          </div>
+        </div>
+      </section>
+
+      <aside class="ed-lado">
+        <div class="panel">
+          <p class="lado-titulo">Publicación</p>
+          <p class="ed-estado">
+            <span class="badge badge--{{ m.estado }}">{{ m.estado }}</span>
+          </p>
+          <div class="ed-acciones">
+            @if (m.estado === 'publicado') {
+              <button type="button" (click)="guardarBorrador()" [disabled]="guardando()">
+                {{ guardando() ? 'Guardando…' : 'Guardar cambios' }}
+              </button>
+              <button type="button" class="secundario peligro" (click)="abrir('despublicar')">
+                Despublicar
+              </button>
+            } @else {
+              <button type="button" (click)="abrir('publicar')">Publicar ahora</button>
+              <button type="button" class="secundario" (click)="abrir('programar')">Programar…</button>
+              <button type="button" class="secundario" (click)="guardarBorrador()" [disabled]="guardando()">
+                {{ guardando() ? 'Guardando…' : 'Guardar borrador' }}
+              </button>
+            }
+            @if (id) {
+              <button type="button" class="secundario peligro" (click)="eliminar()">Eliminar</button>
+            }
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<dialog #dlg class="confirm" (close)="alCerrarModal()">
+  @if (modo(); as md) {
+    <h2>{{ tituloModal(md) }}</h2>
+    <p>{{ textoModal(md) }}</p>
+    @if (md === 'programar') {
+      <label>Fecha y hora de publicación
+        <input type="datetime-local" [(ngModel)]="fechaProgramada" [min]="minProgramable" />
+      </label>
+    }
+    @if (errorModal()) { <p class="error">{{ errorModal() }}</p> }
+    <div class="confirm__acciones">
+      <button type="button" class="secundario" (click)="cerrarModal()">Cancelar</button>
+      <button type="button" (click)="confirmarAccion()" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando…' : ctaModal(md) }}
+      </button>
+    </div>
+  }
+</dialog>

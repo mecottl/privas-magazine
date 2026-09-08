@@ -158,7 +158,7 @@ app-admin-layout {
   min-width: 0;
   height: 100dvh;
   overflow: hidden;
-  padding: var(--admin-gutter) var(--admin-gutter) 0;
+  padding: var(--admin-gutter);
 }
 .admin-main:focus { outline: none; }
 
@@ -172,7 +172,7 @@ app-admin-layout {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--space-md) 2px var(--space-xl);
+  padding: var(--space-md) 2px var(--space-lg);
 }
 
 .admin-page-head {
