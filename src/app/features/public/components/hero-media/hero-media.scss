@@ -1,5 +1,6 @@
-/* El host se coloca con la clase .hero__media del que lo usa (position:
-   absolute; inset:0). Aquí solo repartimos el interior. */
+/* En el hero se coloca con la clase .hero__media (position: absolute; inset:0);
+   en otros sitios (mosaico de secciones) el que lo usa posiciona y dimensiona
+   el host. El componente rellena ese hueco. */
 :host {
   display: block;
   overflow: hidden;
@@ -11,11 +12,14 @@
   height: 100%;
 }
 
-/* El tamaño / object-fit / Ken Burns del <img> los pone la regla global
-   `.hero__media img` (src/styles/_secciones.scss); no los repetimos aquí. */
 .hero-media__img {
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
+/* El object-position / Ken Burns del hero grande los añade encima la regla
+   global `.hero__media img` (src/styles/_secciones.scss). */
 
 /* Placeholder borroso: se pinta escalado y se desvanece al cargar la foto. */
 .hero-media__lqip {

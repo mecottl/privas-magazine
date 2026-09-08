@@ -12,12 +12,28 @@ import {
 import { RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
+import { MarcasService } from '../../../../core/services/marcas.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
 import { mensajeError } from '../../../../core/services/errores';
-import type { Articulo, EdicionRevista } from '../../../../core/models';
+import {
+  SECCIONES,
+  type Articulo,
+  type EdicionRevista,
+  type Marca,
+} from '../../../../core/models';
+
+/** Foto de cada sección para el mosaico "Explora por sección"
+ *  (variantes AVIF/WebP en public/img/, ver scripts/optimize-logos.mjs). */
+const IMG_CATEGORIA: Record<string, string> = {
+  turismo: 'cat-turismo',
+  gastronomia: 'cat-gastronomia',
+  cultura: 'cat-cultura',
+  arte: 'cat-arte',
+  entretenimiento: 'cat-entretenimiento',
+};
 
 const NOMBRE_TEMPORADA: Record<string, string> = {
   'primavera-verano': 'Primavera · Verano',
@@ -38,6 +54,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 export class Landing implements OnInit {
   private readonly artSrv = inject(ArticulosService);
   private readonly edSrv = inject(EdicionesService);
+  private readonly marcasSrv = inject(MarcasService);
   private readonly zone = inject(NgZone);
   private readonly pista = viewChild<ElementRef<HTMLElement>>('pista');
 
@@ -47,8 +64,15 @@ export class Landing implements OnInit {
 
   readonly articulos = signal<Articulo[]>([]);
   readonly ediciones = signal<EdicionRevista[]>([]);
+  readonly marcas = signal<Marca[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
+
+  /** Secciones editoriales con su foto — mosaico "Explora por sección". */
+  readonly categorias = SECCIONES.map((s) => ({
+    ...s,
+    media: IMG_CATEGORIA[s.slug] ?? 'cat-archivo',
+  }));
 
   /** Estado del carrusel: en qué extremo está, cuánto se ha recorrido y el
    *  tamaño relativo del "pulgar" de la barra de progreso (visible / total). */
@@ -170,6 +194,11 @@ export class Landing implements OnInit {
       this.ediciones.set(await this.edSrv.listarPublicas());
     } catch {
       /* la sección de ediciones tolera no tener datos */
+    }
+    try {
+      this.marcas.set(await this.marcasSrv.listar());
+    } catch {
+      /* el teaser de marcas se oculta si no hay datos */
     }
     // Deja que el @for pinte las tarjetas antes de medir la pista.
     setTimeout(() => this.alScroll(), 60);

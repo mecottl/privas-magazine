@@ -101,6 +101,68 @@
   </div>
 </section>
 
+<!-- ================ EXPLORA POR SECCIÓN ================ -->
+<section class="franja seccion-cats">
+  <div class="franja__wrap">
+    <div class="seccion-head" reveal>
+      <h2>Explora por sección</h2>
+    </div>
+    <div class="cats-mosaico" reveal>
+      @for (c of categorias; track c.slug; let i = $index) {
+        <a
+          class="cat-tile"
+          [class.cat-tile--ancho]="i === 0"
+          [routerLink]="['/articulos']"
+          [queryParams]="{ categoria: c.slug }"
+          [style.--i]="i"
+        >
+          <app-hero-media
+            class="cat-tile__media"
+            [nombre]="c.media"
+            [anchos]="[800]"
+            sizes="(max-width: 700px) 100vw, 33vw"
+            [alt]="c.nombre"
+          />
+          <span class="cat-tile__nombre">{{ c.nombre }}</span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ================ NUESTRAS MARCAS ================ -->
+@if (marcas().length) {
+  <section class="franja seccion-marcas">
+    <div class="franja__wrap">
+      <div class="marcas-teaser" reveal>
+        <div class="marcas-teaser__intro">
+          <span class="marcas-teaser__eyebrow">Grupo Privas</span>
+          <h2>Nuestras marcas</h2>
+          <p>Los proyectos de la casa: viajes, medios y más.</p>
+          <a routerLink="/marcas" class="marcas-teaser__cta">Conócelas todas →</a>
+        </div>
+        <ul class="marcas-teaser__lista">
+          @for (m of marcas(); track m.id) {
+            <li>
+              <a
+                [href]="m.sitio_web_url || '/marcas'"
+                [attr.target]="m.sitio_web_url ? '_blank' : null"
+                rel="noopener"
+              >
+                @if (m.logo_url) {
+                  <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
+                } @else {
+                  <span>{{ m.nombre }}</span>
+                }
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+}
+
 <!-- ==================== EDICIONES ==================== -->
 <section
   class="franja franja--foto franja--fin"
