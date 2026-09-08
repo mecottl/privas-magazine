@@ -17,6 +17,7 @@ import { RevealDirective } from '../../../../shared/directives/reveal.directive'
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
+import { MarcaLinktree } from '../../components/marca-linktree/marca-linktree';
 import { mensajeError } from '../../../../core/services/errores';
 import {
   SECCIONES,
@@ -47,7 +48,14 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, RevealDirective, ArticuloCard, EdicionCard, HeroMedia],
+  imports: [
+    RouterLink,
+    RevealDirective,
+    ArticuloCard,
+    EdicionCard,
+    HeroMedia,
+    MarcaLinktree,
+  ],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
 })
@@ -65,6 +73,8 @@ export class Landing implements OnInit {
   readonly articulos = signal<Articulo[]>([]);
   readonly ediciones = signal<EdicionRevista[]>([]);
   readonly marcas = signal<Marca[]>([]);
+  /** Marca cuyo linktree está abierto desde el teaser de la portada. */
+  readonly marcaAbierta = signal<Marca | null>(null);
   readonly error = signal('');
   readonly cargando = signal(true);
 

@@ -33,7 +33,6 @@ export class MarcasLista implements OnInit {
       logo_url: '',
       orden: 0,
       enlaces: [],
-      publicaciones: [],
     };
   }
 
@@ -51,14 +50,6 @@ export class MarcasLista implements OnInit {
 
   quitarEnlace(m: Partial<Marca>, i: number) {
     m.enlaces?.splice(i, 1);
-  }
-
-  agregarPublicacion(m: Partial<Marca>) {
-    (m.publicaciones ??= []).push({ imagen_url: '', enlace: '', texto: '' });
-  }
-
-  quitarPublicacion(m: Partial<Marca>, i: number) {
-    m.publicaciones?.splice(i, 1);
   }
 
   async crear() {
@@ -83,7 +74,6 @@ export class MarcasLista implements OnInit {
         logo_url: m.logo_url,
         orden: m.orden,
         enlaces: m.enlaces as EnlaceMarca[],
-        publicaciones: m.publicaciones,
       });
       await this.cargar();
     } catch (e) {

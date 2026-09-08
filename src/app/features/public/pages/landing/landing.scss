@@ -339,22 +339,23 @@
   flex-wrap: wrap;
   gap: 0.9rem;
 }
-.marcas-teaser__lista a {
+.marcas-teaser__lista button {
   display: grid;
   place-items: center;
   min-width: 8.5rem;
   height: 5rem;
   padding: 0.8rem 1.2rem;
+  border: none;
   border-radius: 16px;
   background: rgba(251, 247, 238, 0.08);
   box-shadow: var(--glass-edge);
   color: var(--on-brand);
   font-family: var(--display);
   font-size: 1.05rem;
-  text-decoration: none;
+  cursor: pointer;
   transition: transform var(--t), background var(--t);
 }
-.marcas-teaser__lista a:hover { transform: translateY(-3px); background: rgba(251, 247, 238, 0.14); }
+.marcas-teaser__lista button:hover { transform: translateY(-3px); background: rgba(251, 247, 238, 0.14); }
 .marcas-teaser__lista img { max-height: 2.6rem; width: auto; }
 @media (max-width: 760px) {
   .marcas-teaser { grid-template-columns: 1fr; }

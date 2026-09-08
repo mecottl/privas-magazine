@@ -37,7 +37,7 @@
     } @else {
       <div class="marcas-grid" reveal>
         @for (m of marcas(); track m.id; let i = $index) {
-          <button type="button" class="marca-card" (click)="abrir(m)" [style.--i]="i">
+          <button type="button" class="marca-card" (click)="abierta.set(m)" [style.--i]="i">
             <span class="marca-card__logo">
               @if (m.logo_url) {
                 <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
@@ -66,66 +66,5 @@
 
 <!-- ===================== LINKTREE (modal) ===================== -->
 @if (abierta(); as m) {
-  <div class="lt-overlay" (click)="cerrar()">
-    <div
-      class="lt-panel"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="'Enlaces de ' + m.nombre"
-      (click)="$event.stopPropagation()"
-    >
-      <button type="button" class="lt-cerrar" (click)="cerrar()" aria-label="Cerrar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
-        </svg>
-      </button>
-
-      <div class="lt-head">
-        <span class="lt-logo">
-          @if (m.logo_url) {
-            <img [src]="m.logo_url" [alt]="m.nombre" />
-          } @else {
-            <span class="lt-inicial">{{ m.nombre.charAt(0) }}</span>
-          }
-        </span>
-        <h2 class="lt-nombre">{{ m.nombre }}</h2>
-        @if (m.descripcion) { <p class="lt-bio">{{ m.descripcion }}</p> }
-      </div>
-
-      <div class="lt-links">
-        @if (m.sitio_web_url) {
-          <a class="lt-link lt-link--primario" [href]="m.sitio_web_url" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
-            </svg>
-            Sitio web
-          </a>
-        }
-        @for (e of enlaces(m); track e.url) {
-          <a class="lt-link" [href]="e.url" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path [attr.d]="meta(e.tipo).icono" />
-            </svg>
-            {{ meta(e.tipo).label }}
-          </a>
-        }
-        @if (!m.sitio_web_url && !enlaces(m).length) {
-          <p class="lt-vacio">Esta marca todavía no tiene enlaces.</p>
-        }
-      </div>
-
-      @if (publicaciones(m).length) {
-        <div class="lt-pubs">
-          <span class="lt-pubs__titulo">Últimas publicaciones</span>
-          <div class="lt-pubs__grid">
-            @for (p of publicaciones(m); track p.enlace) {
-              <a [href]="p.enlace" target="_blank" rel="noopener" [attr.aria-label]="p.texto || 'Ver publicación'">
-                <img [src]="p.imagen_url" [alt]="p.texto || ''" loading="lazy" />
-              </a>
-            }
-          </div>
-        </div>
-      }
-    </div>
-  </div>
+  <app-marca-linktree [marca]="m" (cerrar)="abierta.set(null)" />
 }

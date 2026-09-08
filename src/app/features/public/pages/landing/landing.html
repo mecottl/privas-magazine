@@ -144,23 +144,23 @@
         <ul class="marcas-teaser__lista">
           @for (m of marcas(); track m.id) {
             <li>
-              <a
-                [href]="m.sitio_web_url || '/marcas'"
-                [attr.target]="m.sitio_web_url ? '_blank' : null"
-                rel="noopener"
-              >
+              <button type="button" (click)="marcaAbierta.set(m)" [attr.aria-label]="'Enlaces de ' + m.nombre">
                 @if (m.logo_url) {
                   <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
                 } @else {
                   <span>{{ m.nombre }}</span>
                 }
-              </a>
+              </button>
             </li>
           }
         </ul>
       </div>
     </div>
   </section>
+}
+
+@if (marcaAbierta(); as m) {
+  <app-marca-linktree [marca]="m" (cerrar)="marcaAbierta.set(null)" />
 }
 
 <!-- ==================== EDICIONES ==================== -->

@@ -18,18 +18,7 @@
 .enlace-row button, .marca-form__pie button { height: 2rem; padding-block: 0; }
 .marca-form__pie { display: flex; gap: 0.5rem; margin-top: 0.3rem; }
 
-.pub-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 0.4rem;
-}
-.pub-row input { margin: 0; }
-.pub-row button { height: 2rem; padding-block: 0; }
-
 @media (max-width: 640px) {
   .marca-grid { grid-template-columns: 1fr; }
   .enlace-row { grid-template-columns: 1fr; }
-  .pub-row { grid-template-columns: 1fr; }
 }

@@ -171,17 +171,6 @@ export interface EnlaceMarca {
   url: string;
 }
 
-/**
- * Publicación destacada de una marca (tira "Últimas publicaciones" del
- * linktree). Hoy se llena a mano en el panel; el mismo formato lo puede
- * poblar más adelante una Edge Function contra la API de Instagram.
- */
-export interface PublicacionMarca {
-  imagen_url: string;
-  enlace: string;
-  texto?: string;
-}
-
 export interface Marca {
   id: string;
   nombre: string;
@@ -190,8 +179,6 @@ export interface Marca {
   sitio_web_url: string | null;
   /** Lista flexible de redes sociales. */
   enlaces: EnlaceMarca[];
-  /** Publicaciones destacadas (opcional; columna `publicaciones` jsonb). */
-  publicaciones?: PublicacionMarca[];
   /** @deprecated conservada por compatibilidad; usar `enlaces`. */
   red_social_url: string | null;
   logo_url: string | null;

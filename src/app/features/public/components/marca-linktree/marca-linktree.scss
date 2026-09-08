@@ -1,0 +1,118 @@
+/* Linktree de una marca en panel modal. El overlay va en position:fixed, así
+   que el :host no necesita caja. */
+:host { display: contents; }
+
+.lt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: end center;
+  padding: clamp(0.5rem, 3vw, 2rem);
+  background: rgba(6, 20, 28, 0.62);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: lt-fade 0.2s var(--ease);
+}
+@media (min-width: 640px) {
+  .lt-overlay { place-items: center; }
+}
+@keyframes lt-fade { from { opacity: 0; } }
+
+.lt-panel {
+  position: relative;
+  width: min(100%, 30rem);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: clamp(1.6rem, 5vw, 2.4rem) clamp(1.1rem, 4vw, 1.8rem) clamp(1.4rem, 4vw, 2rem);
+  border-radius: 26px 26px 0 0;
+  color: var(--on-brand);
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-ink) 100%);
+  box-shadow: 0 -10px 60px -12px rgba(0, 0, 0, 0.5), var(--glass-edge);
+  animation: lt-subir 0.32s var(--ease);
+}
+@media (min-width: 640px) {
+  .lt-panel { border-radius: 26px; animation-name: lt-aparecer; }
+}
+@keyframes lt-subir { from { transform: translateY(100%); } }
+@keyframes lt-aparecer { from { transform: translateY(16px) scale(0.98); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .lt-overlay, .lt-panel { animation: none; }
+}
+
+.lt-cerrar {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border: none;
+  border-radius: var(--r-pill);
+  background: rgba(251, 247, 238, 0.12);
+  color: var(--on-brand);
+  cursor: pointer;
+  transition: background var(--t), transform var(--t);
+}
+.lt-cerrar:hover { background: rgba(251, 247, 238, 0.22); transform: rotate(90deg); }
+.lt-cerrar svg { width: 1.1rem; height: 1.1rem; }
+
+.lt-head { text-align: center; margin-bottom: 1.4rem; }
+.lt-logo {
+  display: grid;
+  place-items: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  margin: 0 auto 0.8rem;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(251, 247, 238, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+.lt-logo img { max-width: 76%; max-height: 76%; object-fit: contain; }
+.lt-inicial {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: var(--on-brand);
+}
+.lt-nombre { margin: 0; font-family: var(--display); font-weight: 500; font-size: 1.7rem; }
+.lt-bio {
+  margin: 0.4rem auto 0;
+  max-width: 34ch;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--on-brand-dim);
+}
+
+.lt-links { display: flex; flex-direction: column; gap: 0.6rem; }
+.lt-link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.95rem 1.1rem;
+  border-radius: var(--r-pill);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  color: var(--on-brand);
+  background: rgba(251, 247, 238, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transition: transform var(--t), background var(--t);
+}
+.lt-link:hover { transform: translateY(-2px); background: rgba(251, 247, 238, 0.18); }
+.lt-link svg { width: 1.15rem; height: 1.15rem; flex: none; }
+.lt-link--primario {
+  background: var(--cream);
+  color: var(--brand);
+  box-shadow: none;
+}
+.lt-link--primario:hover { background: var(--white); }
+.lt-vacio {
+  margin: 0.4rem 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--on-brand-dim);
+}
