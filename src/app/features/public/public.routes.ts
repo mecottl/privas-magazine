@@ -22,6 +22,7 @@ export const PUBLIC_ROUTES: Routes = [
       },
       {
         path: 'articulos/:slug',
+        data: { hero: true },
         loadComponent: () =>
           import('./pages/articulo-detalle/articulo-detalle').then(
             (m) => m.ArticuloDetalle,

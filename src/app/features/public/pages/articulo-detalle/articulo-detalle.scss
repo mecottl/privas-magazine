@@ -68,8 +68,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 40%;
-  filter: saturate(1.04) contrast(1.02);
+  object-position: center 38%;
+  filter: saturate(1.02) contrast(1.01) brightness(0.9);
 }
 .art-hero::after {
   content: '';
@@ -77,8 +77,8 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(to top, rgba(9, 28, 38, 0.92) 0%, rgba(9, 28, 38, 0.5) 34%, rgba(9, 28, 38, 0.12) 62%, rgba(9, 28, 38, 0.34) 100%),
-    radial-gradient(120% 80% at 20% 100%, rgba(28, 74, 96, 0.55), transparent 60%);
+    linear-gradient(to top, rgba(9, 28, 38, 0.96) 0%, rgba(9, 28, 38, 0.72) 40%, rgba(9, 28, 38, 0.52) 72%, rgba(9, 28, 38, 0.62) 100%),
+    radial-gradient(120% 75% at 50% 100%, rgba(28, 74, 96, 0.5), transparent 62%);
 }
 .art-hero--sinfoto {
   background:
@@ -86,6 +86,14 @@
     linear-gradient(155deg, var(--brand-hi) 0%, var(--brand) 46%, var(--brand-ink) 100%);
 }
 .art-hero--sinfoto::after { display: none; }
+/* Sin foto que combatir: el degradado ya da contraste, el panel sobra. */
+.art-hero--sinfoto .art-hero__inner {
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  padding-inline: 0;
+}
 
 .art-volver {
   position: absolute;
@@ -114,10 +122,18 @@
 .art-hero__inner {
   position: relative;
   z-index: 1;
-  max-width: 46rem;
+  max-width: 42rem;
   margin-inline: auto;
   width: 100%;
+  padding: clamp(1.4rem, 3.5vw, 2.4rem) clamp(1.3rem, 4vw, 2.6rem) clamp(1.6rem, 4vw, 2.6rem);
   text-align: center;
+  border-radius: var(--r-lg);
+  background: rgba(9, 28, 38, 0.44);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow:
+    inset 0 0 0 1px rgba(251, 247, 238, 0.14),
+    0 24px 60px -28px rgba(9, 28, 38, 0.7);
 }
 .art-hero__cats {
   display: inline-flex;
