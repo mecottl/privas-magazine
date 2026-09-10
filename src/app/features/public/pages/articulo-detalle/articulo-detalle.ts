@@ -1,15 +1,17 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { mensajeError } from '../../../../core/services/errores';
-import type { Articulo, BloqueContenido } from '../../../../core/models';
+import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { ArticuloCard } from '../../components/articulo-card/articulo-card';
+import { mismoSlug, type Articulo, type BloqueContenido } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulo-detalle',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, RevealDirective, ArticuloCard],
   templateUrl: './articulo-detalle.html',
   styleUrl: './articulo-detalle.scss',
 })
@@ -17,7 +19,10 @@ export class ArticuloDetalle implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly srv = inject(ArticulosService);
   private readonly title = inject(Title);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   readonly articulo = signal<Articulo | null>(null);
+  readonly relacionados = signal<Articulo[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
 
@@ -73,6 +78,20 @@ export class ArticuloDetalle implements OnInit {
     return file?.url ?? String(d['url'] ?? '');
   }
 
+  /** Minutos de lectura estimados (≈200 palabras/min sobre el texto plano). */
+  minutosLectura(a: Articulo): number {
+    const texto = this.bloques(a)
+      .map((b) => {
+        const d = this.data(b);
+        if (Array.isArray(d['items'])) return this.items(b).join(' ');
+        return String(d['text'] ?? '');
+      })
+      .join(' ')
+      .replace(/<[^>]+>/g, ' ');
+    const palabras = texto.split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(palabras / 200));
+  }
+
   async ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug') ?? '';
     try {
@@ -83,11 +102,31 @@ export class ArticuloDetalle implements OnInit {
       } else {
         this.articulo.set(a);
         this.title.setTitle(`${a.titulo} · PRIVAS Magazine`);
+        void this.cargarRelacionados(a);
       }
     } catch (e) {
       this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
+  /** "Sigue leyendo": prioriza artículos que comparten alguna categoría. */
+  private async cargarRelacionados(a: Articulo) {
+    try {
+      const todos = await this.srv.listarPublicos();
+      const slugs = (a.categorias ?? []).map((c) => c.slug);
+      const otros = todos.filter((x) => x.id !== a.id);
+      const afines = otros.filter((x) =>
+        (x.categorias ?? []).some((c) => slugs.some((s) => mismoSlug(s, c.slug))),
+      );
+      const resto = otros.filter((x) => !afines.includes(x));
+      this.relacionados.set([...afines, ...resto].slice(0, 3));
+    } catch {
+      /* la sección de relacionados es opcional */
+    } finally {
+      this.cdr.markForCheck();
     }
   }
 }

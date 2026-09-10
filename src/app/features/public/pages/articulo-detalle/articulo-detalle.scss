@@ -1,103 +1,339 @@
-/* Detalle de artículo. La cabecera (.page) y utilidades (.sk, .meta, .leer)
-   son globales; aquí van .articulo y el cuerpo del contenido. */
+/* =============================================================================
+   DETALLE DE ARTÍCULO
+   Hero fotográfico a sangre → hoja de lectura de marfil que "monta" sobre la
+   foto → franja teal "Sigue leyendo". Mismo lenguaje que la portada y /articulos.
+   ========================================================================= */
 
-.articulo-volver {
-  display: inline-block;
-  margin: 0 0 var(--space-sm);
-  font-family: var(--sans);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--ink-55);
-  transition: color var(--t);
+:host {
+  display: block;
 }
-.articulo-volver:hover { color: var(--brand); }
 
-.articulo {
-  max-width: var(--ancho-lectura);
-  margin: 0 auto;
-  padding: var(--space-md) clamp(1.1rem, 4vw, 2rem) var(--space-3xl);
+/* --- Barra de progreso de lectura (CSS scroll-timeline, cero JS) -------- */
+.art-progreso {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  z-index: 201; /* por encima del header (200) */
+  pointer-events: none;
+  background: rgba(20, 56, 72, 0.12);
 }
-.page + .articulo { padding-top: 0; }
-.articulo h1 {
-  font-size: clamp(2rem, 1.4rem + 2.8vw, 3.1rem);
-  font-weight: 500;
-  color: var(--brand);
-  margin: 0.4rem 0 0;
-}
-.articulo > img {
+.art-progreso__fill {
+  display: block;
+  height: 100%;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: var(--r-card);
-  margin: var(--space-md) 0;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--brand-hi), var(--brand));
 }
-.articulo-cabecera { margin-bottom: var(--space-md); }
-.articulo-firma {
+@supports (animation-timeline: scroll()) {
+  .art-progreso__fill {
+    animation: art-progreso-avance linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes art-progreso-avance {
+  to { transform: scaleX(1); }
+}
+
+/* --- Estados de carga / error ----------------------------------------- */
+.art-cargando {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  padding: calc(var(--head-h) + var(--space-lg)) clamp(1.1rem, 4vw, 2.5rem) var(--space-3xl);
+}
+.art-error {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: calc(var(--head-h) + var(--space-2xl)) clamp(1.1rem, 4vw, 2.5rem) var(--space-3xl);
+  text-align: center;
+}
+.art-error .error { margin-bottom: var(--space-md); font-size: var(--fs-md); }
+
+/* --- Hero fotográfico ------------------------------------------------- */
+.art-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(30rem, 82vh, 44rem);
+  padding: var(--head-h) clamp(1.1rem, 4vw, 2.5rem) clamp(4.5rem, 11vw, 8rem);
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--on-brand);
+}
+.art-hero__foto {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: saturate(1.04) contrast(1.02);
+}
+.art-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to top, rgba(9, 28, 38, 0.92) 0%, rgba(9, 28, 38, 0.5) 34%, rgba(9, 28, 38, 0.12) 62%, rgba(9, 28, 38, 0.34) 100%),
+    radial-gradient(120% 80% at 20% 100%, rgba(28, 74, 96, 0.55), transparent 60%);
+}
+.art-hero--sinfoto {
+  background:
+    radial-gradient(90% 60% at 78% 12%, rgba(92, 168, 202, 0.5), transparent 62%),
+    linear-gradient(155deg, var(--brand-hi) 0%, var(--brand) 46%, var(--brand-ink) 100%);
+}
+.art-hero--sinfoto::after { display: none; }
+
+.art-volver {
+  position: absolute;
+  top: calc(var(--head-h) + 0.4rem);
+  left: clamp(1.1rem, 4vw, 2.5rem);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem 0.5rem 0.75rem;
+  border-radius: var(--r-pill);
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--on-brand);
+  background: rgba(9, 28, 38, 0.28);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur-refract);
+  box-shadow: var(--glass-edge);
+  transition: background var(--t), transform var(--t);
+}
+.art-volver:hover { background: rgba(9, 28, 38, 0.44); transform: translateX(-2px); }
+.art-volver svg { width: 1rem; height: 1rem; }
+
+.art-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 46rem;
+  margin-inline: auto;
+  width: 100%;
+  text-align: center;
+}
+.art-hero__cats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-bottom: 1.1rem;
+}
+.art-hero__cat {
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--r-pill);
+  font-family: var(--sans);
+  font-size: var(--fs-3xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-brand);
+  background: rgba(251, 247, 238, 0.16);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 0 0 1px rgba(251, 247, 238, 0.28);
+  transition: background var(--t);
+}
+.art-hero__cat:hover { background: rgba(251, 247, 238, 0.3); }
+
+.art-hero__titulo {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(2.1rem, 1.2rem + 3.8vw, 3.8rem);
+  line-height: 1.06;
+  letter-spacing: -0.012em;
+  text-shadow: 0 3px 40px rgba(9, 28, 38, 0.55), 0 1px 3px rgba(9, 28, 38, 0.4);
+}
+.art-hero__bajada {
+  margin: 1rem auto 0;
+  max-width: 44ch;
+  font-family: var(--sans);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  color: var(--on-brand-dim);
+  text-shadow: 0 1px 12px rgba(9, 28, 38, 0.5);
+}
+.art-hero__firma {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 1.4rem 0 0;
   font-family: var(--sans);
-  font-size: var(--fs-sm);
-  color: var(--ink-55);
-  margin: 0.7rem 0 0;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.02em;
+  color: var(--on-brand-dim);
+  text-shadow: 0 1px 10px rgba(9, 28, 38, 0.5);
 }
-.articulo-pie {
-  margin-top: var(--space-xl);
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--line-2);
+.art-hero__autor { font-weight: 700; color: var(--on-brand); }
+.art-hero__punto {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.7;
 }
-.articulo-cuerpo {
+
+/* --- Hoja de lectura ------------------------------------------------- */
+.art-lectura {
+  position: relative;
+  z-index: 3;
+  max-width: 46rem;
+  margin: clamp(-92px, -9vw, -56px) auto 0;
+  padding: clamp(1.9rem, 5vw, 3.6rem) clamp(1.3rem, 5vw, 3.4rem) clamp(2.2rem, 5vw, 3.4rem);
+  background: var(--white);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.art-cuerpo {
   font-family: var(--sans);
-  font-size: 1.08rem;
-  line-height: 1.75;
+  font-size: 1.09rem;
+  line-height: 1.78;
   color: var(--ink-80);
 }
-.articulo-cuerpo p { margin: 0 0 1.35em; }
-.articulo-cuerpo > p:first-child::first-letter {
+.art-cuerpo p { margin: 0 0 1.4em; }
+.art-cuerpo > p:first-of-type::first-letter {
   float: left;
   font-family: var(--display);
   font-weight: 600;
-  font-size: 3.4em;
-  line-height: 0.82;
-  padding: 0.06em 0.12em 0 0;
+  font-size: 3.6em;
+  line-height: 0.78;
+  padding: 0.05em 0.12em 0 0;
   color: var(--brand);
 }
-.articulo-cuerpo h2,
-.articulo-cuerpo h3,
-.articulo-cuerpo h4 { color: var(--brand); }
-.articulo-cuerpo h2 { font-size: clamp(1.5rem, 1.1rem + 1.2vw, 1.9rem); margin: 2.2rem 0 0.6rem; }
-.articulo-cuerpo h3 { font-size: 1.35rem; margin: 1.9rem 0 0.5rem; }
-.articulo-cuerpo h4 { font-size: 1.12rem; margin: 1.6rem 0 0.4rem; }
-.articulo-cuerpo ul,
-.articulo-cuerpo ol { margin: 0 0 1.35em; padding-left: 1.4em; }
-.articulo-cuerpo li { margin-bottom: 0.45em; }
-.articulo-cuerpo blockquote {
-  margin: 1.9em 0;
-  padding: 0.2em 0 0.2em 1.2em;
-  border-left: 3px solid var(--brand);
+.art-cuerpo h2,
+.art-cuerpo h3,
+.art-cuerpo h4 {
   font-family: var(--display);
-  font-size: 1.4em;
-  line-height: 1.4;
+  font-weight: 500;
+  color: var(--brand);
+  line-height: 1.18;
+}
+.art-cuerpo h2 {
+  font-size: clamp(1.5rem, 1.15rem + 1.2vw, 1.95rem);
+  margin: 2.3rem 0 0.6rem;
+}
+.art-cuerpo h2::before {
+  content: '';
+  display: block;
+  width: 2.4rem;
+  height: 3px;
+  margin-bottom: 0.9rem;
+  border-radius: var(--r-pill);
+  background: var(--brand-hi);
+}
+.art-cuerpo h3 { font-size: 1.35rem; margin: 2rem 0 0.5rem; }
+.art-cuerpo h4 { font-size: 1.12rem; margin: 1.7rem 0 0.4rem; }
+
+.art-cuerpo ul,
+.art-cuerpo ol { margin: 0 0 1.4em; padding-left: 1.3em; }
+.art-cuerpo li { margin-bottom: 0.5em; }
+.art-cuerpo ul li::marker { color: var(--brand-hi); }
+.art-cuerpo ol li::marker { color: var(--brand-hi); font-weight: 700; }
+
+.art-cuerpo blockquote {
+  margin: 2em 0;
+  padding: 1.2rem 1.5rem;
+  border-radius: var(--r-sm);
+  border-left: 3px solid var(--brand);
+  background: var(--teal-wash);
+  font-family: var(--display);
+  font-size: 1.32em;
+  line-height: 1.42;
   font-style: italic;
   color: var(--ink);
 }
-.articulo-cuerpo blockquote p { margin: 0; }
-.articulo-cuerpo blockquote cite {
+.art-cuerpo blockquote p { margin: 0; }
+.art-cuerpo blockquote cite {
   display: block;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
   font-family: var(--sans);
-  font-size: 0.55em;
+  font-size: 0.56em;
   font-style: normal;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-55);
 }
-.articulo-cuerpo figure { margin: 1.9em 0; }
-.articulo-cuerpo figure img { width: 100%; border-radius: var(--r-sm); }
-.articulo-cuerpo figcaption {
-  margin-top: 0.5rem;
+
+.art-cuerpo figure {
+  margin: 2em 0;
+}
+.art-cuerpo figure img {
+  width: 100%;
+  border-radius: var(--r-card);
+}
+.art-cuerpo figcaption {
+  margin-top: 0.55rem;
   font-family: var(--sans);
   font-size: var(--fs-xs);
   color: var(--ink-55);
   text-align: center;
+}
+
+/* --- Cierre del artículo ------------------------------------------------ */
+.art-fin {
+  margin-top: clamp(2rem, 5vw, 3rem);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.art-fin__glifo {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--brand-hi);
+  font-size: 1.1rem;
+}
+.art-fin__firma {
+  margin: 0 0 0.9rem;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  color: var(--ink-55);
+}
+.art-fin__firma strong { color: var(--ink); font-weight: 700; }
+
+/* --- Sigue leyendo (franja teal) ------------------------------------- */
+.art-mas {
+  margin-top: clamp(3rem, 8vw, 5.5rem);
+  padding: clamp(2.6rem, 6vw, 4.5rem) 0 clamp(3.5rem, 9vw, 6rem);
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-lo) 100%);
+  border-radius: var(--r-panel) var(--r-panel) 0 0;
+  color: var(--on-brand);
+}
+.art-mas__wrap {
+  max-width: var(--ancho-max);
+  margin-inline: auto;
+  padding-inline: clamp(1.1rem, 4vw, 2.5rem);
+}
+.art-mas__titulo {
+  margin: 0 0 clamp(1.4rem, 4vw, 2.2rem);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.3rem);
+  color: var(--on-brand);
+}
+.art-mas__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: clamp(1.1rem, 3vw, 1.8rem);
+}
+
+/* --- Móvil --------------------------------------------------------------- */
+@media (max-width: 560px) {
+  .art-hero { min-height: clamp(24rem, 74vh, 32rem); }
+  .art-hero__titulo { font-size: clamp(1.9rem, 1.2rem + 3.4vw, 2.6rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-volver:hover { transform: none; }
 }
