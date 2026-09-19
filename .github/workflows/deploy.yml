@@ -59,3 +59,28 @@ jobs:
             --prod \
             --token="${{ secrets.VERCEL_TOKEN }}" \
             --yes
+
+      - name: Deploy a Akky por FTP
+        # La cuenta FTP de Akky apunta DIRECTO a la raíz pública del dominio,
+        # sin la carpeta public_html/ de la convención estándar de cPanel
+        # (confirmado en vivo, issue #55/#19 — mismo criterio que
+        # FTP_REMOTE_PREFIX vacío en subir-archivo/eliminar-archivo).
+        # server-dir "/" es esa raíz. NUNCA borra archivos remotos que no
+        # vengan del build (dangerous-clean-slate NO se activa) y además se
+        # excluye explícitamente uploads/** — ahí vive lo que suben admins
+        # desde el panel (subir-archivo), un deploy del sitio no debe tocarlo.
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Akky confirmó que no tiene SFTP; a diferencia de subir-archivo
+          # (que intenta FTPS y cae a FTP plano), esta acción no reintenta
+          # sola, así que se fija en 'ftp' para no depender de que el
+          # handshake FTPS funcione en CI.
+          protocol: ftp
+          local-dir: dist/privas-magazine/browser/
+          server-dir: ./
+          exclude: |
+            **/uploads/**
+            **/.well-known/**

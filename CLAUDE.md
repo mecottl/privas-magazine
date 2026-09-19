@@ -9,8 +9,11 @@ activa de diseño y construcción** (editor de bloques, UI definitiva,
 pulido de páginas públicas — ver milestone "Frontend — diseño y editor").
 
 La infraestructura final se está migrando de Hostinger a Akky (ver sección
-de Stack más abajo) — el código de subida/borrado de archivos ya se
-adaptó a FTP, falta el paso de deploy y las credenciales reales.
+de Stack más abajo): subida/borrado de archivos ya funciona en vivo por
+FTP, y `deploy.yml` ya tiene el step que sube el sitio completo a Akky
+(issue #19) — falta que el desarrollador configure los secretos de GitHub
+Actions (`FTP_HOST`/`FTP_USER`/`FTP_PASSWORD`) y se pruebe en vivo. Vercel
+sigue corriendo en paralelo hasta que ese deploy esté confirmado (issue #59).
 
 Plataforma editorial (artículos + revista digital) para PRIVAS Magazine.
 Este archivo es la fuente de verdad de la arquitectura ya decidida. Léelo

@@ -1,0 +1,17 @@
+# PRIVAS Magazine es una SPA (Angular, sin SSR): toda ruta que no sea un
+# archivo real (js/css/img) o la carpeta uploads/ debe servir index.html
+# para que el router de Angular la resuelva del lado del cliente.
+# Sin esto, entrar directo a /articulos/mi-slug o /gestion-privas da 404
+# en Apache/LiteSpeed (Vercel hace este fallback solo, Akky no).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Deja pasar archivos y carpetas reales tal cual (incluye uploads/*).
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Todo lo demás -> index.html (rutas de Angular).
+  RewriteRule ^ index.html [L]
+</IfModule>
