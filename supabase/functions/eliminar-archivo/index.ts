@@ -12,18 +12,19 @@
  *
  * Lógica:
  *   - target 'supabase' → storage.from(bucket).remove([path]) con service_role.
- *   - target 'ftp'       → FTP DELETE en public_html/uploads/<path> (cPanel
- *     de Akky). Akky no tiene SFTP, solo FTP plano — mismo criterio que
- *     subir-archivo: intenta FTPS explícito primero, cae a FTP sin cifrar
- *     si el servidor lo rechaza.
- *     (rama sin probar en vivo hasta tener credenciales reales de Akky —
- *     igual que subir-archivo.)
+ *   - target 'ftp'       → FTP DELETE en <FTP_REMOTE_PREFIX>uploads/<path>
+ *     (prefijo vacío por default — mismo criterio que subir-archivo, la
+ *     cuenta FTP de Akky ya apunta a la raíz pública sin `public_html/`).
+ *     Akky no tiene SFTP, solo FTP plano — intenta FTPS explícito primero,
+ *     cae a FTP sin cifrar si el servidor lo rechaza.
  *
  * Si el archivo ya no existe (borrado doble, o nunca se subió) NO falla
  * ruidosamente: lo registra y responde 200 igual.
  *
  * Secretos: CRON_SECRET, UPLOAD_BUCKET (default "uploads"),
- *           FTP_HOST / FTP_USER / FTP_PASSWORD (solo rama ftp).
+ *           FTP_HOST / FTP_USER / FTP_PASSWORD (solo rama ftp),
+ *           FTP_REMOTE_PREFIX (opcional, default vacío — debe coincidir con
+ *           el de subir-archivo).
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
 import { adminClient, requireCronSecret } from '../_shared/clients.ts';
@@ -61,6 +62,18 @@ async function borrarDeSupabase(path: string): Promise<void> {
   if (error) throw new Error(`Storage: ${error.message}`);
 }
 
+/**
+ * Prefijo del directorio remoto antes de "uploads/...". Vacío por defecto —
+ * ver la misma constante/comentario en subir-archivo/index.ts: en Akky la
+ * cuenta FTP ya apunta a la raíz pública, sin `public_html/`. Debe coincidir
+ * con `FTP_REMOTE_PREFIX` de subir-archivo o se intentará borrar en el lugar
+ * equivocado.
+ */
+function prefijoRemoto(): string {
+  const p = (Deno.env.get('FTP_REMOTE_PREFIX') ?? '').trim();
+  return p ? `${p.replace(/^\/+|\/+$/g, '')}/` : '';
+}
+
 async function borrarPorFtp(path: string): Promise<void> {
   const host = Deno.env.get('FTP_HOST');
   const user = Deno.env.get('FTP_USER');
@@ -70,7 +83,7 @@ async function borrarPorFtp(path: string): Promise<void> {
   }
 
   const { Client } = await import('npm:basic-ftp@5');
-  const remotePath = `public_html/uploads/${path}`;
+  const remotePath = `${prefijoRemoto()}uploads/${path}`;
 
   let client = new Client();
   let conectado = false;

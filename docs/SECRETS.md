@@ -5,9 +5,10 @@
 > se renombraron de `SFTP_*` a `FTP_*` (el código también se migró, de
 > `ssh2-sftp-client` a `basic-ftp`).
 >
-> **Pendiente de confirmar con Akky**: el nombre exacto de la ruta de
-> cuentas FTP dentro de cPanel (equivalente a lo que en Hostinger era
-> hPanel → Archivos → Cuentas FTP).
+> **Confirmado en vivo (19 sep 2026)**: la cuenta FTP de Akky apunta directo
+> a la raíz pública del dominio — a diferencia de Hostinger, NO usa la
+> convención `public_html/`. Ver `FTP_REMOTE_PREFIX` abajo (vacío por
+> default) e issue #55.
 
 ## Secretos de Edge Functions (Supabase)
 
@@ -22,6 +23,7 @@ NO son secretos de GitHub Actions: es Supabase quien llama a GitHub, no al revé
 | `UPLOAD_BUCKET` | `subir-archivo`, `eliminar-archivo` | bucket privado de Storage (default `uploads`) — solo aplica cuando el target es `supabase` |
 | `FTP_HOST` / `FTP_USER` / `FTP_PASSWORD` | `subir-archivo`, `eliminar-archivo` | credenciales de la cuenta FTP en cPanel de Akky. Solo para `UPLOAD_TARGET=ftp`. La función intenta FTPS explícito primero y cae a FTP sin cifrar si el servidor lo rechaza |
 | `FTP_PUBLIC_BASE_URL` | `subir-archivo` | dominio público de Akky, ej. `https://privasmagazine.com` |
+| `FTP_REMOTE_PREFIX` | `subir-archivo`, `eliminar-archivo` | opcional, **default vacío**. La cuenta FTP de Akky ya apunta a la raíz pública del dominio — NO usar `public_html` aquí (se confirmó en vivo, issue #55, que esa carpeta no es la raíz servida). Solo se necesita si algún día se usa una cuenta FTP con la convención estándar de cPanel (home = `.../public_html/`) |
 | `GH_DISPATCH_TOKEN` | `programar-publicacion` | PAT de GitHub con permiso de `repository_dispatch` sobre el repo. NO puede llamarse `GITHUB_*` (prefijo reservado) |
 | `GH_DISPATCH_REPO` | `programar-publicacion` | opcional, `owner/repo`. Default `mecottl/privas-magazine` |
 | `RESEND_API_KEY` | `programar-publicacion` | opcional hoy (sin dominio). Si falta, el envío de newsletter se salta silenciosamente |
@@ -65,7 +67,7 @@ select cron.schedule(
 ## Cómo probar (ver brief "Nota general sobre pruebas")
 
 - **`invitar-admin`**: usar una segunda cuenta real (prueba o de la clienta), no la del dev.
-- **`subir-archivo` / `eliminar-archivo`**: probar con `UPLOAD_TARGET=supabase` (hoy). La rama FTP no se puede probar en vivo hasta tener credenciales reales de Akky.
+- **`subir-archivo` / `eliminar-archivo`**: rama FTP ya probada en vivo contra Akky. Si la URL pública devuelta da 404, lo primero a revisar es `FTP_REMOTE_PREFIX` (debe estar vacío salvo que la cuenta FTP use la convención `public_html/`).
 - **`confirmar-suscripcion` / `cancelar-suscripcion`**: probables de punta a punta ya.
   Sin `RESEND_API_KEY` no se puede enviar el correo con el link, así que:
   1. `insert into suscriptores_newsletter (email) values ('prueba@ejemplo.com');`

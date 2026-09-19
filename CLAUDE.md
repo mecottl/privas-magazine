@@ -58,6 +58,13 @@ este repo.
 > `ssh2-sftp-client` a `basic-ftp` en consecuencia — ver detalle en
 > `EDGE_FUNCTIONS_BRIEF.md`. Si Akky llega a habilitar SFTP/FTPS más
 > adelante, vale la pena volver a cifrar esa subida.
+>
+> **19 sep 2026:** confirmado en vivo que la cuenta FTP de Akky apunta
+> directo a la raíz pública del dominio, SIN la carpeta `public_html/` de
+> la convención estándar de cPanel — un archivo de prueba subido a
+> `public_html/uploads/...` dio 404 (issue #55). El prefijo remoto quedó
+> vacío por default y es configurable vía `FTP_REMOTE_PREFIX` si algún día
+> hace falta.
 
 ## Esquema de base de datos (ya aplicado, no regenerar)
 
@@ -152,6 +159,8 @@ estática sin servidor Node en producción.
   Angular.
 - `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`, `FTP_PUBLIC_BASE_URL` — secretos de
   Edge Function (Akky). Antes eran `SFTP_*` — renombrados el 4 sep 2026.
+  `FTP_REMOTE_PREFIX` opcional (default vacío — NO poner `public_html`,
+  ver nota de "19 sep 2026" arriba).
 - `RESEND_API_KEY` — secreto de Edge Function, se activa cuando exista el
   dominio.
 - Lista completa (incluye `CRON_SECRET`, `GH_DISPATCH_TOKEN`, `UPLOAD_TARGET`,
@@ -168,9 +177,6 @@ estática sin servidor Node en producción.
 - Sección "Nuestras Marcas": si es fija o administrable desde el panel —
   sigue sin confirmar, construir el CRUD de todos modos ya que la tabla
   `marcas` ya existe, pero avisar si se prefiere dejarla fija por ahora.
-- **Nombre exacto de la ruta de cuentas FTP dentro de cPanel de Akky** —
-  pendiente de confirmar (equivalente a lo que en Hostinger era
-  hPanel → Archivos → Cuentas FTP).
 
 ## Dónde está el seguimiento de trabajo
 

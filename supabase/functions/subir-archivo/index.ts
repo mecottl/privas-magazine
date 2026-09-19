@@ -13,14 +13,18 @@
  * 4. Nombre seguro y único: <slug>-<timestamp>.<ext> (nunca el nombre original).
  * 5. Según UPLOAD_TARGET:
  *      - 'supabase' → bucket privado, devuelve URL firmada de larga expiración.
- *      - 'ftp'      → FTP (cPanel de Akky) a public_html/uploads/<...>,
- *                     devuelve URL pública. Akky confirmó que NO tiene SFTP,
- *                     solo FTP plano (sin cifrar) vía cPanel — ver nota de
- *                     seguridad en `subirPorFtp` más abajo.
+ *      - 'ftp'      → FTP (cPanel de Akky) a <FTP_REMOTE_PREFIX>uploads/<...>
+ *                     (prefijo vacío por default — la cuenta FTP de Akky ya
+ *                     apunta a la raíz pública, sin `public_html/` de por
+ *                     medio, a diferencia de la convención estándar de
+ *                     cPanel), devuelve URL pública. Akky confirmó que NO
+ *                     tiene SFTP, solo FTP plano (sin cifrar) vía cPanel —
+ *                     ver nota de seguridad en `subirPorFtp` más abajo.
  * 6. 200 { url } — el frontend guarda esa URL en la fila correspondiente.
  *
  * Secretos: FTP_HOST / FTP_USER / FTP_PASSWORD, UPLOAD_TARGET,
  *           FTP_PUBLIC_BASE_URL (ej. https://privasmagazine.com),
+ *           FTP_REMOTE_PREFIX (opcional, default vacío — ver `prefijoRemoto`),
  *           UPLOAD_BUCKET (default "uploads").
  *
  * Historial: antes usaba SFTP real (ssh2-sftp-client) pensando en Hostinger.
@@ -122,6 +126,19 @@ async function subirASupabase(
   return data.signedUrl;
 }
 
+/**
+ * Prefijo del directorio remoto antes de "uploads/...". Vacío por defecto:
+ * en Akky la cuenta FTP ya apunta directo a la raíz pública del dominio, SIN
+ * la carpeta `public_html/` de la convención estándar de cPanel (confirmado
+ * en vivo — ver issue #55: un archivo subido a `public_html/uploads/...`
+ * dio 404, la raíz real es `/uploads/...`). Configurable vía `FTP_REMOTE_PREFIX`
+ * por si algún día se usa una cuenta FTP con esa convención estándar.
+ */
+function prefijoRemoto(): string {
+  const p = (Deno.env.get('FTP_REMOTE_PREFIX') ?? '').trim();
+  return p ? `${p.replace(/^\/+|\/+$/g, '')}/` : '';
+}
+
 async function subirPorFtp(ruta: string, bytes: Uint8Array): Promise<string> {
   const host = Deno.env.get('FTP_HOST');
   const user = Deno.env.get('FTP_USER');
@@ -136,7 +153,7 @@ async function subirPorFtp(ruta: string, bytes: Uint8Array): Promise<string> {
   const { Client } = await import('npm:basic-ftp@5');
   const { Readable } = await import('node:stream');
 
-  const remoteDir = `public_html/uploads/${ruta.slice(0, ruta.lastIndexOf('/'))}`;
+  const remoteDir = `${prefijoRemoto()}uploads/${ruta.slice(0, ruta.lastIndexOf('/'))}`;
   const remoteName = ruta.slice(ruta.lastIndexOf('/') + 1);
 
   // Akky confirmó que NO tiene SFTP — solo FTP plano vía cPanel. Intentamos

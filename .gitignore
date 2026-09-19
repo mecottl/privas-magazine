@@ -50,4 +50,5 @@ Thumbs.db
 
 .env
 .env.local
-.env.*.localng-serve.*.log
+.env.*.local
+ng-serve.*.log

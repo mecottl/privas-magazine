@@ -71,10 +71,14 @@ Quién la llama: un admin logueado, desde el panel.
 5. Según `UPLOAD_TARGET`:
    - `supabase` → bucket privado con `service_role`, devolver URL firmada
      de larga expiración.
-   - `ftp` → `FTP_HOST/USER/PASSWORD`, sube a `public_html/uploads/...` en
-     cPanel de Akky. Intenta conectar con FTPS explícito (`secure: true`)
-     primero; si el servidor lo rechaza, reintenta en FTP plano
-     (`secure: false`) — Akky confirmó que no tiene SFTP.
+   - `ftp` → `FTP_HOST/USER/PASSWORD`, sube a `<FTP_REMOTE_PREFIX>uploads/...`
+     en cPanel de Akky — `FTP_REMOTE_PREFIX` vacío por default, **no** es
+     `public_html/`: se confirmó en vivo (issue #55) que la cuenta FTP de
+     Akky ya apunta directo a la raíz pública del dominio, sin la carpeta
+     `public_html/` de la convención estándar de cPanel. Intenta conectar
+     con FTPS explícito (`secure: true`) primero; si el servidor lo rechaza,
+     reintenta en FTP plano (`secure: false`) — Akky confirmó que no tiene
+     SFTP.
 6. 200 con `{ url }` — el frontend la guarda en la fila correspondiente.
 
 ## 4. `eliminar-archivo`
@@ -100,7 +104,8 @@ no dejar archivos huérfanos en Storage o en Akky.
 5. 200 con `{ ok: true, resultados: [{ path, target, ok, error? }, ...] }`.
 
 Secretos: `CRON_SECRET`, `UPLOAD_BUCKET`, `FTP_HOST` / `FTP_USER` /
-`FTP_PASSWORD` (solo rama `ftp`).
+`FTP_PASSWORD` / `FTP_REMOTE_PREFIX` (solo rama `ftp`, debe coincidir con el
+de `subir-archivo` o se intenta borrar en el lugar equivocado).
 
 ## 5. `suscribirse`
 
