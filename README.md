@@ -7,7 +7,7 @@ para la arquitectura completa y las decisiones ya tomadas.
 
 - **Frontend**: Angular 22 (standalone components, sin NgModules), build 100% estático.
 - **BaaS**: Supabase (Postgres + Auth + Storage + Edge Functions), ref `xiqqhjdpmqdnzsvpjhwq`.
-- **Hosting**: Akky (cPanel + FTP) en producción; Vercel en staging.
+- **Hosting**: Akky (cPanel + FTP) en producción. Vercel se usó como staging temporal hasta el 20 sep 2026 (issue #59) — ya no forma parte del pipeline.
 - **CI/CD**: GitHub Actions.
 
 ## Estructura

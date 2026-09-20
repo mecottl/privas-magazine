@@ -8,12 +8,11 @@ programada, limpieza de archivos huérfanos). El **frontend está en fase
 activa de diseño y construcción** (editor de bloques, UI definitiva,
 pulido de páginas públicas — ver milestone "Frontend — diseño y editor").
 
-La infraestructura final se está migrando de Hostinger a Akky (ver sección
-de Stack más abajo): subida/borrado de archivos ya funciona en vivo por
-FTP, y `deploy.yml` ya tiene el step que sube el sitio completo a Akky
-(issue #19) — falta que el desarrollador configure los secretos de GitHub
-Actions (`FTP_HOST`/`FTP_USER`/`FTP_PASSWORD`) y se pruebe en vivo. Vercel
-sigue corriendo en paralelo hasta que ese deploy esté confirmado (issue #59).
+La migración de Hostinger a Akky (ver sección de Stack más abajo) **ya
+terminó**: subida/borrado de archivos funciona en vivo por FTP, y
+`deploy.yml` publica el sitio completo a Akky en cada push a `main`
+(issue #19, cerrado 20 sep 2026). Vercel se dio de baja del pipeline el
+mismo día (issue #59) — `privasmagazine.com` ya resuelve directo a Akky.
 
 Plataforma editorial (artículos + revista digital) para PRIVAS Magazine.
 Este archivo es la fuente de verdad de la arquitectura ya decidida. Léelo
@@ -50,9 +49,7 @@ este repo.
 - **Hosting final**: **Akky** — cPanel + **FTP** (Akky confirmó que NO tiene
   SFTP). El build estático y los archivos pesados (PDFs, imágenes) viven ahí,
   NO en Supabase Storage.
-- **Staging temporal**: Vercel, mientras no exista la cuenta de Akky de la
-  clienta (pendiente de que ella la contrate).
-- **CI/CD**: GitHub Actions — build de Angular + deploy.
+- **CI/CD**: GitHub Actions — build de Angular + deploy directo a Akky por FTP.
 
 > **Historial:** el plan original era Hostinger + SFTP real. Se cambió a
 > Akky el 4 sep 2026 porque el hosting definitivo se decidió distinto, y

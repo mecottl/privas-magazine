@@ -42,7 +42,7 @@ secretos nuevos — cuentan sus propios intentos en la tabla
 Usados por `.github/workflows/`:
 
 - `SUPABASE_ANON_KEY` — reemplaza `__SUPABASE_ANON_KEY__` en el bundle (deploy.yml).
-- `VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` — deploy a Vercel (deploy.yml, staging temporal). Se eliminarán cuando el deploy a Akky (abajo) esté probado y Vercel se dé de baja (issue #59) — hasta entonces corren los dos en paralelo.
+- ~~`VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID`~~ — eliminados el 20 sep 2026 (issue #59). Vercel ya no forma parte del pipeline; `deploy.yml` solo publica a Akky.
 - `SUPABASE_ACCESS_TOKEN` — deploy de Edge Functions (supabase-functions.yml).
 - `FTP_HOST` / `FTP_USER` / `FTP_PASSWORD` — deploy del sitio completo a Akky (deploy.yml, step "Deploy a Akky por FTP", issue #19). **Secretos de GitHub Actions, no confundir con los del mismo nombre en Supabase Edge Functions** (docs/SECRETS.md arriba) — viven en dos lugares distintos aunque el valor sea el mismo (misma cuenta FTP `privasmagazine-ftp@privasmagazine.com`). Configúralos en el repo: Settings → Secrets and variables → Actions.
 
