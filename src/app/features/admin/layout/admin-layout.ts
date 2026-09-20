@@ -45,11 +45,9 @@ export class AdminLayout {
       this.primeraCarga = false;
       return;
     }
-    const el = this.main()?.nativeElement;
-    if (!el) return;
-    el.classList.remove('ruta-entrando');
-    void el.offsetWidth;
-    el.classList.add('ruta-entrando');
-    el.focus({ preventScroll: true });
+    // La animación visual ya la da la View Transitions API (ver
+    // app.config.ts) — esto solo mueve el foco a <main> para lectores de
+    // pantalla al cambiar de ruta.
+    this.main()?.nativeElement.focus({ preventScroll: true });
   }
 }

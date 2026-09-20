@@ -1,0 +1,36 @@
+name: Backup mensual de la base de datos
+
+# El plan Free de Supabase no incluye backups automáticos (issue #16).
+# Corre un pg_dump completo una vez al mes y lo deja como artifact de este
+# run — no es almacenamiento permanente (GitHub borra artifacts a los 90
+# días), pero cubre "tener un respaldo reciente" sin infraestructura nueva.
+on:
+  schedule:
+    - cron: '0 6 1 * *' # 06:00 UTC el día 1 de cada mes
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: xiqqhjdpmqdnzsvpjhwq
+    steps:
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Vincular proyecto
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: pg_dump completo (esquema + datos)
+        run: |
+          mkdir -p backup
+          supabase db dump --linked -f "backup/privas-magazine-$(date +%Y-%m-%d).sql"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backup-db-${{ github.run_id }}
+          path: backup/*.sql
+          retention-days: 90

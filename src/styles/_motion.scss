@@ -24,7 +24,6 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes sk-shine { 100% { transform: translateX(100%); } }
-@keyframes aparecer { from { opacity: 0; } }
 
 /* La directiva [reveal] añade .reveal--visible al entrar al viewport */
 .reveal {
@@ -41,7 +40,9 @@
   transform: none;
 }
 
-.ruta-entrando { animation: aparecer 260ms ease both; }
+/* Transición entre páginas: View Transitions API nativa (withViewTransitions
+   en app.config.ts). Sin CSS propio se usa el cross-fade por default del
+   navegador — suficiente y ya estable en Angular 20+/Chrome/Safari. */
 
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -52,4 +53,11 @@
   html { scroll-behavior: auto; }
   .reveal,
   .reveal--visible { opacity: 1; transform: none; transition: none; }
+
+  /* El wildcard de arriba no cubre pseudo-elementos ::view-transition-*. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

@@ -1,10 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.client';
 import type { EdicionRevista, EstadoPublicacion } from '../models';
+import { conCacheTTL } from './cache-ttl';
 
 @Injectable({ providedIn: 'root' })
 export class EdicionesService {
   private readonly sb = inject(SupabaseService).client;
+  private readonly cache = conCacheTTL<EdicionRevista[]>(60_000);
 
   async listarAdmin(): Promise<EdicionRevista[]> {
     const { data, error } = await this.sb
@@ -26,13 +28,15 @@ export class EdicionesService {
   }
 
   async listarPublicas(): Promise<EdicionRevista[]> {
-    const { data, error } = await this.sb
-      .from('ediciones_revista')
-      .select('*')
-      .eq('estado', 'publicado')
-      .order('anio', { ascending: false });
-    if (error) throw error;
-    return data as EdicionRevista[];
+    return this.cache('publicas', async () => {
+      const { data, error } = await this.sb
+        .from('ediciones_revista')
+        .select('*')
+        .eq('estado', 'publicado')
+        .order('anio', { ascending: false });
+      if (error) throw error;
+      return data as EdicionRevista[];
+    });
   }
 
   async crear(ed: Partial<EdicionRevista>): Promise<EdicionRevista> {

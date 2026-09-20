@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
+import { SeoService } from '../../../../core/services/seo.service';
 import { mensajeError } from '../../../../core/services/errores';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
@@ -19,6 +20,7 @@ export class ArticuloDetalle implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly srv = inject(ArticulosService);
   private readonly title = inject(Title);
+  private readonly seo = inject(SeoService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   readonly articulo = signal<Articulo | null>(null);
@@ -101,7 +103,12 @@ export class ArticuloDetalle implements OnInit {
         this.title.setTitle('Artículo no encontrado · PRIVAS Magazine');
       } else {
         this.articulo.set(a);
-        this.title.setTitle(`${a.titulo} · PRIVAS Magazine`);
+        this.seo.actualizar({
+          titulo: a.titulo,
+          descripcion: a.extracto || 'Una revista para los amantes de los viajes.',
+          imagenUrl: a.imagen_portada_url,
+          tipo: 'article',
+        });
         void this.cargarRelacionados(a);
       }
     } catch (e) {

@@ -43,7 +43,8 @@ Usados por `.github/workflows/`:
 
 - `SUPABASE_ANON_KEY` — reemplaza `__SUPABASE_ANON_KEY__` en el bundle (deploy.yml).
 - ~~`VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID`~~ — eliminados el 20 sep 2026 (issue #59). Vercel ya no forma parte del pipeline; `deploy.yml` solo publica a Akky.
-- `SUPABASE_ACCESS_TOKEN` — deploy de Edge Functions (supabase-functions.yml).
+- `SUPABASE_ACCESS_TOKEN` — deploy de Edge Functions (supabase-functions.yml) y backup mensual (backup-db.yml).
+- `SUPABASE_DB_PASSWORD` — **nuevo, falta agregarlo**. Contraseña de Postgres (Supabase Dashboard → Project Settings → Database → Database password — no es la Service Role Key, es la contraseña real de la BD). Usado por `backup-db.yml` (issue #16) para `supabase link` + `supabase db dump`. Sin este secreto el backup mensual falla.
 - `FTP_HOST` / `FTP_USER` / `FTP_PASSWORD` — deploy del sitio completo a Akky (deploy.yml, step "Deploy a Akky por FTP", issue #19). **Secretos de GitHub Actions, no confundir con los del mismo nombre en Supabase Edge Functions** (docs/SECRETS.md arriba) — viven en dos lugares distintos aunque el valor sea el mismo (misma cuenta FTP `privasmagazine-ftp@privasmagazine.com`). Configúralos en el repo: Settings → Secrets and variables → Actions.
 
 ## pg_cron → programar-publicacion

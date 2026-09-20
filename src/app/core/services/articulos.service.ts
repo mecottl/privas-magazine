@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.client';
 import { mismoSlug, type Articulo, type EstadoPublicacion } from '../models';
+import { conCacheTTL } from './cache-ttl';
 
 /**
  * Embebe las categorías por el join M2M nombrando explícitamente la tabla
@@ -14,6 +15,8 @@ const SELECT_CON_CATEGORIAS =
 @Injectable({ providedIn: 'root' })
 export class ArticulosService {
   private readonly sb = inject(SupabaseService).client;
+  /** 60s: navegar entre / → /articulos → /revistas no repite la consulta. */
+  private readonly cache = conCacheTTL<Articulo[]>(60_000);
 
   /** Panel: todos los artículos, filtro opcional por estado. */
   async listarAdmin(estado?: EstadoPublicacion | ''): Promise<Articulo[]> {
@@ -39,15 +42,21 @@ export class ArticulosService {
 
   /** Público: solo publicados, filtro opcional por categoría (slug). */
   async listarPublicos(categoriaSlug?: string): Promise<Articulo[]> {
-    const { data, error } = await this.sb
-      .from('articulos')
-      .select(SELECT_CON_CATEGORIAS)
-      .eq('estado', 'publicado')
-      // Más recientes primero; los que no tienen fecha van al final, no arriba.
-      .order('fecha_publicacion', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    let arts = data as unknown as Articulo[];
+    // Un solo cache para "todos los publicados" — el filtro por categoría
+    // se aplica en memoria abajo, igual que antes, así una sola entrada de
+    // cache sirve para todas las categorías.
+    const todos = await this.cache('publicos', async () => {
+      const { data, error } = await this.sb
+        .from('articulos')
+        .select(SELECT_CON_CATEGORIAS)
+        .eq('estado', 'publicado')
+        // Más recientes primero; los que no tienen fecha van al final, no arriba.
+        .order('fecha_publicacion', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as unknown as Articulo[];
+    });
+    let arts = todos;
     if (categoriaSlug) {
       arts = arts.filter((a) =>
         (a.categorias ?? []).some((c) => mismoSlug(c.slug, categoriaSlug)),

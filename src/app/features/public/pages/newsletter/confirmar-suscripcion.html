@@ -1,4 +1,27 @@
-<section class="page">
-  <h1>Confirmar suscripción</h1>
-  <p>{{ mensaje() }}</p>
+<section class="page suscripcion-estado" [class.suscripcion-estado--error]="estado() === 'error'">
+  <p class="eyebrow">Newsletter</p>
+
+  @switch (estado()) {
+    @case ('cargando') {
+      <div class="suscripcion-estado__icono suscripcion-estado__icono--cargando" aria-hidden="true"></div>
+      <h1>Confirmando tu suscripción…</h1>
+    }
+    @case ('exito') {
+      <div class="suscripcion-estado__icono suscripcion-estado__icono--exito" aria-hidden="true">✓</div>
+      <h1>¡Listo!</h1>
+    }
+    @case ('error') {
+      <div class="suscripcion-estado__icono suscripcion-estado__icono--error" aria-hidden="true">!</div>
+      <h1>No se pudo confirmar</h1>
+    }
+  }
+
+  <p class="suscripcion-estado__texto" role="status">{{ mensaje() }}</p>
+
+  @if (estado() !== 'cargando') {
+    <div class="suscripcion-estado__acciones">
+      <a routerLink="/" class="btn btn--primario">Ir al inicio</a>
+      <a routerLink="/articulos" class="btn btn--fantasma">Ver los artículos</a>
+    </div>
+  }
 </section>
