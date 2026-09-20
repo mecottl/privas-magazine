@@ -74,11 +74,13 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Akky confirmó que no tiene SFTP; a diferencia de subir-archivo
-          # (que intenta FTPS y cae a FTP plano), esta acción no reintenta
-          # sola, así que se fija en 'ftp' para no depender de que el
-          # handshake FTPS funcione en CI.
-          protocol: ftp
+          # Akky confirmó que no tiene SFTP. Igual que subir-archivo, se usa
+          # FTPS explícito primero: el intento con 'ftp' plano dio
+          # "530 Login authentication failed" en CI con las credenciales ya
+          # verificadas — todo apunta a que el servidor exige TLS para
+          # autenticar y subir-archivo solo funcionó porque su rama FTPS
+          # (secure:true) fue la que realmente conectó.
+          protocol: ftps
           local-dir: dist/privas-magazine/browser/
           server-dir: ./
           exclude: |
