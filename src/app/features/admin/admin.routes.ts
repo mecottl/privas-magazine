@@ -10,6 +10,14 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
   {
+    path: 'aceptar-invitacion',
+    title: 'Crea tu contraseña',
+    loadComponent: () =>
+      import('./pages/aceptar-invitacion/aceptar-invitacion').then(
+        (m) => m.AceptarInvitacion,
+      ),
+  },
+  {
     path: '',
     component: AdminLayout,
     canActivate: [adminGuard],

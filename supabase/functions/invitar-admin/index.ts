@@ -8,8 +8,14 @@
  * 2. Body: { email, nombre_visible, nivel_permiso }.
  * 3. Valida nivel_permiso contra los valores del CHECK (hoy solo 'admin_total').
  * 4. Con service_role:
- *      - auth.admin.inviteUserByEmail(email) → crea el usuario y envía el
- *        correo de invitación de Supabase (plantilla en inglés por ahora).
+ *      - auth.admin.inviteUserByEmail(email, { redirectTo }) → crea el
+ *        usuario y envía el correo de invitación de Supabase (plantilla en
+ *        inglés por ahora — personalizarla es dashboard-only, issue #61).
+ *        redirectTo = SITE_URL + /gestion-privas/aceptar-invitacion, la
+ *        pantalla donde la persona invitada pone su contraseña. ¡Esa URL
+ *        tiene que estar en Authentication → URL Configuration → Redirect
+ *        URLs del dashboard de Supabase, o Supabase la ignora en silencio
+ *        y cae en la Site URL default!
  *      - insert en perfiles_admin { id, nombre_visible, nivel_permiso, activo: true }.
  * 5. Si el insert falla tras crear el usuario → rollback con auth.admin.deleteUser().
  * 6. 200 con los datos del nuevo admin (sin nada sensible).
@@ -52,8 +58,16 @@ Deno.serve(async (req) => {
 
     const admin = adminClient();
 
+    // Sin redirectTo, Supabase manda al usuario a la "Site URL" default del
+    // proyecto (o a una página propia de Supabase sin marca) — con esto cae
+    // en /gestion-privas/aceptar-invitacion, la pantalla donde pone su
+    // contraseña (issue #61). Mismo secreto SITE_URL que ya usa
+    // programar-publicacion.
+    const siteUrl = Deno.env.get('SITE_URL') ?? 'https://privasmagazine.com';
+    const redirectTo = `${siteUrl.replace(/\/$/, '')}/gestion-privas/aceptar-invitacion`;
+
     const { data: invited, error: inviteErr } =
-      await admin.auth.admin.inviteUserByEmail(email);
+      await admin.auth.admin.inviteUserByEmail(email, { redirectTo });
     if (inviteErr || !invited.user) {
       return json(
         { error: inviteErr?.message ?? 'No se pudo invitar al usuario' },

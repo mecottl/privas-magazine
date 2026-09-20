@@ -1,0 +1,64 @@
+<div class="login">
+  <div class="login__panel">
+    <a routerLink="/" class="login__marca" aria-label="PRIVAS Magazine — ir al sitio">
+      <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
+    </a>
+
+    <section class="login__card">
+      @if (sinSesion()) {
+        <h1 class="login__titulo">Enlace inválido o vencido</h1>
+        <p class="login__sub">
+          Este link de invitación ya no funciona. Pide que te reenvíen la invitación desde el panel.
+        </p>
+        <a routerLink="/gestion-privas/login" class="login__volver">← Ir a iniciar sesión</a>
+      } @else if (listo()) {
+        <h1 class="login__titulo">¡Listo!</h1>
+        <p class="login__sub">Tu contraseña quedó configurada. Entrando al panel…</p>
+      } @else {
+        <h1 class="login__titulo">Bienvenido a PRIVAS</h1>
+        <p class="login__sub">
+          @if (correo()) {
+            Crea tu contraseña para <strong>{{ correo() }}</strong> y entra al panel de gestión.
+          } @else {
+            Crea tu contraseña para entrar al panel de gestión.
+          }
+        </p>
+
+        <form class="login__form" (ngSubmit)="confirmarClic()">
+          <label class="login__campo">
+            <span>Nueva contraseña</span>
+            <input
+              type="password"
+              name="password"
+              [(ngModel)]="password"
+              required
+              minlength="8"
+              autocomplete="new-password"
+              autofocus
+            />
+          </label>
+          <label class="login__campo">
+            <span>Confirmar contraseña</span>
+            <input
+              type="password"
+              name="confirmar"
+              [(ngModel)]="confirmar"
+              required
+              autocomplete="new-password"
+            />
+          </label>
+
+          @if (error()) {
+            <p class="login__error" role="alert">{{ error() }}</p>
+          }
+
+          <button type="submit" class="login__enviar" [disabled]="cargando()">
+            {{ cargando() ? 'Guardando…' : 'Crear contraseña y entrar' }}
+          </button>
+        </form>
+      }
+    </section>
+
+    <a routerLink="/" class="login__volver">← Volver al sitio</a>
+  </div>
+</div>

@@ -52,11 +52,20 @@ Quién la llama: un admin ya logueado, desde el panel.
 2. Body: `email`, `nombre_visible`, `nivel_permiso`.
 3. Validar `nivel_permiso` contra el CHECK (hoy solo `'admin_total'`); si no
    → 400 con mensaje claro.
-4. Con `service_role`: `auth.admin.inviteUserByEmail(email)` (crea el usuario y
-   manda el correo de invitación de Supabase) + insert en `perfiles_admin`
-   `{ id, nombre_visible, nivel_permiso, activo: true }`.
+4. Con `service_role`: `auth.admin.inviteUserByEmail(email, { redirectTo })`
+   (crea el usuario y manda el correo de invitación de Supabase) + insert en
+   `perfiles_admin` `{ id, nombre_visible, nivel_permiso, activo: true }`.
+   `redirectTo` = `SITE_URL` + `/gestion-privas/aceptar-invitacion` — la
+   pantalla nueva (issue #61) donde la persona invitada pone su contraseña;
+   sin esto Supabase la manda a una página propia sin marca. **Esa URL debe
+   estar en Supabase → Authentication → URL Configuration → Redirect URLs**,
+   si no Supabase la ignora en silencio.
 5. Si el insert falla tras crear el usuario → rollback `auth.admin.deleteUser()`.
 6. 200 con los datos del nuevo admin (sin nada sensible).
+
+Nota: la plantilla del correo de invitación sigue siendo la default de
+Supabase (en inglés, sin marca) — personalizarla es dashboard-only
+(Authentication → Email Templates → Invite user), sigue pendiente.
 
 ## 3. `subir-archivo`
 

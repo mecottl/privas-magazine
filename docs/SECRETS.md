@@ -28,7 +28,7 @@ NO son secretos de GitHub Actions: es Supabase quien llama a GitHub, no al revé
 | `GH_DISPATCH_REPO` | `programar-publicacion` | opcional, `owner/repo`. Default `mecottl/privas-magazine` |
 | `RESEND_API_KEY` | `programar-publicacion` | opcional hoy (sin dominio). Si falta, el envío de newsletter se salta silenciosamente |
 | `RESEND_AUDIENCE_ID` / `NEWSLETTER_FROM` | `programar-publicacion` | audiencia de Resend "marketing" y remitente |
-| `SITE_URL` | `programar-publicacion` | base pública para armar links (default `https://privasmagazine.com`) |
+| `SITE_URL` | `programar-publicacion`, `invitar-admin` | base pública para armar links (default `https://privasmagazine.com`). `invitar-admin` la usa para el `redirectTo` del correo de invitación — **esa URL completa (`SITE_URL/gestion-privas/aceptar-invitacion`) debe estar en Supabase → Authentication → URL Configuration → Redirect URLs**, o Supabase la ignora en silencio (issue #61) |
 
 ## Rate limiting (issue #15)
 
