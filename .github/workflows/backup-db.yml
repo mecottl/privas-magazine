@@ -24,10 +24,15 @@ jobs:
       - name: Vincular proyecto
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
 
-      - name: pg_dump completo (esquema + datos)
+      - name: pg_dump (esquema + datos, por separado)
+        # `supabase db dump --linked` sin flags SOLO trae el esquema — hay
+        # que pedir los datos aparte con --data-only o el backup queda vacío
+        # de contenido real (categorias, marcas, perfiles_admin, etc.).
         run: |
           mkdir -p backup
-          supabase db dump --linked -f "backup/privas-magazine-$(date +%Y-%m-%d).sql"
+          FECHA=$(date +%Y-%m-%d)
+          supabase db dump --linked -f "backup/esquema-$FECHA.sql"
+          supabase db dump --linked --data-only -f "backup/datos-$FECHA.sql"
 
       - uses: actions/upload-artifact@v4
         with:
