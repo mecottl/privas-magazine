@@ -45,6 +45,22 @@ export class AceptarInvitacion implements OnInit {
   readonly listo = signal(false);
 
   async ngOnInit() {
+    // Si el link venció o ya se usó, Supabase deja el error en el hash
+    // (#error=access_denied&error_code=otp_expired&...) y NO crea una
+    // sesión nueva — pero si el navegador ya tenía una sesión previa
+    // guardada (de otra cuenta, o de una visita anterior), `getSession()`
+    // la devuelve igual. Sin este chequeo, esta pantalla mostraba el correo
+    // de esa sesión vieja y dejaba "crear contraseña" para ESA cuenta, sin
+    // relación alguna con el link que se acababa de abrir — un enlace
+    // vencido terminaba pisando la contraseña de quien fuera que ya
+    // estuviera logueado en ese navegador. Por eso el hash se revisa ANTES
+    // de mirar la sesión, y un error ahí corta el flujo de una vez.
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    if (hash.get('error')) {
+      this.sinSesion.set(true);
+      return;
+    }
+
     const { data } = await this.supabase.client.auth.getSession();
     if (!data.session) {
       this.sinSesion.set(true);

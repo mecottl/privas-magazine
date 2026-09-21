@@ -65,6 +65,47 @@
         </p>
       </button>
     }
+
+    @if (cambiandoPassword()) {
+      <form class="admin-sidebar__password" (ngSubmit)="guardarPassword()">
+        <label>
+          <span>Nueva contraseña</span>
+          <input
+            type="password"
+            [(ngModel)]="passwordNueva"
+            name="passwordNueva"
+            minlength="8"
+            [disabled]="guardandoPassword()"
+            autocomplete="new-password"
+            autofocus
+          />
+        </label>
+        <label>
+          <span>Confirmar</span>
+          <input
+            type="password"
+            [(ngModel)]="passwordConfirmar"
+            name="passwordConfirmar"
+            [disabled]="guardandoPassword()"
+            autocomplete="new-password"
+          />
+        </label>
+        @if (errorPassword()) { <small class="error">{{ errorPassword() }}</small> }
+        <div class="admin-sidebar__user-acciones">
+          <button type="submit" [disabled]="guardandoPassword()">
+            {{ guardandoPassword() ? 'Guardando…' : 'Guardar' }}
+          </button>
+          <button type="button" class="secundario" (click)="cancelarCambioPassword()" [disabled]="guardandoPassword()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    } @else {
+      <button type="button" class="admin-sidebar__cambiar-password" (click)="abrirCambioPassword()">
+        Cambiar contraseña
+      </button>
+    }
+
     <button type="button" class="admin-sidebar__salir" (click)="salir()">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
         <path d="M9 5H5v14h4M15 8l4 4-4 4M19 12H9" stroke-linecap="round" stroke-linejoin="round" />

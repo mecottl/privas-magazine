@@ -75,6 +75,18 @@ export class AuthService {
     if (actual) this.perfil.set({ ...actual, nombre_visible });
   }
 
+  /**
+   * Cambiar la propia contraseña ES un cambio legítimo de sesión, pero debe
+   * pasar por aquí — una acción deliberada del panel, con la sesión ya
+   * autenticada de verdad — y no por `aceptar-invitacion`, que solo debe
+   * servir para completar una invitación real (ver el chequeo de `#error`
+   * en ese componente).
+   */
+  async actualizarPassword(password: string): Promise<void> {
+    const { error } = await this.supabase.client.auth.updateUser({ password });
+    if (error) throw error;
+  }
+
   private async cargarPerfil(): Promise<void> {
     // El id del usuario autenticado. SIN este filtro, como la policy de SELECT
     // deja a un admin ver TODOS los perfiles, `.maybeSingle()` falla en cuanto

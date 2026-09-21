@@ -70,6 +70,44 @@ export class AdminLayout {
     }
   }
 
+  readonly cambiandoPassword = signal(false);
+  readonly guardandoPassword = signal(false);
+  readonly errorPassword = signal('');
+  passwordNueva = '';
+  passwordConfirmar = '';
+
+  abrirCambioPassword() {
+    this.passwordNueva = '';
+    this.passwordConfirmar = '';
+    this.errorPassword.set('');
+    this.cambiandoPassword.set(true);
+  }
+
+  cancelarCambioPassword() {
+    this.cambiandoPassword.set(false);
+  }
+
+  async guardarPassword() {
+    this.errorPassword.set('');
+    if (this.passwordNueva.length < 8) {
+      this.errorPassword.set('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+    if (this.passwordNueva !== this.passwordConfirmar) {
+      this.errorPassword.set('Las contraseñas no coinciden.');
+      return;
+    }
+    this.guardandoPassword.set(true);
+    try {
+      await this.auth.actualizarPassword(this.passwordNueva);
+      this.cambiandoPassword.set(false);
+    } catch (e) {
+      this.errorPassword.set(mensajeError(e));
+    } finally {
+      this.guardandoPassword.set(false);
+    }
+  }
+
   async salir() {
     await this.auth.cerrarSesion();
     this.router.navigate(['/gestion-privas/login']);
