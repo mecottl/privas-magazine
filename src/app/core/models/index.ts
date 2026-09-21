@@ -217,6 +217,9 @@ export interface PerfilAdmin {
   nombre_visible: string | null;
   nivel_permiso: NivelPermiso;
   activo: boolean;
+  /** MFA por correo (issue #17) — opcional para admin_total/editor,
+   *  obligatorio para dueño sin importar este valor (ver AuthService.mfaRequerido). */
+  mfa_activo?: boolean;
   created_at?: string;
 }
 

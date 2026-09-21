@@ -1,0 +1,54 @@
+<div class="login">
+  <div class="login__panel">
+    <span class="login__marca" aria-hidden="true">
+      <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
+    </span>
+
+    <section class="login__card">
+      <h1 class="login__titulo">Verificación en dos pasos</h1>
+      <p class="login__sub">
+        @if (enviando()) {
+          Enviando un código a {{ correo }}…
+        } @else {
+          Te mandamos un código a <strong>{{ correo }}</strong>. Escríbelo
+          aquí para entrar.
+        }
+      </p>
+
+      <form class="login__form" (ngSubmit)="confirmar()">
+        <label class="login__campo">
+          <span>Código de 6 dígitos</span>
+          <input
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="6"
+            [(ngModel)]="codigo"
+            name="codigo"
+            [disabled]="verificando() || enviando()"
+            autofocus
+          />
+        </label>
+
+        @if (error()) { <p class="login__error" role="alert">{{ error() }}</p> }
+        @if (reenviado()) { <p class="login__sub">Te mandamos otro código.</p> }
+
+        <button type="submit" class="login__enviar" [disabled]="verificando() || enviando()">
+          {{ verificando() ? 'Verificando…' : 'Entrar' }}
+        </button>
+      </form>
+
+      <button
+        type="button"
+        class="login__volver"
+        style="background:none;border:none;cursor:pointer;display:block;margin:0.9rem auto 0"
+        [disabled]="enviando()"
+        (click)="reenviar()"
+      >
+        Reenviar código
+      </button>
+    </section>
+
+    <button type="button" class="login__volver" style="background:none;border:none;cursor:pointer" (click)="salir()">← Cerrar sesión</button>
+  </div>
+</div>

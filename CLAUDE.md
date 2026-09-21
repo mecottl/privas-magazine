@@ -71,9 +71,17 @@ este repo.
 ## Esquema de base de datos (ya aplicado, no regenerar)
 
 Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
-`ediciones_revista`, `perfiles_admin`, `marcas`, `suscriptores_newsletter`.
+`ediciones_revista`, `perfiles_admin`, `marcas`, `suscriptores_newsletter`,
+`mfa_codigos`.
 
 - `perfiles_admin.id` = `auth.users.id` (sin duplicar login).
+- `perfiles_admin.mfa_activo` (issue #17): opt-in de MFA por correo para
+  `admin_total`/`editor` — autoservicio, columna con GRANT propio para que
+  cada quien la prenda/apague para SU cuenta. Para `dueno` es obligatorio
+  sin importar este valor (`AuthService.mfaRequerido()` lo ignora para ese
+  nivel). `mfa_codigos` guarda los códigos de 6 dígitos de un solo uso (10
+  min de vigencia) — sin políticas de RLS, solo la tocan `mfa-enviar-codigo`
+  / `mfa-verificar-codigo` con `service_role`.
 - `is_admin()` es la función `security definer` que valida permisos en TODAS
   las políticas RLS de escritura — reutilízala, no dupliques la lógica.
 - `estado` en `articulos` y `ediciones_revista`: `borrador` / `programado` /
@@ -112,7 +120,7 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   borrarlo luego). Renombrado de `'sftp'` a `'ftp'` el 4 sep 2026 (ver
   migración `20260904220000_renombrar_target_sftp_a_ftp.sql`).
 
-## Piezas de arquitectura — Edge Functions (8 en total)
+## Piezas de arquitectura — Edge Functions (10 en total)
 
 Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 
@@ -126,6 +134,8 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `suscribirse` | público (form de newsletter) | Alta al newsletter con rate limiting (5/10min por IP) — reemplaza el INSERT directo del frontend. |
 | `confirmar-suscripcion` | público (link de correo) | Doble opt-in del newsletter, con rate limiting (10/15min por IP). |
 | `cancelar-suscripcion` | público (link de correo) | Baja del newsletter por token, no borra la fila. Mismo rate limiting que confirmar. |
+| `mfa-enviar-codigo` | admin logueado (panel) | MFA propio por correo (issue #17, no el TOTP nativo de Supabase): genera un código de 6 dígitos y lo manda por Resend. |
+| `mfa-verificar-codigo` | admin logueado (panel) | Verifica el código contra `mfa_codigos`. El frontend decide cuánto "recordar" el dispositivo (localStorage, 30 días). |
 
 ### Editor de contenido de artículos
 Constructor de bloques libre: texto, imágenes, video embebido, layout libre

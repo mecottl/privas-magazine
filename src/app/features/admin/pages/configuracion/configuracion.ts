@@ -4,7 +4,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { mensajeError } from '../../../../core/services/errores';
 import { NOMBRE_NIVEL_PERMISO } from '../../../../core/models';
 
-/** Cuenta propia: nombre visible y contraseña — antes vivía suelto en el sidebar. */
+/** Cuenta propia: nombre visible, contraseña y MFA — antes vivía suelto en el sidebar. */
 @Component({
   selector: 'app-admin-configuracion',
   standalone: true,
@@ -66,6 +66,21 @@ export class Configuracion {
       this.errorPassword.set(mensajeError(e));
     } finally {
       this.guardandoPassword.set(false);
+    }
+  }
+
+  readonly guardandoMfa = signal(false);
+  readonly errorMfa = signal('');
+
+  async cambiarMfa(activo: boolean) {
+    this.errorMfa.set('');
+    this.guardandoMfa.set(true);
+    try {
+      await this.auth.mfaActivarParaMiCuenta(activo);
+    } catch (e) {
+      this.errorMfa.set(mensajeError(e));
+    } finally {
+      this.guardandoMfa.set(false);
     }
   }
 }

@@ -1,6 +1,6 @@
 # Brief: lógica real de las Edge Functions
 
-Las **8 funciones** viven en `supabase/functions/`. Este documento detalla la
+Las **10 funciones** viven en `supabase/functions/`. Este documento detalla la
 lógica real de cada una. Léelo junto con `CLAUDE.md` — no repite el contexto
 general, solo añade el detalle de implementación.
 
@@ -203,6 +203,39 @@ Matriz de permisos (poder absoluto es solo del `dueno`):
    los artículos de esa cuenta quedan con `creado_por = null`). `password`
    → `auth.admin.updateUserById(id, { password })`. El resto → `update
    perfiles_admin` con los campos que vinieron en el body.
+
+## 9. `mfa-enviar-codigo`
+
+Quién la llama: cualquier admin logueado, desde
+`/gestion-privas/verificar-mfa` (issue #17). MFA **propio por correo**, no
+el TOTP nativo de Supabase — se decidió así para que no sea tedioso para
+`dueno` (sin apps de autenticador ni QR) y porque permite "recordar este
+dispositivo" un tiempo, algo que el MFA nativo de Supabase no soporta.
+
+1. `requireAdmin`.
+2. Invalida (`usado = true`) cualquier código previo sin usar de esa cuenta.
+3. Genera un código de 6 dígitos, vence en 10 min, se guarda en
+   `mfa_codigos` con `service_role`.
+4. Lo manda por correo con la API de Resend directo (`POST
+   https://api.resend.com/emails`) — NO vía Supabase Auth, este no es un
+   correo de su sistema de invitación/recuperación.
+5. 200 `{ ok: true }`. Si falta `RESEND_API_KEY` o Resend responde error,
+   falla explícito (400/500/502) — sin correo no hay forma de verificar.
+
+## 10. `mfa-verificar-codigo`
+
+Quién la llama: la misma pantalla, al escribir el código.
+
+1. `requireAdmin`.
+2. Body: `{ codigo }`.
+3. Busca el código MÁS RECIENTE de esa cuenta: debe coincidir, no estar
+   usado, y no haber vencido (10 min).
+4. Si es válido, lo marca usado (un código sirve una sola vez) y 200
+   `{ ok: true }`. Esta función no sabe nada de "recordar el dispositivo"
+   — eso lo decide el frontend (`AuthService`, localStorage, 30 días).
+
+Secretos: `RESEND_API_KEY` (ya configurado, ver docs/SECRETS.md),
+`MFA_EMAIL_FROM` (opcional, default `PRIVAS Magazine <contacto@privasmagazine.com>`).
 
 ## Nota general sobre pruebas
 

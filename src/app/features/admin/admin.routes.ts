@@ -27,6 +27,12 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
+    path: 'verificar-mfa',
+    title: 'Verificación en dos pasos',
+    loadComponent: () =>
+      import('./pages/verificar-mfa/verificar-mfa').then((m) => m.VerificarMfa),
+  },
+  {
     path: '',
     component: AdminLayout,
     canActivate: [adminGuard],

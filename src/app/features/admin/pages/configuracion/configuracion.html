@@ -57,5 +57,34 @@
         @if (okPassword()) { <p class="ok">Contraseña actualizada.</p> }
       </form>
     </fieldset>
+
+    <fieldset class="panel">
+      <legend>Verificación en dos pasos</legend>
+      @if (auth.esDueno()) {
+        <p class="hint">
+          Por tu nivel de acceso, esta cuenta siempre pide un código por
+          correo al entrar desde un dispositivo nuevo. No se puede
+          desactivar.
+        </p>
+      } @else {
+        <p class="hint">
+          Al entrar te pedimos un código de 6 dígitos por correo, además de
+          tu contraseña. Una vez verificado, no se vuelve a pedir en este
+          dispositivo por 30 días.
+        </p>
+        <div class="row" style="margin-bottom:0">
+          @if (auth.perfil()?.mfa_activo) {
+            <button type="button" class="secundario" [disabled]="guardandoMfa()" (click)="cambiarMfa(false)">
+              {{ guardandoMfa() ? 'Guardando…' : 'Desactivar' }}
+            </button>
+          } @else {
+            <button type="button" [disabled]="guardandoMfa()" (click)="cambiarMfa(true)">
+              {{ guardandoMfa() ? 'Guardando…' : 'Activar verificación en dos pasos' }}
+            </button>
+          }
+        </div>
+        @if (errorMfa()) { <p class="error">{{ errorMfa() }}</p> }
+      }
+    </fieldset>
   </div>
 </div>

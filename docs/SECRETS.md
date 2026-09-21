@@ -26,8 +26,9 @@ NO son secretos de GitHub Actions: es Supabase quien llama a GitHub, no al revé
 | `FTP_REMOTE_PREFIX` | `subir-archivo`, `eliminar-archivo` | opcional, **default vacío**. La cuenta FTP de Akky ya apunta a la raíz pública del dominio — NO usar `public_html` aquí (se confirmó en vivo, issue #55, que esa carpeta no es la raíz servida). Solo se necesita si algún día se usa una cuenta FTP con la convención estándar de cPanel (home = `.../public_html/`) |
 | `GH_DISPATCH_TOKEN` | `programar-publicacion` | PAT de GitHub con permiso de `repository_dispatch` sobre el repo. NO puede llamarse `GITHUB_*` (prefijo reservado) |
 | `GH_DISPATCH_REPO` | `programar-publicacion` | opcional, `owner/repo`. Default `mecottl/privas-magazine` |
-| `RESEND_API_KEY` | `programar-publicacion` | opcional hoy (sin dominio). Si falta, el envío de newsletter se salta silenciosamente |
+| `RESEND_API_KEY` | `programar-publicacion`, `mfa-enviar-codigo` | ya configurado (dominio verificado, SMTP de Auth también usa Resend). En `programar-publicacion` sigue siendo tolerante: si faltara, el envío de newsletter se salta silencioso. En `mfa-enviar-codigo` es obligatorio — sin correo no hay forma de verificar el código |
 | `RESEND_AUDIENCE_ID` / `NEWSLETTER_FROM` | `programar-publicacion` | audiencia de Resend "marketing" y remitente |
+| `MFA_EMAIL_FROM` | `mfa-enviar-codigo` | opcional, default `PRIVAS Magazine <contacto@privasmagazine.com>` |
 | `SITE_URL` | `programar-publicacion`, `invitar-admin` | base pública para armar links (default `https://privasmagazine.com`). `invitar-admin` la usa para el `redirectTo` del correo de invitación — **esa URL completa (`SITE_URL/gestion-privas/aceptar-invitacion`) debe estar en Supabase → Authentication → URL Configuration → Redirect URLs**, o Supabase la ignora en silencio (issue #61) |
 
 ## Rate limiting (issue #15)

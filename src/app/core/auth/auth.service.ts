@@ -92,6 +92,86 @@ export class AuthService {
     if (error) throw error;
   }
 
+  // --- MFA por correo (issue #17) -----------------------------------------
+  // Propio, no el TOTP nativo de Supabase: sin apps de autenticador ni QR
+  // (pensado para que no sea tedioso para el dueño), y con "recordar este
+  // dispositivo" un tiempo — algo que el MFA nativo de Supabase no soporta.
+  // Obligatorio para 'dueno' sin importar `perfil.mfa_activo` (ver
+  // adminGuard); opcional y autoactivable para 'admin_total'/'editor'.
+
+  private static readonly MFA_RECORDAR_MS = 30 * 24 * 60 * 60 * 1000; // 30 días
+
+  private mfaClaveLocalStorage(): string | null {
+    const uid = this.session()?.user?.id;
+    return uid ? `privas-mfa-confiable:${uid}` : null;
+  }
+
+  /** ¿Este navegador ya pasó el MFA hace poco para esta cuenta? */
+  mfaEsDispositivoConfiable(): boolean {
+    const clave = this.mfaClaveLocalStorage();
+    if (!clave) return false;
+    try {
+      const hasta = Number(localStorage.getItem(clave) ?? '0');
+      return hasta > Date.now();
+    } catch {
+      return false; // sin storage disponible, mejor pedir el código
+    }
+  }
+
+  private mfaMarcarDispositivoConfiable(): void {
+    const clave = this.mfaClaveLocalStorage();
+    if (!clave) return;
+    try {
+      localStorage.setItem(clave, String(Date.now() + AuthService.MFA_RECORDAR_MS));
+    } catch {
+      /* si no hay storage, simplemente se volverá a pedir la próxima vez */
+    }
+  }
+
+  /** ¿Esta cuenta necesita pasar por MFA? Obligatorio para dueño. */
+  mfaRequerido(): boolean {
+    return this.esDueno() || this.perfil()?.mfa_activo === true;
+  }
+
+  /** Manda el código de 6 dígitos por correo (Edge Function `mfa-enviar-codigo`). */
+  async mfaEnviarCodigo(): Promise<void> {
+    const { data, error } = await this.supabase.invokeFunction<{
+      ok?: boolean;
+      error?: string;
+    }>('mfa-enviar-codigo', {});
+    if (error) {
+      const detalle = (data as { error?: string } | null)?.error;
+      throw new Error(detalle ?? error.message);
+    }
+  }
+
+  /** Verifica el código y, si es válido, recuerda este dispositivo 30 días. */
+  async mfaVerificarCodigo(codigo: string): Promise<void> {
+    const { data, error } = await this.supabase.invokeFunction<{
+      ok?: boolean;
+      error?: string;
+    }>('mfa-verificar-codigo', { codigo });
+    if (error) {
+      const detalle = (data as { error?: string } | null)?.error;
+      throw new Error(detalle ?? error.message);
+    }
+    this.mfaMarcarDispositivoConfiable();
+  }
+
+  /** Autoservicio para admin_total/editor — a 'dueno' no le hace nada (ver
+   *  mfaRequerido, que ignora esta columna para ese nivel). */
+  async mfaActivarParaMiCuenta(activo: boolean): Promise<void> {
+    const uid = this.session()?.user?.id;
+    if (!uid) throw new Error('No hay sesión activa.');
+    const { error } = await this.supabase.client
+      .from('perfiles_admin')
+      .update({ mfa_activo: activo })
+      .eq('id', uid);
+    if (error) throw error;
+    const actual = this.perfil();
+    if (actual) this.perfil.set({ ...actual, mfa_activo: activo });
+  }
+
   private async cargarPerfil(): Promise<void> {
     // El id del usuario autenticado. SIN este filtro, como la policy de SELECT
     // deja a un admin ver TODOS los perfiles, `.maybeSingle()` falla en cuanto
@@ -103,7 +183,7 @@ export class AuthService {
     }
     const { data } = await this.supabase.client
       .from('perfiles_admin')
-      .select('id, nombre_visible, nivel_permiso, activo')
+      .select('id, nombre_visible, nivel_permiso, activo, mfa_activo')
       .eq('id', uid)
       .maybeSingle();
     const perfil = (data as PerfilAdmin) ?? null;
