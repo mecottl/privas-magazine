@@ -19,6 +19,14 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
+    path: 'confirmar-invitacion',
+    title: 'Confirma tu invitación',
+    loadComponent: () =>
+      import('./pages/confirmar-invitacion/confirmar-invitacion').then(
+        (m) => m.ConfirmarInvitacion,
+      ),
+  },
+  {
     path: '',
     component: AdminLayout,
     canActivate: [adminGuard],

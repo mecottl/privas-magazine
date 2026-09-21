@@ -6,6 +6,15 @@
   ese valor en `inviteUserByEmail(email, { data: { nivel_permiso } })`.
   HTML de tabla + estilos inline a propósito: es la única forma confiable de
   que se vea igual en Gmail/Outlook/Apple Mail, que ignoran <style> a su gusto.
+
+  IMPORTANTE — el link NO apunta directo a {{ .ConfirmationURL }}: pasa por
+  /gestion-privas/confirmar-invitacion?siguiente=... primero. Se confirmó en
+  vivo (Roundcube/webmail de cPanel) que algunos clientes de correo generan
+  una vista previa automática del link al abrir el mensaje, y eso alcanza a
+  "tocar" la URL de Supabase — que es de un solo uso — ANTES de que la
+  persona le dé clic de verdad, dejándolo inválido. El interstitial no hace
+  ninguna petición por su cuenta, solo muestra un botón: un previsualizador
+  automático nunca llega a la URL real de Supabase, solo un clic humano.
 -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#edeae1; padding:40px 16px;">
   <tr>
@@ -46,7 +55,7 @@
             <table role="presentation" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center" style="border-radius:999px; background-color:#256585;">
-                  <a href="{{ .ConfirmationURL }}"
+                  <a href="https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL }}"
                      style="display:inline-block; padding:13px 32px; font-family:Arial,Helvetica,sans-serif; font-size:14px; font-weight:700; letter-spacing:0.03em; color:#fbf7ee; text-decoration:none; border-radius:999px;">
                     Crear mi contraseña
                   </a>
@@ -56,7 +65,7 @@
 
             <p style="margin:28px 0 0; font-size:13px; line-height:1.5; color:#5b747b;">
               Si el botón no funciona, copia y pega este link en tu navegador:<br>
-              <a href="{{ .ConfirmationURL }}" style="color:#256585; word-break:break-all;">{{ .ConfirmationURL }}</a>
+              <a href="https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL }}" style="color:#256585; word-break:break-all;">https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL }}</a>
             </p>
           </td>
         </tr>

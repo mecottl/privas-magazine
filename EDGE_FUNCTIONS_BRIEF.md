@@ -72,6 +72,16 @@ Plantilla del correo: personalizada con la marca de PRIVAS y texto por rol
 Authentication → Emails → Invite user → Source (requiere SMTP propio
 configurado para poder editarla, ver docs/SECRETS.md).
 
+El link del correo NO apunta directo a `{{ .ConfirmationURL }}`: pasa primero
+por `/gestion-privas/confirmar-invitacion?siguiente=...`, una pantalla propia
+que no hace ninguna petición y solo espera un clic. Se confirmó en vivo que
+algunos webmails (Roundcube/cPanel) generan una vista previa automática del
+link al abrir el correo — como el link de Supabase es de un solo uso, esa
+previsualización lo quema antes de que la persona le dé clic de verdad
+("Enlace inválido o vencido" sin haber hecho nada). Un previsualizador
+automático solo llega al interstitial (inofensivo); la URL real de Supabase
+solo se toca con un clic humano.
+
 ## 3. `subir-archivo`
 
 Quién la llama: un admin logueado, desde el panel.
