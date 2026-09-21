@@ -34,13 +34,37 @@
   </nav>
 
   <div class="admin-sidebar__foot">
-    <div class="admin-sidebar__user">
-      <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
-      <p>
-        {{ nombre() }}
-        @if (correo() && correo() !== nombre()) { <small>{{ correo() }}</small> }
-      </p>
-    </div>
+    @if (editandoNombre()) {
+      <form class="admin-sidebar__user admin-sidebar__user--editando" (ngSubmit)="guardarNombre()">
+        <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
+        <div>
+          <input
+            [(ngModel)]="nombreEditado"
+            name="nombreEditado"
+            maxlength="80"
+            [disabled]="guardandoNombre()"
+            autofocus
+          />
+          <div class="admin-sidebar__user-acciones">
+            <button type="submit" [disabled]="guardandoNombre()">
+              {{ guardandoNombre() ? 'Guardando…' : 'Guardar' }}
+            </button>
+            <button type="button" class="secundario" (click)="cancelarEdicionNombre()" [disabled]="guardandoNombre()">
+              Cancelar
+            </button>
+          </div>
+          @if (errorNombre()) { <small class="error">{{ errorNombre() }}</small> }
+        </div>
+      </form>
+    } @else {
+      <button type="button" class="admin-sidebar__user" (click)="editarNombre()" title="Cambiar mi nombre visible">
+        <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
+        <p>
+          {{ nombre() }}
+          @if (correo() && correo() !== nombre()) { <small>{{ correo() }}</small> }
+        </p>
+      </button>
+    }
     <button type="button" class="admin-sidebar__salir" (click)="salir()">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
         <path d="M9 5H5v14h4M15 8l4 4-4 4M19 12H9" stroke-linecap="round" stroke-linejoin="round" />

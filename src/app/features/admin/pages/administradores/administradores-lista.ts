@@ -79,9 +79,54 @@ export class AdministradoresLista implements OnInit {
     if (!ok) return;
     this.msg.set('');
     try {
-      await this.srv.cambiarActivo(a.id, !a.activo);
+      await this.srv.actualizar(a.id, { activo: !a.activo });
       this.exito.set(true);
       this.msg.set(`Cuenta ${desactivar ? 'desactivada' : 'activada'}.`);
+      await this.cargar();
+    } catch (e) {
+      this.exito.set(false);
+      this.msg.set(mensajeError(e));
+    }
+  }
+
+  /** Nivel elegido en el <select> de cada fila mientras no se guarda. */
+  readonly nivelEditado = signal<Record<string, NivelPermiso>>({});
+  nivelPara(a: PerfilAdmin): NivelPermiso {
+    return this.nivelEditado()[a.id] ?? a.nivel_permiso;
+  }
+  cambiarNivelEditado(a: PerfilAdmin, nivel: NivelPermiso) {
+    this.nivelEditado.set({ ...this.nivelEditado(), [a.id]: nivel });
+  }
+
+  async guardarNivel(a: PerfilAdmin) {
+    const nivel = this.nivelPara(a);
+    if (nivel === a.nivel_permiso) return;
+    this.msg.set('');
+    try {
+      await this.srv.actualizar(a.id, { nivel_permiso: nivel });
+      this.exito.set(true);
+      this.msg.set(`Permiso de «${a.nombre_visible || a.id}» actualizado.`);
+      await this.cargar();
+    } catch (e) {
+      this.exito.set(false);
+      this.msg.set(mensajeError(e));
+    }
+  }
+
+  async eliminar(a: PerfilAdmin) {
+    if (a.id === this.miId()) return;
+    const ok = await this.confirmar.confirm({
+      titulo: '¿Eliminar esta cuenta?',
+      mensaje: `«${a.nombre_visible || a.id}» perderá el acceso de forma permanente y no se puede deshacer. Sus artículos no se borran, quedan sin dueño.`,
+      cta: 'Eliminar',
+      peligro: true,
+    });
+    if (!ok) return;
+    this.msg.set('');
+    try {
+      await this.srv.actualizar(a.id, { eliminar: true });
+      this.exito.set(true);
+      this.msg.set(`Cuenta de «${a.nombre_visible || a.id}» eliminada.`);
       await this.cargar();
     } catch (e) {
       this.exito.set(false);

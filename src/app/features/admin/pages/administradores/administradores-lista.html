@@ -38,7 +38,20 @@
                 {{ a.nombre_visible || a.id }}
                 @if (a.id === miId()) { <strong>· tú</strong> }
               </td>
-              <td>{{ nombreNivel[a.nivel_permiso] }}</td>
+              <td>
+                @if (a.id === miId()) {
+                  {{ nombreNivel[a.nivel_permiso] }}
+                } @else {
+                  <div class="nivel-editor">
+                    <select [ngModel]="nivelPara(a)" (ngModelChange)="cambiarNivelEditado(a, $event)" name="nivel-{{ a.id }}">
+                      @for (n of niveles; track n) { <option [value]="n">{{ nombreNivel[n] }}</option> }
+                    </select>
+                    @if (nivelPara(a) !== a.nivel_permiso) {
+                      <button class="secundario" (click)="guardarNivel(a)">Guardar</button>
+                    }
+                  </div>
+                }
+              </td>
               <td>
                 <span class="badge" [class.badge--publicado]="a.activo" [class.badge--despublicado]="!a.activo">
                   {{ a.activo ? 'activo' : 'inactivo' }}
@@ -53,6 +66,7 @@
                     <button class="secundario" [class.peligro]="a.activo" (click)="toggle(a)">
                       {{ a.activo ? 'Desactivar' : 'Activar' }}
                     </button>
+                    <button class="secundario peligro" (click)="eliminar(a)">Eliminar</button>
                   </div>
                 }
               </td>

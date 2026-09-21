@@ -38,15 +38,19 @@ export class AdminsService {
   }
 
   /**
-   * Activa/desactiva OTRO admin vía la Edge Function `set-admin-activo`.
-   * No se puede hacer con un UPDATE directo: la RLS de `perfiles_admin` solo
-   * permite `id = auth.uid()`, y además hay que impedir auto-desactivarse.
+   * Activa/desactiva, cambia el nivel de permiso, o elimina OTRO admin vía
+   * la Edge Function `set-admin-activo`. No se puede hacer con un UPDATE
+   * directo: la RLS de `perfiles_admin` solo permite que un admin toque su
+   * propia fila (y solo la columna `nombre_visible`).
    */
-  async cambiarActivo(id: string, activo: boolean): Promise<void> {
+  async actualizar(
+    id: string,
+    cambios: { activo?: boolean; nivel_permiso?: NivelPermiso; eliminar?: boolean },
+  ): Promise<void> {
     const { data, error } = await this.supabase.invokeFunction<{
       ok?: boolean;
       error?: string;
-    }>('set-admin-activo', { id, activo });
+    }>('set-admin-activo', { id, ...cambios });
     if (error) {
       const detalle = (data as { error?: string } | null)?.error;
       throw new Error(detalle ?? error.message);

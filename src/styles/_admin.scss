@@ -102,6 +102,41 @@ app-admin-layout {
   gap: 0.6rem;
   padding: 0 0.4rem;
 }
+button.admin-sidebar__user {
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  text-align: left;
+  transition: background-color 0.15s;
+}
+button.admin-sidebar__user:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.admin-sidebar__user--editando {
+  align-items: flex-start;
+  padding: 0.3rem 0.4rem;
+}
+.admin-sidebar__user--editando input {
+  width: 100%;
+  font-size: var(--fs-xs);
+  padding: 0.3rem 0.5rem;
+}
+.admin-sidebar__user-acciones {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+.admin-sidebar__user-acciones button {
+  font-size: var(--fs-3xs);
+  padding: 0.25rem 0.6rem;
+}
+.admin-sidebar__user--editando .error {
+  display: block;
+  margin-top: 0.3rem;
+  color: #ffb3b3;
+}
 .admin-sidebar__avatar {
   flex: none;
   display: grid;
@@ -448,11 +483,14 @@ dialog.confirm button.peligro-solido:hover:not(:disabled) {
 }
 
 .admin-main td.col-acciones { width: 1%; white-space: nowrap; }
-.acciones {
+.acciones,
+.nivel-editor {
   display: flex;
   align-items: center;
   gap: 0.4rem;
 }
+.nivel-editor select { height: 2rem; margin-top: 0; }
+.nivel-editor button { height: 2rem; padding: 0.4rem 0.7rem; }
 .acciones > a { display: inline-flex; }
 .acciones a,
 .acciones button { white-space: nowrap; }

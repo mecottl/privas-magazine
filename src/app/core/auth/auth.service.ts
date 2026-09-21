@@ -56,6 +56,25 @@ export class AuthService {
     this.perfil.set(null);
   }
 
+  /**
+   * Cualquier admin puede cambiar su propio nombre visible — es un UPDATE
+   * directo porque la RLS ya lo permite, pero solo esa columna: la
+   * migración `restringir_autoedicion_y_borrado_admin` le quitó a
+   * `authenticated` el GRANT de UPDATE sobre `nivel_permiso`/`activo`, así
+   * que no hay forma de que esto sirva para auto-promoverse.
+   */
+  async actualizarNombre(nombre_visible: string): Promise<void> {
+    const uid = this.session()?.user?.id;
+    if (!uid) throw new Error('No hay sesión activa.');
+    const { error } = await this.supabase.client
+      .from('perfiles_admin')
+      .update({ nombre_visible })
+      .eq('id', uid);
+    if (error) throw error;
+    const actual = this.perfil();
+    if (actual) this.perfil.set({ ...actual, nombre_visible });
+  }
+
   private async cargarPerfil(): Promise<void> {
     // El id del usuario autenticado. SIN este filtro, como la policy de SELECT
     // deja a un admin ver TODOS los perfiles, `.maybeSingle()` falla en cuanto
