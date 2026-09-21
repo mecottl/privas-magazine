@@ -32,21 +32,31 @@
           } @else {
             @for (a of articulos(); track a.id) {
               <tr>
-                <td><a [routerLink]="[a.id]">{{ a.titulo }}</a></td>
+                <td>
+                  @if (puedeEditar(a)) {
+                    <a [routerLink]="[a.id]">{{ a.titulo }}</a>
+                  } @else {
+                    {{ a.titulo }}
+                  }
+                </td>
                 <td>{{ a.categorias | categoriasNombre: '—' }}</td>
                 <td><span class="badge badge--{{ a.estado }}">{{ a.estado }}</span></td>
                 <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'dd MMM y') : '—' }}</td>
                 <td class="col-acciones">
-                  <div class="acciones">
-                    <a [routerLink]="[a.id]"><button class="secundario">Editar</button></a>
-                    <select #sel aria-label="Más acciones" (change)="ejecutar(a, sel.value); sel.value = ''">
-                      <option value="" selected>Acciones…</option>
-                      @if (a.estado !== 'publicado') { <option value="publicado">Publicar</option> }
-                      @if (a.estado === 'publicado') { <option value="despublicado">Despublicar</option> }
-                      @if (a.estado !== 'borrador') { <option value="borrador">Pasar a borrador</option> }
-                      <option value="eliminar">Eliminar</option>
-                    </select>
-                  </div>
+                  @if (puedeEditar(a)) {
+                    <div class="acciones">
+                      <a [routerLink]="[a.id]"><button class="secundario">Editar</button></a>
+                      <select #sel aria-label="Más acciones" (change)="ejecutar(a, sel.value); sel.value = ''">
+                        <option value="" selected>Acciones…</option>
+                        @if (a.estado !== 'publicado') { <option value="publicado">Publicar</option> }
+                        @if (a.estado === 'publicado') { <option value="despublicado">Despublicar</option> }
+                        @if (a.estado !== 'borrador') { <option value="borrador">Pasar a borrador</option> }
+                        <option value="eliminar">Eliminar</option>
+                      </select>
+                    </div>
+                  } @else {
+                    <span class="hint" title="Solo quien lo creó (o un administrador) puede editarlo">De otro autor</span>
+                  }
                 </td>
               </tr>
             } @empty {

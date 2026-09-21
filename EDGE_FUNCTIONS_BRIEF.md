@@ -46,26 +46,31 @@ Quién la llama: `pg_cron` cada 15 min, autenticado con `CRON_SECRET`.
 
 ## 2. `invitar-admin`
 
-Quién la llama: un admin ya logueado, desde el panel.
+Quién la llama: un admin **`admin_total`** ya logueado, desde el panel — un
+`editor` no puede invitar a nadie.
 
-1. `requireAdmin` (admin activo).
+1. `requireAdminTotal` (admin activo Y `nivel_permiso = 'admin_total'`).
 2. Body: `email`, `nombre_visible`, `nivel_permiso`.
-3. Validar `nivel_permiso` contra el CHECK (hoy solo `'admin_total'`); si no
-   → 400 con mensaje claro.
-4. Con `service_role`: `auth.admin.inviteUserByEmail(email, { redirectTo })`
+3. Validar `nivel_permiso` contra el CHECK (`'admin_total'` | `'editor'`); si
+   no → 400 con mensaje claro.
+4. Con `service_role`: `auth.admin.inviteUserByEmail(email, { redirectTo, data })`
    (crea el usuario y manda el correo de invitación de Supabase) + insert en
    `perfiles_admin` `{ id, nombre_visible, nivel_permiso, activo: true }`.
-   `redirectTo` = `SITE_URL` + `/gestion-privas/aceptar-invitacion` — la
-   pantalla nueva (issue #61) donde la persona invitada pone su contraseña;
-   sin esto Supabase la manda a una página propia sin marca. **Esa URL debe
-   estar en Supabase → Authentication → URL Configuration → Redirect URLs**,
-   si no Supabase la ignora en silencio.
+   - `redirectTo` = `SITE_URL` + `/gestion-privas/aceptar-invitacion` — la
+     pantalla (issue #61) donde la persona invitada pone su contraseña; sin
+     esto Supabase la manda a una página propia sin marca. **Esa URL debe
+     estar en Supabase → Authentication → URL Configuration → Redirect URLs**,
+     si no Supabase la ignora en silencio.
+   - `data: { nivel_permiso, nombre_visible }` — queda disponible en la
+     plantilla del correo como `{{ .Data.nivel_permiso }}`, para mostrar
+     texto distinto según el rol invitado (ver `docs/email-invitacion.html`).
 5. Si el insert falla tras crear el usuario → rollback `auth.admin.deleteUser()`.
 6. 200 con los datos del nuevo admin (sin nada sensible).
 
-Nota: la plantilla del correo de invitación sigue siendo la default de
-Supabase (en inglés, sin marca) — personalizarla es dashboard-only
-(Authentication → Email Templates → Invite user), sigue pendiente.
+Plantilla del correo: personalizada con la marca de PRIVAS y texto por rol
+(admin_total/editor) — ver `docs/email-invitacion.html`, se pega en
+Authentication → Emails → Invite user → Source (requiere SMTP propio
+configurado para poder editarla, ver docs/SECRETS.md).
 
 ## 3. `subir-archivo`
 
@@ -156,13 +161,15 @@ rate limit (misma función `actualizarEstadoSuscripcion`, ruta
 
 ## 8. `set-admin-activo`
 
-Quién la llama: un admin logueado, desde la pantalla de Administradores.
+Quién la llama: un admin **`admin_total`** logueado, desde la pantalla de
+Administradores — un `editor` no puede llamarla (esa pantalla ni siquiera
+carga para él, ver `adminTotalGuard`).
 
 Existe porque la RLS de `perfiles_admin` para UPDATE es `id = auth.uid()` (un
 admin solo puede editar su propia fila), así que activar/desactivar a OTRO admin
 es imposible desde el cliente. Se hace aquí con `service_role`.
 
-1. `requireAdmin` (admin activo).
+1. `requireAdminTotal` (admin activo Y `nivel_permiso = 'admin_total'`).
 2. Body: `{ id: uuid, activo: boolean }`.
 3. Candado: `id === quienLlama.id && activo === false` → 400 (no puedes
    desactivarte a ti mismo y dejarte fuera).

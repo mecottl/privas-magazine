@@ -11,7 +11,7 @@
         <label>Nombre visible <input [(ngModel)]="nombre" name="nombre" /></label>
         <label>Nivel de permiso
           <select [(ngModel)]="nivel" name="nivel">
-            @for (n of niveles; track n) { <option [value]="n">{{ n }}</option> }
+            @for (n of niveles; track n) { <option [value]="n">{{ nombreNivel[n] }}</option> }
           </select>
         </label>
       </div>
@@ -38,7 +38,7 @@
                 {{ a.nombre_visible || a.id }}
                 @if (a.id === miId()) { <strong>· tú</strong> }
               </td>
-              <td>{{ a.nivel_permiso }}</td>
+              <td>{{ nombreNivel[a.nivel_permiso] }}</td>
               <td>
                 <span class="badge" [class.badge--publicado]="a.activo" [class.badge--despublicado]="!a.activo">
                   {{ a.activo ? 'activo' : 'inactivo' }}

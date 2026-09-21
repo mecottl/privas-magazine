@@ -121,6 +121,13 @@ export interface Articulo {
   updated_at?: string;
   /** Categorías del artículo (join M2M). Un artículo puede tener varias. */
   categorias?: CategoriaRef[];
+  /**
+   * Dueño real de la fila (uuid de auth.users), lo pone la BD sola
+   * (`default auth.uid()`) — distinto de `autor_texto`/`autor_uid`, que son
+   * el byline público y pueden decir cualquier cosa. Un `editor` solo puede
+   * editar/borrar artículos donde `creado_por` sea su propio id (RLS).
+   */
+  creado_por?: string | null;
 }
 
 export interface EdicionRevista {
@@ -186,8 +193,17 @@ export interface Marca {
   created_at?: string;
 }
 
-export type NivelPermiso = 'admin_total';
-export const NIVELES_PERMISO: NivelPermiso[] = ['admin_total'];
+/**
+ * 'admin_total': acceso completo, incluye gestionar otras cuentas de admin.
+ * 'editor': todo el panel EXCEPTO Administradores, y solo puede
+ *   editar/borrar los artículos que él mismo creó (RLS por `creado_por`).
+ */
+export type NivelPermiso = 'admin_total' | 'editor';
+export const NIVELES_PERMISO: NivelPermiso[] = ['admin_total', 'editor'];
+export const NOMBRE_NIVEL_PERMISO: Record<NivelPermiso, string> = {
+  admin_total: 'Administrador',
+  editor: 'Editor',
+};
 
 export interface PerfilAdmin {
   id: string;

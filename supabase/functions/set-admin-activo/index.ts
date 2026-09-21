@@ -13,9 +13,12 @@
  *   2. No puedes desactivar al último admin activo.
  *
  * Body: { "id": "<uuid del perfil>", "activo": boolean }
+ *
+ * Solo `admin_total` puede llamarla — un `editor` no gestiona otras cuentas
+ * (CLAUDE.md → niveles de permiso).
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
-import { adminClient, requireAdmin } from '../_shared/clients.ts';
+import { adminClient, requireAdminTotal } from '../_shared/clients.ts';
 
 interface Payload {
   id?: string;
@@ -27,7 +30,7 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
   try {
-    const quienLlama = await requireAdmin(req);
+    const quienLlama = await requireAdminTotal(req);
 
     const { id, activo } = (await req.json().catch(() => ({}))) as Payload;
     if (!id || typeof activo !== 'boolean') {

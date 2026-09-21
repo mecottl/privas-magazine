@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
 import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
@@ -20,11 +21,17 @@ export class ArticulosLista implements OnInit {
   private readonly srv = inject(ArticulosService);
   private readonly route = inject(ActivatedRoute);
   private readonly confirmar = inject(ConfirmService);
+  readonly auth = inject(AuthService);
   readonly articulos = signal<Articulo[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
   readonly estados = ESTADOS;
   filtro: EstadoPublicacion | '' = '';
+
+  /** Un editor solo puede tocar lo que él mismo creó — admin_total, todo. */
+  puedeEditar(a: Articulo): boolean {
+    return this.auth.esAdminTotal() || a.creado_por === this.auth.user()?.id;
+  }
 
   ngOnInit() {
     const q = this.route.snapshot.queryParamMap.get('estado');

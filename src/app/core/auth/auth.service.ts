@@ -17,6 +17,8 @@ export class AuthService {
   readonly perfil = signal<PerfilAdmin | null>(null);
   readonly user = computed<User | null>(() => this.session()?.user ?? null);
   readonly esAdmin = computed(() => this.perfil() !== null);
+  /** false para 'editor' — gestionar otras cuentas de admin es solo admin_total. */
+  readonly esAdminTotal = computed(() => this.perfil()?.nivel_permiso === 'admin_total');
 
   private iniciado?: Promise<void>;
 

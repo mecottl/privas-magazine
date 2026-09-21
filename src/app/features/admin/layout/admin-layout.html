@@ -25,10 +25,12 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z" stroke-linejoin="round"/></svg>
       Marcas
     </a>
-    <a routerLink="administradores" routerLinkActive="active">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 19v-2a4 4 0 0 0-8 0v2M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Administradores
-    </a>
+    @if (auth.esAdminTotal()) {
+      <a routerLink="administradores" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 19v-2a4 4 0 0 0-8 0v2M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Administradores
+      </a>
+    }
   </nav>
 
   <div class="admin-sidebar__foot">

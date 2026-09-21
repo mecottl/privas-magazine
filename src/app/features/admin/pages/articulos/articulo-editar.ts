@@ -52,6 +52,10 @@ export class ArticuloEditar implements OnInit {
   readonly subiendo = signal(false);
   readonly modo = signal<Modo | null>(null);
   readonly errorModal = signal('');
+  /** true si un editor abrió por URL directa un artículo que no es suyo — RLS
+   *  bloquearía el guardado igual, esto solo evita la confusión de un error
+   *  al intentar guardar en vez de avisar desde que carga. */
+  readonly soloLectura = signal(false);
 
   m: Partial<Articulo> = {
     titulo: '',
@@ -78,6 +82,14 @@ export class ArticuloEditar implements OnInit {
       try {
         const a = await this.srv.obtener(this.id);
         this.m = { ...a };
+        const puedeEditar =
+          this.auth.esAdminTotal() || a.creado_por === this.auth.user()?.id;
+        this.soloLectura.set(!puedeEditar);
+        if (!puedeEditar) {
+          this.error.set(
+            'Solo quien creó este artículo (o un administrador) puede editarlo. Lo ves en modo lectura.',
+          );
+        }
         this.m.autor_texto =
           a.autor_texto || this.nombreCuenta();
         this.contenidoBloques = Array.isArray(a.contenido_json)
@@ -139,7 +151,7 @@ export class ArticuloEditar implements OnInit {
   }
 
   async eliminar() {
-    if (!this.id) return;
+    if (!this.id || this.soloLectura()) return;
     const ok = await this.confirmar.confirm({
       titulo: '¿Eliminar el artículo?',
       mensaje: `«${this.m.titulo}» se borrará de forma permanente.`,
@@ -206,6 +218,10 @@ export class ArticuloEditar implements OnInit {
 
   private validar(): boolean {
     this.error.set('');
+    if (this.soloLectura()) {
+      this.error.set('No puedes editar este artículo — no eres su autor.');
+      return false;
+    }
     if (!this.m.titulo?.trim()) {
       this.error.set('El título es obligatorio.');
       return false;

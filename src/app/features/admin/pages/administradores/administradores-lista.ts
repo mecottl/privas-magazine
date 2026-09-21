@@ -7,6 +7,7 @@ import { ConfirmService } from '../../../../shared/components/confirm-dialog/con
 import { mensajeError } from '../../../../core/services/errores';
 import {
   NIVELES_PERMISO,
+  NOMBRE_NIVEL_PERMISO,
   type NivelPermiso,
   type PerfilAdmin,
 } from '../../../../core/models';
@@ -27,6 +28,7 @@ export class AdministradoresLista implements OnInit {
   readonly msg = signal('');
   readonly exito = signal(false);
   readonly niveles = NIVELES_PERMISO;
+  readonly nombreNivel = NOMBRE_NIVEL_PERMISO;
 
   email = '';
   nombre = '';

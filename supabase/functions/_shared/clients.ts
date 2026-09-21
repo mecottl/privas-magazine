@@ -64,6 +64,20 @@ export async function requireAdmin(req: Request): Promise<PerfilAdmin> {
 }
 
 /**
+ * Igual que `requireAdmin`, pero además exige `nivel_permiso = 'admin_total'`.
+ * Úsala en acciones que gestionan OTRAS cuentas de admin (invitar,
+ * activar/desactivar) — un `editor` no debe poder tocar eso, ver CLAUDE.md
+ * → niveles de permiso.
+ */
+export async function requireAdminTotal(req: Request): Promise<PerfilAdmin> {
+  const perfil = await requireAdmin(req);
+  if (perfil.nivel_permiso !== 'admin_total') {
+    throw json({ error: 'Esta acción requiere nivel de administrador total' }, 403);
+  }
+  return perfil;
+}
+
+/**
  * Valida que quien llama sea el propio sistema (pg_cron), comparando el header
  * `Authorization: Bearer <CRON_SECRET>` contra la variable de entorno.
  * Lanza un `Response` 401 si no coincide.

@@ -1,30 +1,30 @@
 /**
  * invitar-admin (CLAUDE.md → tabla de Edge Functions · brief "lógica real")
  *
- * Quién la llama: un admin ya logueado, desde el panel.
+ * Quién la llama: un admin `admin_total` ya logueado, desde el panel.
  * ÚNICA vía autorizada para crear cuentas de admin.
  *
- * 1. Valida que quien llama es admin activo (requireAdmin).
+ * 1. Valida que quien llama es `admin_total` activo (requireAdminTotal) — un
+ *    `editor` no puede invitar a nadie (CLAUDE.md → niveles de permiso).
  * 2. Body: { email, nombre_visible, nivel_permiso }.
- * 3. Valida nivel_permiso contra los valores del CHECK (hoy solo 'admin_total').
+ * 3. Valida nivel_permiso contra los valores del CHECK ('admin_total' | 'editor').
  * 4. Con service_role:
- *      - auth.admin.inviteUserByEmail(email, { redirectTo }) → crea el
- *        usuario y envía el correo de invitación de Supabase (plantilla en
- *        inglés por ahora — personalizarla es dashboard-only, issue #61).
+ *      - auth.admin.inviteUserByEmail(email, { redirectTo, data }) → crea el
+ *        usuario y envía el correo de invitación de Supabase. `data` lleva
+ *        `{ nivel_permiso }` para que la plantilla del correo pueda mostrar
+ *        texto distinto según el rol (issue #61) vía `{{ .Data.nivel_permiso }}`.
  *        redirectTo = SITE_URL + /gestion-privas/aceptar-invitacion, la
- *        pantalla donde la persona invitada pone su contraseña. ¡Esa URL
- *        tiene que estar en Authentication → URL Configuration → Redirect
- *        URLs del dashboard de Supabase, o Supabase la ignora en silencio
- *        y cae en la Site URL default!
+ *        pantalla donde la persona invitada pone su contraseña. Esa URL debe
+ *        estar en Authentication → URL Configuration → Redirect URLs.
  *      - insert en perfiles_admin { id, nombre_visible, nivel_permiso, activo: true }.
  * 5. Si el insert falla tras crear el usuario → rollback con auth.admin.deleteUser().
  * 6. 200 con los datos del nuevo admin (sin nada sensible).
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
-import { adminClient, requireAdmin } from '../_shared/clients.ts';
+import { adminClient, requireAdminTotal } from '../_shared/clients.ts';
 
-/** Valores admitidos por el CHECK de perfiles_admin.nivel_permiso (CLAUDE.md). */
-const NIVELES_PERMITIDOS = ['admin_total'] as const;
+/** Valores admitidos por el CHECK de perfiles_admin.nivel_permiso. */
+const NIVELES_PERMITIDOS = ['admin_total', 'editor'] as const;
 type NivelPermiso = (typeof NIVELES_PERMITIDOS)[number];
 
 interface Payload {
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
   try {
-    await requireAdmin(req);
+    await requireAdminTotal(req);
 
     const { email, nombre_visible, nivel_permiso } = (await req
       .json()
@@ -58,16 +58,13 @@ Deno.serve(async (req) => {
 
     const admin = adminClient();
 
-    // Sin redirectTo, Supabase manda al usuario a la "Site URL" default del
-    // proyecto (o a una página propia de Supabase sin marca) — con esto cae
-    // en /gestion-privas/aceptar-invitacion, la pantalla donde pone su
-    // contraseña (issue #61). Mismo secreto SITE_URL que ya usa
-    // programar-publicacion.
     const siteUrl = Deno.env.get('SITE_URL') ?? 'https://privasmagazine.com';
     const redirectTo = `${siteUrl.replace(/\/$/, '')}/gestion-privas/aceptar-invitacion`;
 
-    const { data: invited, error: inviteErr } =
-      await admin.auth.admin.inviteUserByEmail(email, { redirectTo });
+    const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(
+      email,
+      { redirectTo, data: { nivel_permiso, nombre_visible: nombre_visible ?? null } },
+    );
     if (inviteErr || !invited.user) {
       return json(
         { error: inviteErr?.message ?? 'No se pudo invitar al usuario' },
