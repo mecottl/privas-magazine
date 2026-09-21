@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MarcasService } from '../../../../core/services/marcas.service';
 import { HeroMedia } from '../../components/hero-media/hero-media';
+import { Colaboradores } from '../../components/colaboradores/colaboradores';
 import type { Marca } from '../../../../core/models';
 
 /**
@@ -12,7 +13,7 @@ import type { Marca } from '../../../../core/models';
 @Component({
   selector: 'app-directorio',
   standalone: true,
-  imports: [HeroMedia],
+  imports: [HeroMedia, Colaboradores],
   templateUrl: './directorio.html',
   styleUrl: './directorio.scss',
 })
