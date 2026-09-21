@@ -20,6 +20,62 @@
 import { corsHeaders, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
+/**
+ * Mismo lenguaje visual que `docs/email-invitacion.html` (cabecera teal +
+ * PRIVAS, cuerpo crema) — issue #63. A diferencia de esa plantilla, esta no
+ * se pega en el dashboard de Supabase: se manda directo por la API de
+ * Resend desde este archivo, así que vive aquí en vez de en /docs.
+ */
+function plantillaCorreo(codigo: string): string {
+  return `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#edeae1; padding:40px 16px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="420" cellpadding="0" cellspacing="0" style="max-width:420px; width:100%; background-color:#f7f2e7; border-radius:12px; overflow:hidden;">
+
+        <tr>
+          <td align="center" style="background-color:#256585; padding:32px 24px;">
+            <div style="font-family:Georgia,'Times New Roman',serif; font-size:26px; font-weight:700; letter-spacing:0.04em; color:#fbf7ee;">
+              PRIVAS
+            </div>
+            <div style="font-family:Arial,Helvetica,sans-serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#bcd7de; margin-top:4px;">
+              Magazine
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:36px 32px 28px; font-family:Arial,Helvetica,sans-serif; color:#16323a;">
+            <h1 style="margin:0 0 14px; font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:700; color:#256585;">
+              Tu código de verificación
+            </h1>
+            <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:#2c4a52;">
+              Escríbelo en la pantalla de verificación para entrar al panel de PRIVAS Magazine:
+            </p>
+
+            <div style="display:inline-block; padding:14px 30px; border-radius:12px; background-color:#edeae1; font-family:Arial,Helvetica,sans-serif; font-size:34px; font-weight:700; letter-spacing:0.3em; color:#256585;">
+              ${codigo}
+            </div>
+
+            <p style="margin:24px 0 0; font-size:13px; line-height:1.5; color:#5b747b;">
+              Vence en 10 minutos. Si no fuiste tú quien lo pidió, ignora este correo —
+              tu cuenta sigue protegida por tu contraseña.
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:18px 32px; border-top:1px solid #cec5ac; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#5b747b;">
+            Este código es personal — nunca lo compartas con nadie.
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
@@ -62,12 +118,7 @@ Deno.serve(async (req) => {
           from,
           to: userData.user.email,
           subject: `${codigo} — tu código para entrar a PRIVAS`,
-          html: `
-            <div style="font-family:Arial,Helvetica,sans-serif;color:#16323a;max-width:420px;margin:0 auto;padding:24px;">
-              <p>Tu código de verificación para entrar al panel de PRIVAS Magazine es:</p>
-              <p style="font-size:32px;font-weight:700;letter-spacing:0.25em;color:#256585;margin:16px 0;">${codigo}</p>
-              <p style="font-size:13px;color:#5b747b;">Vence en 10 minutos. Si no fuiste tú quien lo pidió, ignora este correo — tu cuenta sigue protegida por tu contraseña.</p>
-            </div>`,
+          html: plantillaCorreo(codigo),
         }),
       });
       if (!res.ok) {
