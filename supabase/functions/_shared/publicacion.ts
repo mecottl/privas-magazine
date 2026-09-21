@@ -89,11 +89,14 @@ function plantillaCorreo(itemsHtml: string): string {
 function filaItem(titulo: string, href: string | null): string {
   return `
 <tr>
-  <td style="padding:12px 0; border-bottom:1px solid #e3ddc9;">
+  <td style="padding:16px 0; border-bottom:1px solid #e3ddc9;">
+    <p style="margin:0 0 12px; font-family:Georgia,'Times New Roman',serif; font-size:17px; font-weight:700; color:#16323a; line-height:1.4;">
+      ${titulo}
+    </p>
     ${
       href
-        ? `<a href="${href}" style="font-family:Georgia,'Times New Roman',serif; font-size:16px; font-weight:700; color:#256585; text-decoration:none;">${titulo}</a>`
-        : `<span style="font-family:Georgia,'Times New Roman',serif; font-size:16px; font-weight:700; color:#256585;">${titulo}</span>`
+        ? `<a href="${href}" style="display:inline-block; padding:10px 22px; border-radius:8px; background-color:#256585; font-family:Arial,Helvetica,sans-serif; font-size:13px; font-weight:700; letter-spacing:0.02em; color:#fbf7ee; text-decoration:none;">Ve la publicación aquí →</a>`
+        : ''
     }
   </td>
 </tr>`;
