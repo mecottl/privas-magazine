@@ -202,6 +202,12 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Sin "Sigue leyendo" (.art-mas) después, .art es el último hijo y no hay
+   nada que separe la tarjeta blanca redondeada del pie — el margin-top
+   negativo del footer se le mete encima. Con .art-mas presente, su propio
+   margin-top ya da de sobra este respiro. */
+.art:last-child { margin-bottom: clamp(3rem, 6vw, 4.5rem); }
+
 .art-cuerpo {
   font-family: var(--sans);
   font-size: 1.09rem;
