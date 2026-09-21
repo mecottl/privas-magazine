@@ -1,37 +1,48 @@
-<section class="page">
-  <h1>Directorio y sobre nosotros</h1>
+<section class="hero hero--seccion">
+  <app-hero-media class="hero__media" nombre="cat-entretenimiento" alt="" [prioridad]="true" />
 
-  <p>
-    PRIVAS Magazine forma parte de <strong>Grupo Privas</strong>, un conjunto
-    de marcas dedicadas a los viajes y las experiencias en el sureste
-    mexicano. Esta revista nace de esa misma pasión: contar los lugares,
-    sabores y momentos que hacen que valga la pena empacar la maleta.
-  </p>
-  <p>
-    <!-- TODO: texto final de "quiénes somos" pendiente de confirmar con la
-         clienta (issue #34) — este párrafo es un placeholder editorial. -->
-    Somos un equipo pequeño que cree en el periodismo de viajes hecho con
-    calma: fotografía cuidada, recomendaciones probadas y una mirada honesta
-    de cada destino.
-  </p>
+  <div class="hero__inner">
+    <span class="hero__eyebrow">El grupo</span>
+    <h1 class="hero__title">Directorio y sobre nosotros</h1>
+    <p class="hero__texto">
+      PRIVAS Magazine forma parte de Grupo Privas, un conjunto de marcas
+      dedicadas a los viajes y las experiencias en el sureste mexicano.
+    </p>
+  </div>
+</section>
 
-  @if (marcas().length) {
-    <h2>Nuestras marcas</h2>
-    <ul class="directorio-lista">
-      @for (m of marcas(); track m.id) {
-        <li class="directorio-item">
-          @if (m.logo_url) {
-            <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
-          }
-          <div>
-            <strong>{{ m.nombre }}</strong>
-            @if (m.descripcion) { <p>{{ m.descripcion }}</p> }
-            @if (m.sitio_web_url) {
-              <a [href]="m.sitio_web_url" target="_blank" rel="noopener">Visitar sitio →</a>
+<section class="franja franja--fin">
+  <div class="franja__wrap directorio-wrap">
+    <p>
+      Esta revista nace de esa misma pasión: contar los lugares, sabores y
+      momentos que hacen que valga la pena empacar la maleta.
+    </p>
+    <p>
+      <!-- TODO: texto final de "quiénes somos" pendiente de confirmar con la
+           clienta (issue #34) — este párrafo es un placeholder editorial. -->
+      Somos un equipo pequeño que cree en el periodismo de viajes hecho con
+      calma: fotografía cuidada, recomendaciones probadas y una mirada honesta
+      de cada destino.
+    </p>
+
+    @if (marcas().length) {
+      <h2>Nuestras marcas</h2>
+      <ul class="directorio-lista">
+        @for (m of marcas(); track m.id) {
+          <li class="directorio-item">
+            @if (m.logo_url) {
+              <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
             }
-          </div>
-        </li>
-      }
-    </ul>
-  }
+            <div>
+              <strong>{{ m.nombre }}</strong>
+              @if (m.descripcion) { <p>{{ m.descripcion }}</p> }
+              @if (m.sitio_web_url) {
+                <a [href]="m.sitio_web_url" target="_blank" rel="noopener">Visitar sitio →</a>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
 </section>

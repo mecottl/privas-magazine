@@ -1,13 +1,24 @@
 :host { display: block; }
 
-.page p { max-width: 62ch; }
+/* La franja ya pone color: var(--on-brand) por defecto — solo hace falta
+   acotar el ancho de lectura y el tono secundario de los párrafos. */
+.directorio-wrap {
+  max-width: 62ch;
+}
+.directorio-wrap p { color: var(--on-brand-dim); }
+.directorio-wrap h2 {
+  margin-top: var(--space-lg);
+  color: var(--on-brand);
+  font-weight: 500;
+}
 
 .directorio-lista {
+  max-width: none;
   list-style: none;
-  margin: 1.5rem 0 0;
+  margin: 1.25rem 0 0;
   padding: 0;
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 .directorio-item {
   display: flex;
@@ -15,7 +26,8 @@
   gap: 1rem;
   padding: 1rem;
   border-radius: var(--r-card);
-  background: var(--paper-2);
+  background: rgba(251, 247, 238, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 .directorio-item img {
   width: 3.5rem;
@@ -23,8 +35,10 @@
   object-fit: contain;
   flex: none;
 }
+.directorio-item strong { color: var(--on-brand); }
 .directorio-item p {
   margin: 0.25rem 0;
-  color: var(--ink-55);
+  color: var(--on-brand-dim);
   font-size: var(--fs-sm);
 }
+.directorio-item a { color: var(--on-brand); font-weight: 700; }

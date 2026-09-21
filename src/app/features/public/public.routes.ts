@@ -68,6 +68,7 @@ export const PUBLIC_ROUTES: Routes = [
       {
         path: 'directorio-y-sobre-nosotros',
         title: 'Directorio y sobre nosotros',
+        data: { hero: true },
         loadComponent: () =>
           import('./pages/directorio/directorio').then((m) => m.Directorio),
       },

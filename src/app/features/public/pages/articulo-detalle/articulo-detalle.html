@@ -50,7 +50,6 @@
           </span>
         }
         <h1 class="art-hero__titulo">{{ a.titulo }}</h1>
-        @if (a.extracto) { <p class="art-hero__bajada">{{ a.extracto }}</p> }
         <p class="art-hero__firma">
           <span class="art-hero__autor">{{ a.autor_texto || 'Redacción PRIVAS' }}</span>
           @if (a.fecha_publicacion) {
