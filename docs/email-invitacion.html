@@ -15,6 +15,20 @@
   persona le dé clic de verdad, dejándolo inválido. El interstitial no hace
   ninguna petición por su cuenta, solo muestra un botón: un previsualizador
   automático nunca llega a la URL real de Supabase, solo un clic humano.
+
+  OJO: {{ .ConfirmationURL }} va SIEMPRE con el filtro `| urlquery` cuando
+  se usa aquí adentro de otra URL (como valor de `?siguiente=`). Supabase la
+  marca internamente como "URL seguirá", así que sin el filtro se pega SIN
+  codificar — queda como texto plano "https://xxx.supabase.co/auth/v1/
+  verify?token=...&type=..." dentro del atributo href, detectable por
+  cualquier escáner de links de texto plano (exactamente el problema que
+  este interstitial existe para evitar) y además le rompe el query string a
+  esta misma URL (el navegador corta en el primer "&" sin escapar). Con
+  `| urlquery` queda codificada (%3A%2F%2F...) y ninguna de las dos cosas
+  pasa. Si el botón "Crear mi contraseña" alguna vez vuelve a dar "enlace
+  inválido" de una, sin pasar por la pantalla de "Confirma tu invitación",
+  lo primero a revisar es que este filtro siga presente en las DOS
+  ocurrencias de abajo.
 -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#edeae1; padding:40px 16px;">
   <tr>
@@ -55,7 +69,7 @@
             <table role="presentation" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center" style="border-radius:999px; background-color:#256585;">
-                  <a href="https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL }}"
+                  <a href="https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL | urlquery }}"
                      style="display:inline-block; padding:13px 32px; font-family:Arial,Helvetica,sans-serif; font-size:14px; font-weight:700; letter-spacing:0.03em; color:#fbf7ee; text-decoration:none; border-radius:999px;">
                     Crear mi contraseña
                   </a>
@@ -65,7 +79,7 @@
 
             <p style="margin:28px 0 0; font-size:13px; line-height:1.5; color:#5b747b;">
               Si el botón no funciona, copia y pega este link en tu navegador:<br>
-              <a href="https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL }}" style="color:#256585; word-break:break-all;">https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL }}</a>
+              <a href="https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL | urlquery }}" style="color:#256585; word-break:break-all;">https://privasmagazine.com/gestion-privas/confirmar-invitacion?siguiente={{ .ConfirmationURL | urlquery }}</a>
             </p>
           </td>
         </tr>
