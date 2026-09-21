@@ -7,7 +7,7 @@
     <fieldset class="panel">
       <legend>Nueva categoría</legend>
       <form class="row" (ngSubmit)="crear()" style="margin:0">
-        <input name="nombre" [(ngModel)]="nuevoNombre" placeholder="Nombre" required />
+        <input name="nombre" [(ngModel)]="nuevoNombre" placeholder="Nombre" aria-label="Nombre de la categoría" required />
         <button type="submit" [disabled]="!nuevoNombre.trim()">Crear</button>
       </form>
     </fieldset>

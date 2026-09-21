@@ -73,6 +73,7 @@
                       [(ngModel)]="resetPassword"
                       name="resetPassword-{{ a.id }}"
                       placeholder="Nueva contraseña"
+                      aria-label="Nueva contraseña"
                       minlength="8"
                       [disabled]="guardandoReset()"
                     />
@@ -81,6 +82,7 @@
                       [(ngModel)]="resetConfirmar"
                       name="resetConfirmar-{{ a.id }}"
                       placeholder="Confirmar"
+                      aria-label="Confirmar nueva contraseña"
                       [disabled]="guardandoReset()"
                     />
                     <button type="submit" [disabled]="guardandoReset()">

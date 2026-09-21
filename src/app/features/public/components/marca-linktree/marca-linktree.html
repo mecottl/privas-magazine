@@ -15,7 +15,7 @@
     <div class="lt-head">
       <span class="lt-logo">
         @if (marca().logo_url) {
-          <img [src]="marca().logo_url" [alt]="marca().nombre" />
+          <img [src]="marca().logo_url" [alt]="marca().nombre" loading="lazy" />
         } @else {
           <span class="lt-inicial">{{ marca().nombre.charAt(0) }}</span>
         }

@@ -16,6 +16,7 @@
           class="mc-titulo"
           name="nombre"
           placeholder="Nombre de la marca"
+          aria-label="Nombre de la marca"
           [(ngModel)]="m.nombre"
           required
         />
@@ -31,7 +32,7 @@
 
         <p class="lado-titulo">Logo</p>
         <div class="mc-logo">
-          <input [(ngModel)]="m.logo_url" name="logo" placeholder="Pega una URL de imagen…" />
+          <input [(ngModel)]="m.logo_url" name="logo" placeholder="Pega una URL de imagen…" aria-label="URL del logo" />
           <div class="mc-logo__subir">
             <app-campo-archivo
               [url]="m.logo_url || null"
@@ -55,7 +56,7 @@
             <select [(ngModel)]="e.tipo" [name]="'tipo-' + $index" aria-label="Tipo de red">
               @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
             </select>
-            <input [(ngModel)]="e.url" [name]="'url-' + $index" [placeholder]="ph(e.tipo)" />
+            <input [(ngModel)]="e.url" [name]="'url-' + $index" [placeholder]="ph(e.tipo)" aria-label="URL de la red social" />
             <button type="button" class="secundario peligro" (click)="quitarEnlace($index)">Quitar</button>
           </div>
         } @empty {
