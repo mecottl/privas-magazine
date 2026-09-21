@@ -93,8 +93,13 @@ async function notificarNewsletter(
         audience_id: audienceId,
         from,
         subject: 'Novedades en PRIVAS Magazine',
+        // {{{RESEND_UNSUBSCRIBE_URL}}} es el merge tag nativo de Resend para
+        // broadcasts — no existe forma de mandar un link con NUESTRO propio
+        // token por destinatario en un solo broadcast a toda la audiencia
+        // (issue #64). Resend marca al contacto como unsubscribed en la
+        // audiencia solo; no actualiza `suscriptores_newsletter.activo`.
         html: `<h1>Nuevas publicaciones</h1><ul>${items}</ul>
-               <p><a href="${siteUrl}/newsletter/cancelar?token={{unsubscribe_token}}">Darse de baja</a></p>`,
+               <p><a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Darse de baja</a></p>`,
       }),
     });
     if (!res.ok) {

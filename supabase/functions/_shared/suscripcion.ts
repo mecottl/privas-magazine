@@ -1,6 +1,7 @@
 import { corsHeaders, json } from './cors.ts';
 import { adminClient } from './clients.ts';
 import { dentroDelLimite, ipDeRequest } from './rate_limit.ts';
+import { sincronizarContactoAudiencia } from './resend_audience.ts';
 
 /**
  * Lógica compartida de confirmar/cancelar suscripción
@@ -44,7 +45,7 @@ export async function actualizarEstadoSuscripcion(
 
   const { data: fila } = await supabase
     .from('suscriptores_newsletter')
-    .select('id')
+    .select('id, email')
     .eq('token_confirmacion', token)
     .maybeSingle();
 
@@ -55,6 +56,8 @@ export async function actualizarEstadoSuscripcion(
     .from('suscriptores_newsletter')
     .update({ activo })
     .eq('id', fila.id);
+
+  await sincronizarContactoAudiencia(fila.email, activo);
 
   return json(RESPUESTA_GENERICA);
 }

@@ -40,8 +40,14 @@ Quién la llama: `pg_cron` cada 15 min, autenticado con `CRON_SECRET`.
 3. Si el total de filas afectadas > 0:
    - `repository_dispatch` a GitHub (`event_type: rebuild-sitio`) con
      `GH_DISPATCH_TOKEN`.
-   - Newsletter vía Resend "marketing", detrás de un check de `RESEND_API_KEY`
-     y su propio `try/catch` (si falta la key, saltar silenciosamente).
+   - Newsletter vía Resend "marketing" (broadcast a `RESEND_AUDIENCE_ID`),
+     detrás de un check de `RESEND_API_KEY` y su propio `try/catch` (si falta
+     la key, saltar silenciosamente). El link de baja usa el merge tag nativo
+     `{{{RESEND_UNSUBSCRIBE_URL}}}` (issue #64) — un broadcast a toda la
+     audiencia no puede llevar un link con nuestro propio token por
+     destinatario, así que la baja por ese link la gestiona Resend en su
+     audiencia (no actualiza `suscriptores_newsletter.activo`; para eso está
+     nuestro propio flujo de `cancelar-suscripcion`).
 4. 200 con un resumen (cuántos artículos/ediciones se publicaron).
 
 ## 2. `invitar-admin`
@@ -145,10 +151,15 @@ precisamente para poder validar y limitar aquí antes de escribir (issue #15).
    intentos por IP cada 10 min. Si excede → 429.
 2. Body: `{ email }`. Validar formato con una regex simple; si no matchea →
    400.
-3. Con `service_role`: `insert` en `suscriptores_newsletter`.
+3. Con `service_role`: `insert` en `suscriptores_newsletter`, pidiendo de
+   vuelta `token_confirmacion`.
 4. Si `error.code === '23505'` (email duplicado, columna `unique`) → 409
    "Ese correo ya está registrado.". Otro error → 500.
-5. 200 `{ ok: true }`.
+5. Manda el correo de confirmación por Resend con el link a
+   `/newsletter/confirmar?token=...` (issue #64 — antes esto no pasaba y
+   nadie podía completar el doble opt-in). Tolerante: si `RESEND_API_KEY`
+   falta, solo loguea, no tumba la función.
+6. 200 `{ ok: true }`.
 
 ## 6. `confirmar-suscripcion`
 
@@ -161,7 +172,9 @@ Pública, vía el link del correo de confirmación.
 3. Con `service_role`: buscar la fila con ese `token_confirmacion`.
 4. Si no existe → respuesta genérica ("enlace inválido o ya usado"), sin
    confirmar ni negar la existencia de un email.
-5. Si existe → `update ... set activo = true`.
+5. Si existe → `update ... set activo = true`, y sincroniza el contacto en la
+   audiencia de Resend (`_shared/resend_audience.ts`, issue #64) para que el
+   broadcast de `programar-publicacion` de verdad le llegue.
 6. Respuesta genérica de éxito. El mensaje visible lo pinta Angular en
    `/newsletter/confirmar`.
 
@@ -170,7 +183,8 @@ Pública, vía el link del correo de confirmación.
 Igual que `confirmar-suscripcion`, pero `activo = false` y su propio cupo de
 rate limit (misma función `actualizarEstadoSuscripcion`, ruta
 `'cancelar-suscripcion'` — no comparte cupo con confirmar). NO borra la fila
-(respeta la baja aunque reintenten confirmar con un token viejo).
+(respeta la baja aunque reintenten confirmar con un token viejo). También
+marca al contacto como `unsubscribed` en la audiencia de Resend.
 
 ## 8. `set-admin-activo`
 
