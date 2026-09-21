@@ -158,7 +158,11 @@ async function subirPorFtp(ruta: string, bytes: Uint8Array): Promise<string> {
       await client.access({ host, user, password, secure: false });
     }
     await client.ensureDir(remoteDir);
-    await client.uploadFrom(Readable.from(bytes), remoteName);
+    // Readable.from(bytes) con un Uint8Array crudo entra en objectMode e
+    // itera byte por byte (cada byte como chunk `number`) — así falla
+    // Writable.write() en el socket de datos con "Received type number
+    // (255)". Envolver en [bytes] emite el buffer completo como un chunk.
+    await client.uploadFrom(Readable.from([bytes]), remoteName);
   } finally {
     client.close();
   }
