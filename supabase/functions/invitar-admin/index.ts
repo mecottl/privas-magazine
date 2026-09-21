@@ -1,13 +1,20 @@
 /**
  * invitar-admin (CLAUDE.md → tabla de Edge Functions · brief "lógica real")
  *
- * Quién la llama: un admin `admin_total` ya logueado, desde el panel.
- * ÚNICA vía autorizada para crear cuentas de admin.
+ * Quién la llama: un admin logueado con `nivel_permiso` de `dueno` o
+ * `admin_total` — un `editor` no puede invitar a nadie. ÚNICA vía
+ * autorizada para crear cuentas de admin.
  *
- * 1. Valida que quien llama es `admin_total` activo (requireAdminTotal) — un
- *    `editor` no puede invitar a nadie (CLAUDE.md → niveles de permiso).
+ * Matriz de a quién puede invitar cada nivel (poder absoluto es solo del
+ * dueño — ver CLAUDE.md → niveles de permiso):
+ *   - `dueno`: cualquier nivel (dueno, admin_total, editor).
+ *   - `admin_total`: solo `editor`.
+ *   - `editor`: nada, 403.
+ *
+ * 1. requireAdmin + chequeo manual del nivel de quien llama (arriba).
  * 2. Body: { email, nombre_visible, nivel_permiso }.
- * 3. Valida nivel_permiso contra los valores del CHECK ('admin_total' | 'editor').
+ * 3. Valida nivel_permiso contra los valores del CHECK y contra lo que el
+ *    nivel de quien llama puede otorgar.
  * 4. Con service_role:
  *      - auth.admin.inviteUserByEmail(email, { redirectTo, data }) → crea el
  *        usuario y envía el correo de invitación de Supabase. `data` lleva
@@ -21,10 +28,10 @@
  * 6. 200 con los datos del nuevo admin (sin nada sensible).
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
-import { adminClient, requireAdminTotal } from '../_shared/clients.ts';
+import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
 /** Valores admitidos por el CHECK de perfiles_admin.nivel_permiso. */
-const NIVELES_PERMITIDOS = ['admin_total', 'editor'] as const;
+const NIVELES_PERMITIDOS = ['dueno', 'admin_total', 'editor'] as const;
 type NivelPermiso = (typeof NIVELES_PERMITIDOS)[number];
 
 interface Payload {
@@ -38,7 +45,10 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
   try {
-    await requireAdminTotal(req);
+    const quienLlama = await requireAdmin(req);
+    if (quienLlama.nivel_permiso === 'editor') {
+      return json({ error: 'No tienes permiso para invitar administradores.' }, 403);
+    }
 
     const { email, nombre_visible, nivel_permiso } = (await req
       .json()
@@ -54,6 +64,9 @@ Deno.serve(async (req) => {
         },
         400,
       );
+    }
+    if (quienLlama.nivel_permiso === 'admin_total' && nivel_permiso !== 'editor') {
+      return json({ error: 'Un administrador solo puede invitar editores.' }, 403);
     }
 
     const admin = adminClient();

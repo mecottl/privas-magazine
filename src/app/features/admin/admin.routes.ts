@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/auth/admin.guard';
-import { adminTotalGuard } from '../../core/auth/admin-total.guard';
+import { gestionAdminsGuard } from '../../core/auth/gestion-admins.guard';
 import { AdminLayout } from './layout/admin-layout';
 
 /** Rutas del panel de administración (protegidas por `adminGuard`). */
@@ -111,10 +111,18 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'administradores',
         title: 'Administradores · Gestión',
-        canActivate: [adminTotalGuard],
+        canActivate: [gestionAdminsGuard],
         loadComponent: () =>
           import('./pages/administradores/administradores-lista').then(
             (m) => m.AdministradoresLista,
+          ),
+      },
+      {
+        path: 'configuracion',
+        title: 'Configuración · Gestión',
+        loadComponent: () =>
+          import('./pages/configuracion/configuracion').then(
+            (m) => m.Configuracion,
           ),
       },
     ],

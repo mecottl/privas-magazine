@@ -1,0 +1,61 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <h1>Configuración</h1>
+  </div>
+
+  <div class="admin-page__scroll">
+    <fieldset class="panel">
+      <legend>Mi cuenta</legend>
+      <p class="hint">
+        {{ auth.user()?.email }} · {{ nombreNivel[auth.perfil()!.nivel_permiso] }}
+      </p>
+
+      <form (ngSubmit)="guardarNombre()">
+        <div class="campos-grid">
+          <label>Nombre visible <input [(ngModel)]="nombre" name="nombre" required [disabled]="guardandoNombre()" /></label>
+        </div>
+        <div class="row" style="margin-bottom:0">
+          <button type="submit" [disabled]="guardandoNombre()">
+            {{ guardandoNombre() ? 'Guardando…' : 'Guardar nombre' }}
+          </button>
+        </div>
+        @if (errorNombre()) { <p class="error">{{ errorNombre() }}</p> }
+        @if (okNombre()) { <p class="ok">Nombre actualizado.</p> }
+      </form>
+    </fieldset>
+
+    <fieldset class="panel">
+      <legend>Cambiar contraseña</legend>
+      <form (ngSubmit)="guardarPassword()">
+        <div class="campos-grid">
+          <label>Nueva contraseña
+            <input
+              type="password"
+              [(ngModel)]="passwordNueva"
+              name="passwordNueva"
+              minlength="8"
+              autocomplete="new-password"
+              [disabled]="guardandoPassword()"
+            />
+          </label>
+          <label>Confirmar
+            <input
+              type="password"
+              [(ngModel)]="passwordConfirmar"
+              name="passwordConfirmar"
+              autocomplete="new-password"
+              [disabled]="guardandoPassword()"
+            />
+          </label>
+        </div>
+        <div class="row" style="margin-bottom:0">
+          <button type="submit" [disabled]="guardandoPassword()">
+            {{ guardandoPassword() ? 'Guardando…' : 'Guardar contraseña' }}
+          </button>
+        </div>
+        @if (errorPassword()) { <p class="error">{{ errorPassword() }}</p> }
+        @if (okPassword()) { <p class="ok">Contraseña actualizada.</p> }
+      </form>
+    </fieldset>
+  </div>
+</div>

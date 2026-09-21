@@ -83,7 +83,7 @@ export class ArticuloEditar implements OnInit {
         const a = await this.srv.obtener(this.id);
         this.m = { ...a };
         const puedeEditar =
-          this.auth.esAdminTotal() || a.creado_por === this.auth.user()?.id;
+          this.auth.tieneAccesoTotal() || a.creado_por === this.auth.user()?.id;
         this.soloLectura.set(!puedeEditar);
         if (!puedeEditar) {
           this.error.set(

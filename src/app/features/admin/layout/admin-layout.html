@@ -25,87 +25,26 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8L3.5 9.7l5.9-.9z" stroke-linejoin="round"/></svg>
       Marcas
     </a>
-    @if (auth.esAdminTotal()) {
+    @if (auth.tieneAccesoTotal()) {
       <a routerLink="administradores" routerLinkActive="active">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 19v-2a4 4 0 0 0-8 0v2M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Administradores
       </a>
     }
+    <a routerLink="configuracion" routerLinkActive="active">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke-linejoin="round"/><path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V19a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H4a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H10a1.65 1.65 0 0 0 1-1.51V4a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V10a1.65 1.65 0 0 0 1.51 1H20a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Configuración
+    </a>
   </nav>
 
   <div class="admin-sidebar__foot">
-    @if (editandoNombre()) {
-      <form class="admin-sidebar__user admin-sidebar__user--editando" (ngSubmit)="guardarNombre()">
-        <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
-        <div>
-          <input
-            [(ngModel)]="nombreEditado"
-            name="nombreEditado"
-            maxlength="80"
-            [disabled]="guardandoNombre()"
-            autofocus
-          />
-          <div class="admin-sidebar__user-acciones">
-            <button type="submit" [disabled]="guardandoNombre()">
-              {{ guardandoNombre() ? 'Guardando…' : 'Guardar' }}
-            </button>
-            <button type="button" class="secundario" (click)="cancelarEdicionNombre()" [disabled]="guardandoNombre()">
-              Cancelar
-            </button>
-          </div>
-          @if (errorNombre()) { <small class="error">{{ errorNombre() }}</small> }
-        </div>
-      </form>
-    } @else {
-      <button type="button" class="admin-sidebar__user" (click)="editarNombre()" title="Cambiar mi nombre visible">
-        <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
-        <p>
-          {{ nombre() }}
-          @if (correo() && correo() !== nombre()) { <small>{{ correo() }}</small> }
-        </p>
-      </button>
-    }
-
-    @if (cambiandoPassword()) {
-      <form class="admin-sidebar__password" (ngSubmit)="guardarPassword()">
-        <label>
-          <span>Nueva contraseña</span>
-          <input
-            type="password"
-            [(ngModel)]="passwordNueva"
-            name="passwordNueva"
-            minlength="8"
-            [disabled]="guardandoPassword()"
-            autocomplete="new-password"
-            autofocus
-          />
-        </label>
-        <label>
-          <span>Confirmar</span>
-          <input
-            type="password"
-            [(ngModel)]="passwordConfirmar"
-            name="passwordConfirmar"
-            [disabled]="guardandoPassword()"
-            autocomplete="new-password"
-          />
-        </label>
-        @if (errorPassword()) { <small class="error">{{ errorPassword() }}</small> }
-        <div class="admin-sidebar__user-acciones">
-          <button type="submit" [disabled]="guardandoPassword()">
-            {{ guardandoPassword() ? 'Guardando…' : 'Guardar' }}
-          </button>
-          <button type="button" class="secundario" (click)="cancelarCambioPassword()" [disabled]="guardandoPassword()">
-            Cancelar
-          </button>
-        </div>
-      </form>
-    } @else {
-      <button type="button" class="admin-sidebar__cambiar-password" (click)="abrirCambioPassword()">
-        Cambiar contraseña
-      </button>
-    }
-
+    <div class="admin-sidebar__user">
+      <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
+      <p>
+        {{ nombre() }}
+        @if (correo() && correo() !== nombre()) { <small>{{ correo() }}</small> }
+      </p>
+    </div>
     <button type="button" class="admin-sidebar__salir" (click)="salir()">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
         <path d="M9 5H5v14h4M15 8l4 4-4 4M19 12H9" stroke-linecap="round" stroke-linejoin="round" />

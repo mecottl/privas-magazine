@@ -2,38 +2,52 @@
  * set-admin-activo
  *
  * Gestiona la cuenta de OTRO administrador: activar/desactivar, cambiar su
- * nivel de permiso, o eliminarla por completo.
+ * nivel de permiso, restablecerle la contraseña, o eliminarla por completo.
+ * A pesar del nombre (histórico, de cuando solo activaba/desactivaba), hoy
+ * cubre las cuatro acciones — se mantiene un solo archivo en vez de cuatro
+ * funciones casi idénticas.
  *
  * Por qué es una Edge Function y no un UPDATE directo desde el panel: la
  * policy de RLS de `perfiles_admin` para UPDATE es `id = auth.uid()` (un
  * admin solo puede tocar su propia fila, y solo la columna `nombre_visible`
  * — ver migración `restringir_autoedicion_y_borrado_admin`), así que desde
  * el cliente es imposible tocar a otra persona o auto-promoverse. Aquí se
- * hace con `service_role`, validando primero que quien llama es admin_total,
- * con estos candados:
- *   1. No puedes desactivarte ni eliminarte a ti mismo.
- *   2. No puedes dejar el sistema sin ningún admin activo.
- *   3. No puedes dejar el sistema sin ningún `admin_total` activo (ni
- *      desactivando, ni degradando a editor, ni eliminando la cuenta).
+ * hace con `service_role`.
  *
- * Body: { id: uuid, activo?: boolean, nivel_permiso?: 'admin_total'|'editor', eliminar?: true }
+ * Matriz de permisos (poder absoluto es solo del `dueno` — CLAUDE.md →
+ * niveles de permiso):
+ *   - `editor`: no puede llamar esta función en absoluto (403).
+ *   - `admin_total`: solo puede activar/desactivar o ELIMINAR cuentas cuyo
+ *     `nivel_permiso` sea `editor`. No puede cambiar `nivel_permiso` de
+ *     nadie ni restablecer contraseñas ajenas — eso es exclusivo del dueño.
+ *   - `dueno`: puede todo, sobre cualquier cuenta (activo, nivel_permiso,
+ *     password, eliminar), con los candados de abajo.
+ *
+ * Candados (aplican sobre quien LLAMA y, para el dueño, también sobre la
+ * cuenta objetivo):
+ *   1. Nadie se desactiva ni se elimina a sí mismo.
+ *   2. Nunca puede quedar el sistema sin ningún admin activo.
+ *   3. Nunca puede quedar sin ningún `admin_total` activo (al desactivar,
+ *      degradar a editor, o eliminar).
+ *   4. Nunca puede quedar sin ningún `dueno` activo (mismas tres acciones).
+ *
+ * Body: { id: uuid, activo?: boolean, nivel_permiso?: 'dueno'|'admin_total'|'editor',
+ *         password?: string, eliminar?: true }
  * `eliminar` borra la cuenta por completo (auth.users + perfiles_admin en
- * cascada) e ignora `activo`/`nivel_permiso`; sus artículos quedan sin dueño
+ * cascada) e ignora el resto de los campos; sus artículos quedan sin dueño
  * (`creado_por = null`, ver misma migración) en vez de bloquear el borrado.
- *
- * Solo `admin_total` puede llamarla — un `editor` no gestiona otras cuentas
- * (CLAUDE.md → niveles de permiso).
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
-import { adminClient, requireAdminTotal } from '../_shared/clients.ts';
+import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
-const NIVELES_PERMITIDOS = ['admin_total', 'editor'] as const;
+const NIVELES_PERMITIDOS = ['dueno', 'admin_total', 'editor'] as const;
 type NivelPermiso = (typeof NIVELES_PERMITIDOS)[number];
 
 interface Payload {
   id?: string;
   activo?: boolean;
   nivel_permiso?: NivelPermiso;
+  password?: string;
   eliminar?: boolean;
 }
 
@@ -42,19 +56,33 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
   try {
-    const quienLlama = await requireAdminTotal(req);
-    const { id, activo, nivel_permiso, eliminar } =
+    const quienLlama = await requireAdmin(req);
+    if (quienLlama.nivel_permiso === 'editor') {
+      return json({ error: 'No tienes permiso para gestionar otras cuentas.' }, 403);
+    }
+    const esDueno = quienLlama.nivel_permiso === 'dueno';
+
+    const { id, activo, nivel_permiso, password, eliminar } =
       (await req.json().catch(() => ({}))) as Payload;
 
     if (!id) return json({ error: 'Se requiere { id: uuid }' }, 400);
     if (nivel_permiso && !NIVELES_PERMITIDOS.includes(nivel_permiso)) {
       return json({ error: 'nivel_permiso inválido' }, 400);
     }
-    if (!eliminar && activo === undefined && !nivel_permiso) {
+    if (!esDueno && (nivel_permiso || password)) {
       return json(
-        { error: 'Se requiere activo, nivel_permiso o eliminar.' },
+        { error: 'Cambiar el nivel de permiso o la contraseña de otra cuenta es solo del dueño.' },
+        403,
+      );
+    }
+    if (!eliminar && activo === undefined && !nivel_permiso && !password) {
+      return json(
+        { error: 'Se requiere activo, nivel_permiso, password o eliminar.' },
         400,
       );
+    }
+    if (password && password.length < 8) {
+      return json({ error: 'La contraseña debe tener al menos 8 caracteres.' }, 400);
     }
 
     const admin = adminClient();
@@ -67,40 +95,39 @@ Deno.serve(async (req) => {
     if (errObjetivo) return json({ error: errObjetivo.message }, 400);
     if (!objetivo) return json({ error: 'Perfil no encontrado' }, 404);
 
-    const sePuedeDesactivar = async () => {
-      const { count } = await admin
+    // Un admin_total (no-dueño) solo gestiona cuentas de editor.
+    if (!esDueno && objetivo.nivel_permiso !== 'editor') {
+      return json(
+        { error: 'Un administrador solo puede gestionar cuentas de editor.' },
+        403,
+      );
+    }
+
+    const contarActivos = async (nivel?: NivelPermiso, excluirId?: string) => {
+      let q = admin
         .from('perfiles_admin')
         .select('id', { count: 'exact', head: true })
         .eq('activo', true);
-      return (count ?? 0) > 1;
-    };
-    const quedanOtrosAdminTotal = async () => {
-      const { count } = await admin
-        .from('perfiles_admin')
-        .select('id', { count: 'exact', head: true })
-        .eq('activo', true)
-        .eq('nivel_permiso', 'admin_total')
-        .neq('id', id);
-      return (count ?? 0) > 0;
+      if (nivel) q = q.eq('nivel_permiso', nivel);
+      if (excluirId) q = q.neq('id', excluirId);
+      const { count } = await q;
+      return count ?? 0;
     };
 
     if (eliminar) {
       if (id === quienLlama.id) {
         return json({ error: 'No puedes eliminar tu propia cuenta.' }, 400);
       }
-      if (objetivo.activo && !(await sePuedeDesactivar())) {
-        return json(
-          { error: 'No puedes eliminar al último administrador activo.' },
-          400,
-        );
+      if (objetivo.activo && (await contarActivos()) <= 1) {
+        return json({ error: 'No puedes eliminar al último administrador activo.' }, 400);
       }
       if (
         objetivo.activo &&
-        objetivo.nivel_permiso === 'admin_total' &&
-        !(await quedanOtrosAdminTotal())
+        (objetivo.nivel_permiso === 'admin_total' || objetivo.nivel_permiso === 'dueno') &&
+        (await contarActivos(objetivo.nivel_permiso as NivelPermiso, id)) === 0
       ) {
         return json(
-          { error: 'No puedes eliminar al último administrador total activo.' },
+          { error: `No puedes eliminar al último ${objetivo.nivel_permiso === 'dueno' ? 'dueño' : 'administrador total'} activo.` },
           400,
         );
       }
@@ -112,43 +139,55 @@ Deno.serve(async (req) => {
     if (activo === false && id === quienLlama.id) {
       return json({ error: 'No puedes desactivar tu propia cuenta.' }, 400);
     }
-    if (activo === false && !(await sePuedeDesactivar())) {
+    if (activo === false && (await contarActivos()) <= 1) {
+      return json({ error: 'No puedes desactivar al último administrador activo.' }, 400);
+    }
+    if (
+      activo === false &&
+      (objetivo.nivel_permiso === 'admin_total' || objetivo.nivel_permiso === 'dueno') &&
+      (await contarActivos(objetivo.nivel_permiso as NivelPermiso, id)) === 0
+    ) {
       return json(
-        { error: 'No puedes desactivar al último administrador activo.' },
+        { error: `No puedes desactivar al último ${objetivo.nivel_permiso === 'dueno' ? 'dueño' : 'administrador total'} activo.` },
         400,
       );
     }
     if (
       nivel_permiso &&
-      nivel_permiso !== 'admin_total' &&
-      objetivo.nivel_permiso === 'admin_total' &&
+      nivel_permiso !== objetivo.nivel_permiso &&
+      (objetivo.nivel_permiso === 'admin_total' || objetivo.nivel_permiso === 'dueno') &&
       objetivo.activo &&
-      !(await quedanOtrosAdminTotal())
+      (await contarActivos(objetivo.nivel_permiso as NivelPermiso, id)) === 0
     ) {
       return json(
-        {
-          error:
-            'No puedes quitarle admin_total al último administrador total activo.',
-        },
+        { error: `No puedes quitarle ${objetivo.nivel_permiso === 'dueno' ? 'dueño' : 'admin_total'} al último activo.` },
         400,
       );
+    }
+
+    if (password) {
+      const { error } = await admin.auth.admin.updateUserById(id, { password });
+      if (error) return json({ error: error.message }, 400);
     }
 
     const cambios: Partial<{ activo: boolean; nivel_permiso: NivelPermiso }> = {};
     if (activo !== undefined) cambios.activo = activo;
     if (nivel_permiso) cambios.nivel_permiso = nivel_permiso;
 
-    const { data, error } = await admin
-      .from('perfiles_admin')
-      .update(cambios)
-      .eq('id', id)
-      .select('id, nombre_visible, activo, nivel_permiso')
-      .maybeSingle();
+    let perfil = objetivo;
+    if (Object.keys(cambios).length > 0) {
+      const { data, error } = await admin
+        .from('perfiles_admin')
+        .update(cambios)
+        .eq('id', id)
+        .select('id, nombre_visible, activo, nivel_permiso')
+        .maybeSingle();
+      if (error) return json({ error: error.message }, 400);
+      if (!data) return json({ error: 'Perfil no encontrado' }, 404);
+      perfil = data;
+    }
 
-    if (error) return json({ error: error.message }, 400);
-    if (!data) return json({ error: 'Perfil no encontrado' }, 404);
-
-    return json({ ok: true, perfil: data });
+    return json({ ok: true, perfil });
   } catch (e) {
     if (e instanceof Response) return e;
     return json({ error: String(e) }, 500);

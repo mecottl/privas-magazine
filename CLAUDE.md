@@ -14,7 +14,7 @@ terminó**: subida/borrado de archivos funciona en vivo por FTP, y
 (issue #19, cerrado 20 sep 2026). Vercel se dio de baja del pipeline el
 mismo día (issue #59) — `privasmagazine.com` ya resuelve directo a Akky.
 Niveles de permiso de administrador ya definidos y construidos (21 sep
-2026): `admin_total` y `editor` — ver sección de esquema más abajo.
+2026): `dueno`, `admin_total` y `editor` — ver sección de esquema más abajo.
 
 Plataforma editorial (artículos + revista digital) para PRIVAS Magazine.
 Este archivo es la fuente de verdad de la arquitectura ya decidida. Léelo
@@ -79,15 +79,26 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
 - `estado` en `articulos` y `ediciones_revista`: `borrador` / `programado` /
   `publicado` / `despublicado`. La visibilidad pública SOLO depende de
   `estado = 'publicado'` (RLS ya filtra esto).
-- `nivel_permiso` en `perfiles_admin` es texto con un CHECK que permite
-  `'admin_total'` (todo, incluida la gestión de otros admins) y `'editor'`
-  (todo el panel EXCEPTO Administradores, y solo edita/borra sus propios
-  artículos — ver `articulos.creado_por` y `es_admin_total()`). No lo
-  conviertas a enum.
+- `nivel_permiso` en `perfiles_admin` es texto con un CHECK que permite tres
+  valores — **poder absoluto es SOLO del `dueno`**, `admin_total` es un
+  nivel intermedio:
+  - `'dueno'`: todo. El único que invita/gestiona cuentas `dueno` o
+    `admin_total`, el único que cambia el `nivel_permiso` de cualquiera, el
+    único que restablece la contraseña de otra cuenta, y también puede
+    eliminar/activar cuentas `editor`.
+  - `'admin_total'`: solo invita cuentas `editor` y solo activa/desactiva/
+    elimina cuentas `editor` — no toca otras cuentas `admin_total` ni
+    `dueno`, no cambia niveles, no restablece contraseñas ajenas. Sí tiene
+    el mismo acceso total a artículos que el dueño (ver abajo).
+  - `'editor'`: todo el panel EXCEPTO Administradores, y solo edita/borra
+    sus propios artículos (ver `articulos.creado_por`).
+  Funciones `security definer`: `es_admin_total()` y `es_dueno()`. No
+  conviertas esto a enum.
 - `articulos.creado_por` (uuid, `default auth.uid()`) es el dueño REAL de la
   fila para efectos de permisos — distinto de `autor_texto`/`autor_uid`, que
   son el byline público y pueden decir cualquier cosa. RLS de UPDATE/DELETE
-  en `articulos` exige `es_admin_total()` o `creado_por = auth.uid()`.
+  en `articulos` exige `es_admin_total()`, `es_dueno()`, o `creado_por =
+  auth.uid()`.
 - `autor_tipo` en `articulos` es `'libre'` o `'usuario'`, con un CHECK que
   obliga a llenar `autor_texto` o `autor_uid` según corresponda.
 - **Categorías: YA implementadas y en uso**, no son un pendiente. Las trae
@@ -110,8 +121,8 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `subir-archivo` | admin (panel) | Sube a Supabase Storage o FTP (Akky) según `UPLOAD_TARGET`. |
 | `eliminar-archivo` | triggers de BD (`pg_net`) | Limpieza automática de archivos huérfanos al reemplazar/borrar. |
 | `programar-publicacion` | `pg_cron` cada 15 min | Publica lo programado, dispara rebuild + newsletter. |
-| `invitar-admin` | admin_total (panel) | Única vía autorizada para crear cuentas nuevas de admin. Un `editor` no puede llamarla. |
-| `set-admin-activo` | admin_total (panel) | Activar/desactivar OTRO admin (RLS de `perfiles_admin` no lo permite desde el cliente). Bloquea auto-desactivación y dejar 0 admins activos. Un `editor` no puede llamarla. |
+| `invitar-admin` | dueno/admin_total (panel) | Única vía autorizada para crear cuentas nuevas de admin. `admin_total` solo invita `editor`; `editor` no puede llamarla. |
+| `set-admin-activo` | dueno/admin_total (panel) | Activar/desactivar/eliminar OTRO admin, cambiar su nivel, o restablecerle la contraseña (RLS de `perfiles_admin` no lo permite desde el cliente). `admin_total` solo gestiona cuentas `editor` y no cambia niveles ni contraseñas ajenas — eso es solo del `dueno`. Bloquea auto-gestión y dejar 0 admins/admin_total/dueno activos. |
 | `suscribirse` | público (form de newsletter) | Alta al newsletter con rate limiting (5/10min por IP) — reemplaza el INSERT directo del frontend. |
 | `confirmar-suscripcion` | público (link de correo) | Doble opt-in del newsletter, con rate limiting (10/15min por IP). |
 | `cancelar-suscripcion` | público (link de correo) | Baja del newsletter por token, no borra la fila. Mismo rate limiting que confirmar. |

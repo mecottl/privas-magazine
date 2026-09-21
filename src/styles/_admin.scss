@@ -102,75 +102,6 @@ app-admin-layout {
   gap: 0.6rem;
   padding: 0 0.4rem;
 }
-button.admin-sidebar__user {
-  width: 100%;
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-radius: var(--r-sm);
-  text-align: left;
-  transition: background-color 0.15s;
-}
-button.admin-sidebar__user:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-.admin-sidebar__user--editando {
-  align-items: flex-start;
-  padding: 0.3rem 0.4rem;
-}
-.admin-sidebar__user--editando input {
-  width: 100%;
-  font-size: var(--fs-xs);
-  padding: 0.3rem 0.5rem;
-}
-.admin-sidebar__user-acciones {
-  display: flex;
-  gap: 0.4rem;
-  margin-top: 0.4rem;
-}
-.admin-sidebar__user-acciones button {
-  font-size: var(--fs-3xs);
-  padding: 0.25rem 0.6rem;
-}
-.admin-sidebar__user--editando .error {
-  display: block;
-  margin-top: 0.3rem;
-  color: #ffb3b3;
-}
-.admin-sidebar__cambiar-password {
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: 0 0.4rem;
-  text-align: left;
-  font-family: var(--sans);
-  font-size: var(--fs-3xs);
-  color: rgba(255, 255, 255, 0.55);
-  text-decoration: underline;
-}
-.admin-sidebar__cambiar-password:hover { color: rgba(255, 255, 255, 0.85); }
-.admin-sidebar__password {
-  padding: 0.3rem 0.4rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.admin-sidebar__password label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-family: var(--sans);
-  font-size: var(--fs-3xs);
-  color: rgba(255, 255, 255, 0.7);
-}
-.admin-sidebar__password input {
-  font-size: var(--fs-xs);
-  padding: 0.3rem 0.5rem;
-}
-.admin-sidebar__password .error {
-  color: #ffb3b3;
-  font-size: var(--fs-3xs);
-}
 .admin-sidebar__avatar {
   flex: none;
   display: grid;
@@ -529,6 +460,13 @@ dialog.confirm button.peligro-solido:hover:not(:disabled) {
 .acciones a,
 .acciones button { white-space: nowrap; }
 .acciones button { height: 2rem; }
+.acciones input {
+  height: 2rem;
+  margin-top: 0;
+  padding: 0 0.6rem;
+  font-size: var(--fs-xs);
+  width: 9rem;
+}
 .acciones select {
   height: 2rem;
   margin-top: 0;

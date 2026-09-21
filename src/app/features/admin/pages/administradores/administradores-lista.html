@@ -5,16 +5,21 @@
 
   <div class="admin-page__scroll">
     <fieldset class="panel">
-      <legend>Invitar administrador</legend>
+      <legend>Invitar {{ auth.esDueno() ? 'cuenta' : 'editor' }}</legend>
       <div class="campos-grid">
         <label>Correo <input type="email" [(ngModel)]="email" name="email" /></label>
         <label>Nombre visible <input [(ngModel)]="nombre" name="nombre" /></label>
-        <label>Nivel de permiso
-          <select [(ngModel)]="nivel" name="nivel">
-            @for (n of niveles; track n) { <option [value]="n">{{ nombreNivel[n] }}</option> }
-          </select>
-        </label>
+        @if (auth.esDueno()) {
+          <label>Nivel de permiso
+            <select [(ngModel)]="nivel" name="nivel">
+              @for (n of nivelesInvitables(); track n) { <option [value]="n">{{ nombreNivel[n] }}</option> }
+            </select>
+          </label>
+        }
       </div>
+      @if (!auth.esDueno()) {
+        <p class="hint">Como administrador solo puedes invitar cuentas de Editor.</p>
+      }
       <div class="row" style="margin-bottom:0">
         <button (click)="invitar()" [disabled]="enviando()">
           {{ enviando() ? 'Enviando…' : 'Enviar invitación' }}
@@ -39,9 +44,7 @@
                 @if (a.id === miId()) { <strong>· tú</strong> }
               </td>
               <td>
-                @if (a.id === miId()) {
-                  {{ nombreNivel[a.nivel_permiso] }}
-                } @else {
+                @if (puedeGestionarComoDueno(a)) {
                   <div class="nivel-editor">
                     <select [ngModel]="nivelPara(a)" (ngModelChange)="cambiarNivelEditado(a, $event)" name="nivel-{{ a.id }}">
                       @for (n of niveles; track n) { <option [value]="n">{{ nombreNivel[n] }}</option> }
@@ -50,6 +53,8 @@
                       <button class="secundario" (click)="guardarNivel(a)">Guardar</button>
                     }
                   </div>
+                } @else {
+                  {{ nombreNivel[a.nivel_permiso] }}
                 }
               </td>
               <td>
@@ -61,12 +66,43 @@
               <td class="col-acciones">
                 @if (a.id === miId()) {
                   <span class="hint">—</span>
+                } @else if (restableciendoId() === a.id) {
+                  <form class="acciones" (ngSubmit)="guardarReset(a)">
+                    <input
+                      type="password"
+                      [(ngModel)]="resetPassword"
+                      name="resetPassword-{{ a.id }}"
+                      placeholder="Nueva contraseña"
+                      minlength="8"
+                      [disabled]="guardandoReset()"
+                    />
+                    <input
+                      type="password"
+                      [(ngModel)]="resetConfirmar"
+                      name="resetConfirmar-{{ a.id }}"
+                      placeholder="Confirmar"
+                      [disabled]="guardandoReset()"
+                    />
+                    <button type="submit" [disabled]="guardandoReset()">
+                      {{ guardandoReset() ? 'Guardando…' : 'Guardar' }}
+                    </button>
+                    <button type="button" class="secundario" (click)="cancelarReset()" [disabled]="guardandoReset()">
+                      Cancelar
+                    </button>
+                  </form>
+                } @else if (!puedeGestionar(a) && !puedeGestionarComoDueno(a)) {
+                  <span class="hint">Solo el dueño</span>
                 } @else {
                   <div class="acciones">
-                    <button class="secundario" [class.peligro]="a.activo" (click)="toggle(a)">
-                      {{ a.activo ? 'Desactivar' : 'Activar' }}
-                    </button>
-                    <button class="secundario peligro" (click)="eliminar(a)">Eliminar</button>
+                    @if (puedeGestionar(a)) {
+                      <button class="secundario" [class.peligro]="a.activo" (click)="toggle(a)">
+                        {{ a.activo ? 'Desactivar' : 'Activar' }}
+                      </button>
+                      <button class="secundario peligro" (click)="eliminar(a)">Eliminar</button>
+                    }
+                    @if (puedeGestionarComoDueno(a)) {
+                      <button class="secundario" (click)="abrirReset(a)">Contraseña</button>
+                    }
                   </div>
                 }
               </td>

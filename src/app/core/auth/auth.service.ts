@@ -17,8 +17,13 @@ export class AuthService {
   readonly perfil = signal<PerfilAdmin | null>(null);
   readonly user = computed<User | null>(() => this.session()?.user ?? null);
   readonly esAdmin = computed(() => this.perfil() !== null);
-  /** false para 'editor' — gestionar otras cuentas de admin es solo admin_total. */
   readonly esAdminTotal = computed(() => this.perfil()?.nivel_permiso === 'admin_total');
+  /** Poder absoluto: el único que cambia niveles, restablece contraseñas
+   *  ajenas, o gestiona cuentas que no sean de nivel 'editor'. */
+  readonly esDueno = computed(() => this.perfil()?.nivel_permiso === 'dueno');
+  /** admin_total o dueño — quienes ven la pantalla de Administradores y
+   *  pueden editar cualquier artículo, no solo el propio. */
+  readonly tieneAccesoTotal = computed(() => this.esAdminTotal() || this.esDueno());
 
   private iniciado?: Promise<void>;
 

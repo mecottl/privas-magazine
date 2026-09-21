@@ -194,13 +194,20 @@ export interface Marca {
 }
 
 /**
- * 'admin_total': acceso completo, incluye gestionar otras cuentas de admin.
+ * 'dueno': poder absoluto — el único que invita/gestiona 'dueno' y
+ *   'admin_total', el único que cambia el nivel de cualquier cuenta o le
+ *   restablece la contraseña a otra persona, y el único que puede eliminar
+ *   cuentas que no sean de nivel 'editor'.
+ * 'admin_total': solo invita y gestiona (activar/desactivar/eliminar)
+ *   cuentas de 'editor' — no puede tocar otras cuentas 'admin_total' ni
+ *   'dueno', ni cambiar el nivel de nadie.
  * 'editor': todo el panel EXCEPTO Administradores, y solo puede
  *   editar/borrar los artículos que él mismo creó (RLS por `creado_por`).
  */
-export type NivelPermiso = 'admin_total' | 'editor';
-export const NIVELES_PERMISO: NivelPermiso[] = ['admin_total', 'editor'];
+export type NivelPermiso = 'dueno' | 'admin_total' | 'editor';
+export const NIVELES_PERMISO: NivelPermiso[] = ['dueno', 'admin_total', 'editor'];
 export const NOMBRE_NIVEL_PERMISO: Record<NivelPermiso, string> = {
+  dueno: 'Dueño',
   admin_total: 'Administrador',
   editor: 'Editor',
 };

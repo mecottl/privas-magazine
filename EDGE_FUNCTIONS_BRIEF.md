@@ -46,13 +46,16 @@ Quién la llama: `pg_cron` cada 15 min, autenticado con `CRON_SECRET`.
 
 ## 2. `invitar-admin`
 
-Quién la llama: un admin **`admin_total`** ya logueado, desde el panel — un
-`editor` no puede invitar a nadie.
+Quién la llama: un admin **`dueno` o `admin_total`** ya logueado, desde el
+panel — un `editor` no puede invitar a nadie.
 
-1. `requireAdminTotal` (admin activo Y `nivel_permiso = 'admin_total'`).
+1. `requireAdmin` + chequeo manual: si `nivel_permiso === 'editor'` → 403.
 2. Body: `email`, `nombre_visible`, `nivel_permiso`.
-3. Validar `nivel_permiso` contra el CHECK (`'admin_total'` | `'editor'`); si
-   no → 400 con mensaje claro.
+3. Validar `nivel_permiso` contra el CHECK (`'dueno'` | `'admin_total'` |
+   `'editor'`); si no → 400. Además, si quien llama es `admin_total` (no
+   `dueno`) y pide un `nivel_permiso` distinto de `'editor'` → 403 — un
+   `admin_total` solo puede invitar editores, invitar `dueno`/`admin_total`
+   es exclusivo del `dueno`.
 4. Con `service_role`: `auth.admin.inviteUserByEmail(email, { redirectTo, data })`
    (crea el usuario y manda el correo de invitación de Supabase) + insert en
    `perfiles_admin` `{ id, nombre_visible, nivel_permiso, activo: true }`.
@@ -171,21 +174,35 @@ rate limit (misma función `actualizarEstadoSuscripcion`, ruta
 
 ## 8. `set-admin-activo`
 
-Quién la llama: un admin **`admin_total`** logueado, desde la pantalla de
-Administradores — un `editor` no puede llamarla (esa pantalla ni siquiera
-carga para él, ver `adminTotalGuard`).
+Quién la llama: un admin **`dueno` o `admin_total`** logueado, desde la
+pantalla de Administradores — un `editor` no puede llamarla (esa pantalla
+ni siquiera carga para él, ver `gestionAdminsGuard`). A pesar del nombre
+(histórico), hoy cubre cuatro acciones — se mantiene un solo archivo en vez
+de cuatro funciones casi idénticas.
 
-Existe porque la RLS de `perfiles_admin` para UPDATE es `id = auth.uid()` (un
-admin solo puede editar su propia fila), así que activar/desactivar a OTRO admin
+Existe porque la RLS de `perfiles_admin` para UPDATE es `id = auth.uid()`
+(y solo permite tocar la columna `nombre_visible`, ver migración
+`restringir_autoedicion_y_borrado_admin`), así que gestionar a OTRO admin
 es imposible desde el cliente. Se hace aquí con `service_role`.
 
-1. `requireAdminTotal` (admin activo Y `nivel_permiso = 'admin_total'`).
-2. Body: `{ id: uuid, activo: boolean }`.
-3. Candado: `id === quienLlama.id && activo === false` → 400 (no puedes
-   desactivarte a ti mismo y dejarte fuera).
-4. Candado: si `activo === false` y solo queda 1 admin activo → 400.
-5. `update perfiles_admin set activo = <activo> where id = <id>` con
-   `service_role`; devuelve la fila afectada.
+Matriz de permisos (poder absoluto es solo del `dueno`):
+- `admin_total`: solo activa/desactiva/elimina cuentas cuyo `nivel_permiso`
+  sea `editor` — nunca cambia `nivel_permiso` ni restablece contraseñas
+  ajenas, ni toca cuentas `admin_total`/`dueno`.
+- `dueno`: cualquier acción, sobre cualquier cuenta.
+
+1. `requireAdmin` + chequeo manual del nivel de quien llama.
+2. Body: `{ id: uuid, activo?: boolean, nivel_permiso?, password?, eliminar?: true }`.
+   `nivel_permiso`/`password` → 403 si quien llama no es `dueno`.
+3. Si quien llama no es `dueno`, exige que la cuenta objetivo sea `editor`
+   → 403 si no.
+4. Candados: nadie se desactiva/elimina a sí mismo; nunca puede quedar el
+   sistema sin ningún admin activo, sin ningún `admin_total` activo, ni sin
+   ningún `dueno` activo (al desactivar, degradar de nivel, o eliminar).
+5. `eliminar` → `auth.admin.deleteUser(id)` (cascada a `perfiles_admin`,
+   los artículos de esa cuenta quedan con `creado_por = null`). `password`
+   → `auth.admin.updateUserById(id, { password })`. El resto → `update
+   perfiles_admin` con los campos que vinieron en el body.
 
 ## Nota general sobre pruebas
 

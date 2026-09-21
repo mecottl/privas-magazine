@@ -28,9 +28,9 @@ export class ArticulosLista implements OnInit {
   readonly estados = ESTADOS;
   filtro: EstadoPublicacion | '' = '';
 
-  /** Un editor solo puede tocar lo que él mismo creó — admin_total, todo. */
+  /** Un editor solo puede tocar lo que él mismo creó — admin_total/dueño, todo. */
   puedeEditar(a: Articulo): boolean {
-    return this.auth.esAdminTotal() || a.creado_por === this.auth.user()?.id;
+    return this.auth.tieneAccesoTotal() || a.creado_por === this.auth.user()?.id;
   }
 
   ngOnInit() {
