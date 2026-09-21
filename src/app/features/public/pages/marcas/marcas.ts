@@ -3,13 +3,14 @@ import { MarcasService } from '../../../../core/services/marcas.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { HeroMedia } from '../../components/hero-media/hero-media';
 import { MarcaLinktree } from '../../components/marca-linktree/marca-linktree';
+import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Marca } from '../../../../core/models';
 
 @Component({
   selector: 'app-marcas',
   standalone: true,
-  imports: [RevealDirective, HeroMedia, MarcaLinktree],
+  imports: [RevealDirective, HeroMedia, MarcaLinktree, ErrorAviso],
   templateUrl: './marcas.html',
   styleUrl: './marcas.scss',
 })
@@ -24,6 +25,12 @@ export class Marcas implements OnInit {
   readonly abierta = signal<Marca | null>(null);
 
   async ngOnInit() {
+    await this.cargar();
+  }
+
+  async cargar() {
+    this.error.set('');
+    this.cargando.set(true);
     try {
       this.marcas.set(await this.srv.listar());
     } catch (e) {

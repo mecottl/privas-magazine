@@ -12,7 +12,7 @@
   </div>
 } @else if (error()) {
   <div class="art-error">
-    <p class="error">{{ error() }}</p>
+    <app-error-aviso [mensaje]="error()" [conReintentar]="true" (reintentar)="cargar()" />
     <a routerLink="/articulos" class="btn btn--primario">Ver todos los artículos</a>
   </div>
 } @else if (articulo(); as a) {

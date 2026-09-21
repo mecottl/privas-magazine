@@ -22,7 +22,7 @@
 <section class="franja franja--fin" id="archivo">
   <div class="franja__wrap">
     @if (error()) {
-      <p class="rev-aviso error">{{ error() }}</p>
+      <app-error-aviso [mensaje]="error()" [sobreTeal]="true" [conReintentar]="true" (reintentar)="cargar()" />
     } @else if (cargando()) {
       <div class="revistas-grid">
         @for (s of skeletons; track s) {

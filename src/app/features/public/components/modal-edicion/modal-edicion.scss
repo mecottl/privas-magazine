@@ -1,0 +1,124 @@
+/* Modal de promoción de la última edición (issue #53). Mismo patrón de
+   overlay que app-marca-linktree (fixed, backdrop-blur, bottom-sheet en
+   móvil / centrado en desktop) pero con panel color crema — esto vende
+   una portada, no un teal de marca. */
+:host { display: contents; }
+
+.me-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: end center;
+  padding: clamp(0.5rem, 3vw, 2rem);
+  background: rgba(6, 20, 28, 0.62);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: me-fade 0.2s var(--ease);
+}
+@media (min-width: 640px) {
+  .me-overlay { place-items: center; }
+}
+@keyframes me-fade { from { opacity: 0; } }
+
+.me-panel {
+  position: relative;
+  width: min(100%, 24rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 26px 26px 0 0;
+  background: var(--cream);
+  box-shadow: 0 -10px 60px -12px rgba(0, 0, 0, 0.5), var(--glass-edge);
+  animation: me-subir 0.32s var(--ease);
+}
+@media (min-width: 640px) {
+  .me-panel { border-radius: 26px; animation-name: me-aparecer; }
+}
+@keyframes me-subir { from { transform: translateY(100%); } }
+@keyframes me-aparecer { from { transform: translateY(16px) scale(0.98); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .me-overlay, .me-panel { animation: none; }
+}
+
+.me-cerrar {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: none;
+  border-radius: var(--r-pill);
+  background: rgba(9, 28, 38, 0.45);
+  color: var(--on-brand);
+  cursor: pointer;
+  transition: background var(--t), transform var(--t);
+}
+.me-cerrar:hover { background: rgba(9, 28, 38, 0.68); transform: rotate(90deg); }
+.me-cerrar svg { width: 1rem; height: 1rem; }
+
+.me-portada {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.me-body {
+  padding: 1.4rem 1.5rem 1.7rem;
+  text-align: center;
+}
+.me-eyebrow {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--sans);
+  font-size: var(--fs-2xs);
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-55);
+}
+.me-titulo {
+  margin: 0 0 0.35rem;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: var(--brand);
+}
+.me-gancho {
+  margin: 0 0 1.2rem;
+  color: var(--ink-80);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+.me-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  border-radius: var(--r-pill);
+  background: var(--brand);
+  color: var(--on-brand);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  transition: background var(--t), transform var(--t);
+}
+.me-cta:hover { background: var(--brand-hi); transform: translateY(-2px); }
+.me-cta svg { width: 1.05rem; height: 1.05rem; }
+.me-mas {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--ink-55);
+  border-bottom: 1.5px solid var(--line-2);
+}
+.me-mas:hover { color: var(--brand); border-color: var(--brand); }

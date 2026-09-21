@@ -3,6 +3,7 @@ import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
+import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import type { EdicionRevista } from '../../../../core/models';
 
@@ -14,7 +15,7 @@ import type { EdicionRevista } from '../../../../core/models';
 @Component({
   selector: 'app-revistas',
   standalone: true,
-  imports: [RevealDirective, EdicionCard, HeroMedia],
+  imports: [RevealDirective, EdicionCard, HeroMedia, ErrorAviso],
   templateUrl: './revistas.html',
   styleUrl: './revistas.scss',
 })
@@ -27,6 +28,12 @@ export class Revistas implements OnInit {
   readonly skeletons = [0, 1, 2, 3];
 
   async ngOnInit() {
+    await this.cargar();
+  }
+
+  async cargar() {
+    this.error.set('');
+    this.cargando.set(true);
     try {
       this.ediciones.set(await this.srv.listarPublicas());
     } catch (e) {

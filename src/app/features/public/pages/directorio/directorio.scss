@@ -1,0 +1,30 @@
+:host { display: block; }
+
+.page p { max-width: 62ch; }
+
+.directorio-lista {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+.directorio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: var(--r-card);
+  background: var(--paper-2);
+}
+.directorio-item img {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+  flex: none;
+}
+.directorio-item p {
+  margin: 0.25rem 0;
+  color: var(--ink-55);
+  font-size: var(--fs-sm);
+}

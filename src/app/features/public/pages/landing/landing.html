@@ -25,7 +25,9 @@
       <a routerLink="/articulos" class="ver-todo">Ver todos los artículos</a>
     </div>
 
-    @if (error()) { <p class="error" style="color:var(--on-brand)">{{ error() }}</p> }
+    @if (error()) {
+      <app-error-aviso [mensaje]="error()" [sobreTeal]="true" [conReintentar]="true" (reintentar)="cargarArticulos()" />
+    }
 
     <div
       class="carrusel"
@@ -53,6 +55,10 @@
           [class.arrastrando]="arrastrando()"
           (scroll)="alScroll()"
           (pointerdown)="alBajar($event)"
+          (keydown)="alTeclado($event)"
+          tabindex="0"
+          role="region"
+          aria-label="Últimos artículos, desplazable con las flechas del teclado"
         >
           @if (cargando()) {
             @for (n of [1, 2, 3, 4]; track n) {

@@ -16,7 +16,7 @@
 <section class="franja franja--fin" id="marcas">
   <div class="franja__wrap">
     @if (error()) {
-      <p class="marca-aviso error">{{ error() }}</p>
+      <app-error-aviso [mensaje]="error()" [sobreTeal]="true" [conReintentar]="true" (reintentar)="cargar()" />
     } @else if (cargando()) {
       <div class="marcas-grid">
         @for (s of skeletons; track s) {

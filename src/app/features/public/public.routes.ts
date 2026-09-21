@@ -66,8 +66,15 @@ export const PUBLIC_ROUTES: Routes = [
           ),
       },
       {
+        path: 'directorio-y-sobre-nosotros',
+        title: 'Directorio y sobre nosotros',
+        loadComponent: () =>
+          import('./pages/directorio/directorio').then((m) => m.Directorio),
+      },
+      {
         path: '**',
         title: 'Página no encontrada',
+        data: { hero: true },
         loadComponent: () =>
           import('./pages/no-encontrado/no-encontrado').then((m) => m.NoEncontrado),
       },

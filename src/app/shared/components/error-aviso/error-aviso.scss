@@ -1,0 +1,59 @@
+:host { display: block; }
+
+.aviso-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 32rem;
+  margin-inline: auto;
+  padding: 1.5rem 1.25rem;
+  border-radius: var(--r-card);
+  text-align: center;
+  background: var(--danger-wash);
+  color: var(--danger);
+}
+.aviso-error__icono {
+  width: 1.9rem;
+  height: 1.9rem;
+  flex: none;
+}
+.aviso-error__texto {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  color: var(--ink-80);
+}
+.aviso-error__btn {
+  margin-top: 0.2rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--danger);
+  background: none;
+  color: var(--danger);
+  font-family: var(--sans);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--t), color var(--t);
+}
+.aviso-error__btn:hover {
+  background: var(--danger);
+  color: var(--white);
+}
+
+/* Sobre una franja teal (ej. carrusel de la portada) el fondo claro rosado
+   desentona — versión sobre cristal, a juego con las demás franjas. */
+.aviso-error--teal {
+  background: rgba(163, 49, 36, 0.16);
+  color: var(--on-brand);
+}
+.aviso-error--teal .aviso-error__texto { color: var(--on-brand); }
+.aviso-error--teal .aviso-error__btn {
+  border-color: var(--on-brand);
+  color: var(--on-brand);
+}
+.aviso-error--teal .aviso-error__btn:hover {
+  background: var(--on-brand);
+  color: var(--brand);
+}

@@ -1,0 +1,72 @@
+/* =============================================================================
+   HOJA DE IMPRESIÓN (issue #52)
+   Antes un artículo impreso salía con el header fijo, fondos teal a sangre y
+   controles interactivos — esto lo resetea a texto negro sobre blanco,
+   pensado sobre todo para /articulos/:slug (el resto de rutas públicas
+   comparten el mismo chrome, así que se benefician igual).
+   ========================================================================= */
+@media print {
+  app-site-header,
+  app-site-footer,
+  app-confirm-dialog,
+  .skip-link,
+  .hero__cue,
+  .art-progreso,
+  .art-volver,
+  .art-mas,
+  .art-hero__cats,
+  .carrusel__flecha,
+  .carrusel__barra {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+
+  /* El hero fotográfico pierde el degradado oscuro y el texto en crema —
+     sobre blanco eso imprime una franja negra ilegible. */
+  .art-hero {
+    position: static !important;
+    min-height: 0 !important;
+    color: #000 !important;
+    padding-block: 1rem;
+  }
+  .art-hero::after { display: none !important; }
+  .art-hero__foto {
+    position: static !important;
+    max-height: 3.5in;
+    animation: none !important;
+    filter: none !important;
+  }
+  .art-hero__inner {
+    padding: 0.5rem 0 !important;
+    text-align: left !important;
+  }
+  .art-hero__titulo,
+  .art-hero__bajada,
+  .art-hero__firma {
+    color: #000 !important;
+    text-shadow: none !important;
+  }
+
+  .art-lectura,
+  .art-cuerpo,
+  .art {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Nada de recuadros/tarjetas de cristal en tinta. */
+  blockquote {
+    border-left: 3px solid #000;
+    padding-left: 1rem;
+  }
+}

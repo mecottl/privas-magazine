@@ -8,3 +8,4 @@
 @use './styles/paginas';      // .page + .inicio-encabezado (páginas de texto)
 @use './styles/skeletons';    // .sk .sk--line .sk--title .sk--img
 @use './styles/admin';        // sistema visual del panel /gestion-privas
+@use './styles/print';        // @media print — issue #52

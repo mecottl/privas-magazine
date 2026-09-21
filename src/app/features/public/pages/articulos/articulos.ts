@@ -13,6 +13,7 @@ import { CategoriasService } from '../../../../core/services/categorias.service'
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
+import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import {
   mismoSlug,
@@ -64,7 +65,7 @@ const HERO_ARCHIVO: Omit<HeroSeccion, 'media'> = {
 @Component({
   selector: 'app-articulos',
   standalone: true,
-  imports: [RevealDirective, ArticuloCard, HeroMedia],
+  imports: [RevealDirective, ArticuloCard, HeroMedia, ErrorAviso],
   templateUrl: './articulos.html',
   styleUrl: './articulos.scss',
 })

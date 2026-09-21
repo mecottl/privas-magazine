@@ -47,7 +47,7 @@
   padding: calc(var(--head-h) + var(--space-2xl)) clamp(1.1rem, 4vw, 2.5rem) var(--space-3xl);
   text-align: center;
 }
-.art-error .error { margin-bottom: var(--space-md); font-size: var(--fs-md); }
+.art-error app-error-aviso { margin-bottom: var(--space-md); }
 
 /* --- Hero fotográfico ------------------------------------------------- */
 .art-hero {

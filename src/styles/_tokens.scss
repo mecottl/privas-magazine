@@ -33,7 +33,9 @@
   --ink-55: #5b747b; /* secundario */
   --ink-35: #93a6ab; /* deshabilitado / hairline sobre oscuro */
   --on-brand: #fbf7ee; /* texto sobre teal */
-  --on-brand-dim: rgba(251, 247, 238, 0.8);
+  /* 0.8 medía ~4.49:1 sobre --brand (#256585) — por debajo del 4.5:1 de AA
+     para texto normal (issue #46). Subido a 0.9 (~5.3:1). */
+  --on-brand-dim: rgba(251, 247, 238, 0.9);
 
   /* ---- Filetes --------------------------------------------------- */
   --line: #ded6c3; /* sobre marfil */

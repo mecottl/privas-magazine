@@ -11,6 +11,7 @@
           routerLink="/articulos"
           [queryParams]="{ categoria: s.slug }"
           routerLinkActive="is-active"
+          ariaCurrentWhenActive="page"
         >{{ s.nombre }}</a>
       }
       <a
@@ -24,7 +25,7 @@
           <path d="M20 20l-3.5-3.5" stroke-linecap="round" />
         </svg>
       </a>
-      <a class="site-nav__revista" routerLink="/revistas" routerLinkActive="is-active">La revista</a>
+      <a class="site-nav__revista" routerLink="/revistas" routerLinkActive="is-active" ariaCurrentWhenActive="page">La revista</a>
     </nav>
 
     <button

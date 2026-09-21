@@ -1,0 +1,10 @@
+<div class="aviso-error" [class.aviso-error--teal]="sobreTeal()" role="alert">
+  <svg class="aviso-error__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7.5v6M12 16.5h.01" stroke-linecap="round" />
+  </svg>
+  <p class="aviso-error__texto">{{ mensaje() }}</p>
+  @if (conReintentar()) {
+    <button type="button" class="aviso-error__btn" (click)="reintentar.emit()">Reintentar</button>
+  }
+</div>

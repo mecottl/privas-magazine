@@ -18,6 +18,7 @@ import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
 import { MarcaLinktree } from '../../components/marca-linktree/marca-linktree';
+import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import {
   SECCIONES,
@@ -55,6 +56,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
     EdicionCard,
     HeroMedia,
     MarcaLinktree,
+    ErrorAviso,
   ],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
@@ -143,6 +145,18 @@ export class Landing implements OnInit {
     el.scrollBy({ left: dir * this.paso(el), behavior: 'smooth' });
   }
 
+  /** El carrusel es un contenedor con scroll enfocable — con el foco ahí,
+   *  las flechas izq/der lo mueven igual que los botones (issue #46). */
+  alTeclado(ev: KeyboardEvent) {
+    if (ev.key === 'ArrowRight') {
+      ev.preventDefault();
+      this.mover(1);
+    } else if (ev.key === 'ArrowLeft') {
+      ev.preventDefault();
+      this.mover(-1);
+    }
+  }
+
   /** Indicador de scroll del hero → baja a "Últimos Artículos". */
   bajarAArticulos() {
     document
@@ -200,13 +214,7 @@ export class Landing implements OnInit {
   };
 
   async ngOnInit() {
-    try {
-      this.articulos.set(await this.artSrv.listarPublicos());
-    } catch (e) {
-      this.error.set(mensajeError(e));
-    } finally {
-      this.cargando.set(false);
-    }
+    await this.cargarArticulos();
     try {
       this.ediciones.set(await this.edSrv.listarPublicas());
     } catch {
@@ -219,5 +227,18 @@ export class Landing implements OnInit {
     }
     // Deja que el @for pinte las tarjetas antes de medir la pista.
     setTimeout(() => this.alScroll(), 60);
+  }
+
+  /** Reintentar del carrusel de "Últimos Artículos" (issue #52). */
+  async cargarArticulos() {
+    this.error.set('');
+    this.cargando.set(true);
+    try {
+      this.articulos.set(await this.artSrv.listarPublicos());
+    } catch (e) {
+      this.error.set(mensajeError(e));
+    } finally {
+      this.cargando.set(false);
+    }
   }
 }

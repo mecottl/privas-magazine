@@ -7,12 +7,13 @@ import { SeoService } from '../../../../core/services/seo.service';
 import { mensajeError } from '../../../../core/services/errores';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
+import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
 import { mismoSlug, type Articulo, type BloqueContenido } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulo-detalle',
   standalone: true,
-  imports: [DatePipe, RouterLink, RevealDirective, ArticuloCard],
+  imports: [DatePipe, RouterLink, RevealDirective, ArticuloCard, ErrorAviso],
   templateUrl: './articulo-detalle.html',
   styleUrl: './articulo-detalle.scss',
 })
@@ -95,7 +96,14 @@ export class ArticuloDetalle implements OnInit {
   }
 
   async ngOnInit() {
+    await this.cargar();
+  }
+
+  /** Reintentar (issue #52) — mismo slug de la ruta actual. */
+  async cargar() {
     const slug = this.route.snapshot.paramMap.get('slug') ?? '';
+    this.error.set('');
+    this.cargando.set(true);
     try {
       const a = await this.srv.obtenerPublicoPorSlug(slug);
       if (!a) {

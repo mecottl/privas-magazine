@@ -56,7 +56,7 @@
     }
 
     @if (error()) {
-      <p class="cat-aviso error">{{ error() }}</p>
+      <app-error-aviso [mensaje]="error()" [sobreTeal]="true" [conReintentar]="true" (reintentar)="cargar()" />
     } @else if (cargando() && primeraCarga()) {
       <div class="cat-grid">
         @for (s of skeletons; track s) {

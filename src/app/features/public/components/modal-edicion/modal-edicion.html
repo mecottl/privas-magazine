@@ -1,0 +1,32 @@
+@if (abierto() && edicion(); as e) {
+  <div class="me-overlay" (click)="cerrar()">
+    <div
+      class="me-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Última edición de la revista"
+      (click)="$event.stopPropagation()"
+    >
+      <button type="button" class="me-cerrar" (click)="cerrar()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <img class="me-portada" [src]="e.portada_url" [alt]="'Portada de ' + e.titulo" />
+
+      <div class="me-body">
+        <span class="me-eyebrow">{{ nombreTemporada[e.temporada] ?? e.temporada }} · {{ e.anio }}</span>
+        <h2 class="me-titulo">Ya salió la nueva edición</h2>
+        <p class="me-gancho">{{ e.titulo }}</p>
+        <a class="me-cta" [href]="e.pdf_url" target="_blank" rel="noopener" (click)="cerrar()">
+          Leer la edición
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+        <a class="me-mas" routerLink="/revistas" (click)="cerrar()">Ver todas las ediciones</a>
+      </div>
+    </div>
+  </div>
+}
