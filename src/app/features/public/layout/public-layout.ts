@@ -17,6 +17,7 @@ import { filter } from 'rxjs';
 import { SiteHeader } from '../components/site-header/site-header';
 import { SiteFooter } from '../components/site-footer/site-footer';
 import { ModalEdicion } from '../components/modal-edicion/modal-edicion';
+import { Colaboradores } from '../components/colaboradores/colaboradores';
 
 /**
  * Cascarón del sitio público: header fijo (`app-site-header`), contenido
@@ -28,7 +29,7 @@ import { ModalEdicion } from '../components/modal-edicion/modal-edicion';
 @Component({
   selector: 'app-public-layout',
   standalone: true,
-  imports: [RouterOutlet, SiteHeader, SiteFooter, ModalEdicion],
+  imports: [RouterOutlet, SiteHeader, SiteFooter, ModalEdicion, Colaboradores],
   templateUrl: './public-layout.html',
   styleUrl: './public-layout.scss',
 })

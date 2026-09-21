@@ -1,0 +1,14 @@
+<section class="colaboradores" aria-labelledby="colaboradores-titulo">
+  <div class="colaboradores__wrap">
+    <span class="colaboradores__eyebrow">Grupo Privas</span>
+    <h2 id="colaboradores-titulo">Quiénes hacemos la revista</h2>
+    <ul class="colaboradores__lista">
+      @for (c of equipo; track c.nombre) {
+        <li class="colaboradores__item">
+          <span class="colaboradores__rol">{{ c.rol }}</span>
+          <span class="colaboradores__nombre">{{ c.nombre }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
