@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { UploadsService } from '../../../../core/services/uploads.service';
+import { NotificarPublicacionService } from '../../../../core/services/notificar-publicacion.service';
 import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import { CampoArchivo } from '../../shared/campo-archivo/campo-archivo';
@@ -33,6 +34,7 @@ type Modo = 'publicar' | 'programar' | 'despublicar';
 export class EdicionEditar implements OnInit {
   private readonly srv = inject(EdicionesService);
   private readonly uploads = inject(UploadsService);
+  private readonly notificar = inject(NotificarPublicacionService);
   private readonly confirmar = inject(ConfirmService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -177,7 +179,12 @@ export class EdicionEditar implements OnInit {
       fecha = new Date(this.fechaProgramada).toISOString();
     }
     const okGuardado = await this.persistir(estado, fecha, { irATabla: true });
-    if (okGuardado) this.dlg().nativeElement.close();
+    if (okGuardado) {
+      this.dlg().nativeElement.close();
+      if (md === 'publicar') {
+        this.notificar.notificarEdicion({ id: this.id, titulo: this.m.titulo ?? '' });
+      }
+    }
   }
 
   private validar(): boolean {

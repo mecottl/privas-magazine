@@ -13,15 +13,15 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 })
 export class NewsletterForm {
   private readonly srv = inject(NewsletterService);
-  email = '';
+  readonly email = signal('');
   readonly enviando = signal(false);
   readonly ok = signal(false);
   readonly msg = signal('');
   readonly tocado = signal(false);
 
-  readonly emailValido = computed(() => EMAIL_RE.test(this.email.trim()));
+  readonly emailValido = computed(() => EMAIL_RE.test(this.email().trim()));
   readonly mostrarError = computed(
-    () => this.tocado() && this.email.trim().length > 0 && !this.emailValido(),
+    () => this.tocado() && this.email().trim().length > 0 && !this.emailValido(),
   );
 
   async enviar() {
@@ -29,7 +29,7 @@ export class NewsletterForm {
     if (!this.emailValido() || this.enviando()) return;
     this.enviando.set(true);
     this.msg.set('');
-    const res = await this.srv.suscribir(this.email);
+    const res = await this.srv.suscribir(this.email());
     this.enviando.set(false);
     this.ok.set(res.ok);
     this.msg.set(
@@ -37,6 +37,6 @@ export class NewsletterForm {
         ? 'Listo. Te enviamos un correo para confirmar la suscripción.'
         : res.error ?? 'No se pudo registrar. Intenta de nuevo.',
     );
-    if (res.ok) this.email = '';
+    if (res.ok) this.email.set('');
   }
 }

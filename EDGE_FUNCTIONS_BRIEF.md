@@ -1,6 +1,6 @@
 # Brief: lógica real de las Edge Functions
 
-Las **10 funciones** viven en `supabase/functions/`. Este documento detalla la
+Las **11 funciones** viven en `supabase/functions/`. Este documento detalla la
 lógica real de cada una. Léelo junto con `CLAUDE.md` — no repite el contexto
 general, solo añade el detalle de implementación.
 
@@ -250,6 +250,30 @@ Quién la llama: la misma pantalla, al escribir el código.
 
 Secretos: `RESEND_API_KEY` (ya configurado, ver docs/SECRETS.md),
 `MFA_EMAIL_FROM` (opcional, default `PRIVAS Magazine <contacto@privasmagazine.com>`).
+
+## 11. `notificar-publicacion`
+
+Quién la llama: un admin logueado, desde el panel, justo después de
+"Publicar ahora" en un artículo o edición (issue #64).
+
+Antes de esto, `estado` se ponía en `'publicado'` con un update directo del
+cliente (RLS ya lo permite) y ahí terminaba todo — sin rebuild, sin
+newsletter. Solo `programar-publicacion` (cron) los disparaba, y solo para
+contenido que pasó por "Programar". Esta función reutiliza exactamente la
+misma lógica que el cron (`_shared/publicacion.ts` — `dispararRebuild` y
+`notificarNewsletter`, ahora compartidas por ambas) para que "Publicar
+ahora" haga lo mismo.
+
+1. `requireAdmin`.
+2. Body: `{ articulos?: [{id,titulo,slug}], ediciones?: [{id,titulo}] }` — el
+   frontend manda el artículo/edición que acaba de publicar. Si ambos vienen
+   vacíos → 400.
+3. `dispararRebuild()` + `notificarNewsletter()`, igual que en
+   `programar-publicacion`. No fatal: si Resend o GitHub fallan, 200 igual
+   (el contenido ya está publicado, esto es un extra).
+
+El frontend (`NotificarPublicacionService`) la llama en paralelo sin
+bloquear la navegación — si falla, no rompe el flujo de publicar.
 
 ## Nota general sobre pruebas
 

@@ -11,6 +11,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { CategoriasService } from '../../../../core/services/categorias.service';
 import { UploadsService } from '../../../../core/services/uploads.service';
+import { NotificarPublicacionService } from '../../../../core/services/notificar-publicacion.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { slugify } from '../../../../core/services/slug';
@@ -37,6 +38,7 @@ export class ArticuloEditar implements OnInit {
   private readonly srv = inject(ArticulosService);
   private readonly catSrv = inject(CategoriasService);
   private readonly uploads = inject(UploadsService);
+  private readonly notificar = inject(NotificarPublicacionService);
   private readonly auth = inject(AuthService);
   private readonly confirmar = inject(ConfirmService);
   private readonly route = inject(ActivatedRoute);
@@ -213,7 +215,16 @@ export class ArticuloEditar implements OnInit {
     }
 
     const okGuardado = await this.persistir(estado, fecha, { irATabla: true });
-    if (okGuardado) this.dlg().nativeElement.close();
+    if (okGuardado) {
+      this.dlg().nativeElement.close();
+      if (md === 'publicar') {
+        this.notificar.notificarArticulo({
+          id: this.id,
+          titulo: this.m.titulo ?? '',
+          slug: this.m.slug ?? '',
+        });
+      }
+    }
   }
 
   private validar(): boolean {
