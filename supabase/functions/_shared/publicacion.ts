@@ -61,12 +61,11 @@ export async function notificarNewsletter(
       ...ediciones.map((e) => `<li>${e.titulo} (nueva edición de la revista)</li>`),
     ].join('');
 
-    const res = await fetch('https://api.resend.com/broadcasts', {
+    const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
+
+    const crear = await fetch('https://api.resend.com/broadcasts', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         audience_id: audienceId,
         from,
@@ -78,9 +77,21 @@ export async function notificarNewsletter(
                <p><a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Darse de baja</a></p>`,
       }),
     });
-    if (!res.ok) {
-      console.error(`Resend broadcast falló: ${res.status} ${await res.text()}`);
-      return { enviado: false, motivo: `Resend ${res.status}` };
+    if (!crear.ok) {
+      console.error(`Resend: crear broadcast falló: ${crear.status} ${await crear.text()}`);
+      return { enviado: false, motivo: `Resend ${crear.status}` };
+    }
+
+    // POST /broadcasts solo lo deja como borrador — sin este segundo paso no
+    // se manda a nadie (issue #64: así estaba antes y nunca llegaba nada).
+    const { id } = await crear.json();
+    const enviar = await fetch(`https://api.resend.com/broadcasts/${id}/send`, {
+      method: 'POST',
+      headers,
+    });
+    if (!enviar.ok) {
+      console.error(`Resend: enviar broadcast falló: ${enviar.status} ${await enviar.text()}`);
+      return { enviado: false, motivo: `Resend send ${enviar.status}` };
     }
     return { enviado: true };
   } catch (e) {
