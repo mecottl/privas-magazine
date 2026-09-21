@@ -99,8 +99,8 @@ export class Landing implements OnInit {
   /** Fondo de la franja "Ediciones": AVIF/WebP con JPG de reserva. */
   readonly fondoEdiciones =
     'image-set(' +
-    'url("/img/ediciones-bg-1400.avif") type("image/avif"),' +
-    'url("/img/ediciones-bg-1400.webp") type("image/webp"),' +
+    'url("/assets/img/ediciones-bg-1400.avif") type("image/avif"),' +
+    'url("/assets/img/ediciones-bg-1400.webp") type("image/webp"),' +
     'url("/ediciones-bg.jpg") type("image/jpeg"))';
   /** Dos huecos: edición existente o `null` para "Próximamente". */
   readonly slotsEdiciones = computed<(EdicionRevista | null)[]>(() => {

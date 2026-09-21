@@ -6,7 +6,7 @@
  * - Logos (design/logos/*.png, PNG enormes de Canva) → public/*.png recortados.
  * - Favicon → public/favicon.svg (adaptable al theme) + png + apple-touch-icon.
  * - Fotos de hero por categoría (design/categorias/*.jpg) →
- *   public/categorias/<slug>.jpg reescaladas y recomprimidas.
+ *   public/assets/categorias/<slug>.jpg reescaladas y recomprimidas.
  */
 import sharp from 'sharp';
 import { statSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -83,7 +83,7 @@ for (const { src, out, height } of JOBS) {
 }
 
 /* --- Fotos de hero por categoría ------------------------------------------
- * design/categorias/<slug>.jpg (originales de la clienta) → public/categorias/.
+ * design/categorias/<slug>.jpg (originales de la clienta) → public/assets/categorias/.
  * Las que aún no tienen foto propia siguen siendo copia de hero.jpg.
  */
 {
@@ -98,33 +98,33 @@ for (const { src, out, height } of JOBS) {
     await sharp(src)
       .resize({ width, withoutEnlargement: true })
       .jpeg({ quality: 78, mozjpeg: true })
-      .toFile(`public/categorias/${slug}.jpg`);
-    const m = await sharp(`public/categorias/${slug}.jpg`).metadata();
-    console.log(`public/categorias/${slug}.jpg  ${m.width}x${m.height}  ${(statSync(`public/categorias/${slug}.jpg`).size / 1024).toFixed(0)} KB`);
+      .toFile(`public/assets/categorias/${slug}.jpg`);
+    const m = await sharp(`public/assets/categorias/${slug}.jpg`).metadata();
+    console.log(`public/assets/categorias/${slug}.jpg  ${m.width}x${m.height}  ${(statSync(`public/assets/categorias/${slug}.jpg`).size / 1024).toFixed(0)} KB`);
   }
 }
 
 /* --- Fotos grandes: variantes responsive AVIF/WebP + LQIP -----------------
  * Para cada foto a sangre (hero de portada, fondo de Ediciones y heroes de
  * categoría) generamos:
- *   public/img/<clave>-<w>.avif  y  .webp   (varios anchos → srcset)
+ *   public/assets/img/<clave>-<w>.avif  y  .webp   (varios anchos → srcset)
  *   un LQIP (placeholder borroso ~24px) en src/app/shared/lqip.generated.ts
  * El JPG original se queda como último recurso (<img src>). Lo consume el
  * componente app-hero-media.
  */
 {
-  mkdirSync('public/img', { recursive: true });
+  mkdirSync('public/assets/img', { recursive: true });
 
-  // clave → archivo original. `cat-*` sale de public/categorias/.
+  // clave → archivo original. `cat-*` sale de public/assets/categorias/.
   const FOTOS = {
     hero: 'public/hero.jpg',
     'ediciones-bg': 'public/ediciones-bg.jpg',
-    'cat-archivo': 'public/categorias/archivo.jpg',
-    'cat-turismo': 'public/categorias/turismo.jpg',
-    'cat-gastronomia': 'public/categorias/gastronomia.jpg',
-    'cat-cultura': 'public/categorias/cultura.jpg',
-    'cat-arte': 'public/categorias/arte.jpg',
-    'cat-entretenimiento': 'public/categorias/entretenimiento.jpg',
+    'cat-archivo': 'public/assets/categorias/archivo.jpg',
+    'cat-turismo': 'public/assets/categorias/turismo.jpg',
+    'cat-gastronomia': 'public/assets/categorias/gastronomia.jpg',
+    'cat-cultura': 'public/assets/categorias/cultura.jpg',
+    'cat-arte': 'public/assets/categorias/arte.jpg',
+    'cat-entretenimiento': 'public/assets/categorias/entretenimiento.jpg',
   };
   // `ediciones-bg` va detrás de las tarjetas y ya viene desenfocada → un solo
   // ancho basta. El resto son LCP: tres anchos.
@@ -141,7 +141,7 @@ for (const { src, out, height } of JOBS) {
     const anchos = ANCHOS[clave] ?? ANCHOS_DEF;
     for (const w of anchos) {
       for (const fmt of ['avif', 'webp']) {
-        const out = `public/img/${clave}-${w}.${fmt}`;
+        const out = `public/assets/img/${clave}-${w}.${fmt}`;
         const pipe = sharp(src).resize({ width: w, withoutEnlargement: true });
         await (fmt === 'avif'
           ? pipe.avif({ quality: 50 })
