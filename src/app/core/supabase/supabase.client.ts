@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+  createClient,
+  FunctionsHttpError,
+  SupabaseClient,
+} from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -24,8 +28,29 @@ export class SupabaseService {
   /**
    * Invoca una Edge Function pasando el JWT del usuario logueado.
    * Acepta un objeto JSON o un FormData (para subidas multipart).
+   *
+   * Cuando la función responde con un status distinto de 2xx, el SDK
+   * devuelve `data: null` y un `FunctionsHttpError` cuyo `.message` es un
+   * texto genérico ("Edge Function returned a non-2xx status code") — el
+   * cuerpo real `{ error: "..." }` que sí mandan nuestras funciones vive en
+   * `error.context` (el Response crudo), sin leer todavía. Lo leemos aquí y
+   * lo devolvemos como `data` para que todos los servicios que ya hacían
+   * `data?.error ?? error.message` (issue #69) empiecen a funcionar sin
+   * tener que tocar cada uno por separado.
    */
-  invokeFunction<T = unknown>(name: string, body?: Record<string, unknown> | FormData) {
-    return this.client.functions.invoke<T>(name, { body });
+  async invokeFunction<T = unknown>(
+    name: string,
+    body?: Record<string, unknown> | FormData,
+  ) {
+    const res = await this.client.functions.invoke<T>(name, { body });
+    if (res.error instanceof FunctionsHttpError) {
+      try {
+        const cuerpo = await res.error.context.json();
+        return { ...res, data: cuerpo as T };
+      } catch {
+        /* el cuerpo no era JSON válido — se deja el error genérico tal cual */
+      }
+    }
+    return res;
   }
 }
