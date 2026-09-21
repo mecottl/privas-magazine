@@ -41,6 +41,65 @@ export async function dispararRebuild(): Promise<boolean> {
 }
 
 /**
+ * Mismo lenguaje visual que `docs/email-invitacion.html` y los correos de
+ * MFA/confirmación de suscripción (cabecera teal + PRIVAS, cuerpo crema).
+ */
+function plantillaCorreo(itemsHtml: string): string {
+  return `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#edeae1; padding:40px 16px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px; width:100%; background-color:#f7f2e7; border-radius:12px; overflow:hidden;">
+
+        <tr>
+          <td align="center" style="background-color:#256585; padding:32px 24px;">
+            <div style="font-family:Georgia,'Times New Roman',serif; font-size:26px; font-weight:700; letter-spacing:0.04em; color:#fbf7ee;">
+              PRIVAS
+            </div>
+            <div style="font-family:Arial,Helvetica,sans-serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#bcd7de; margin-top:4px;">
+              Magazine
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:36px 32px 28px; font-family:Arial,Helvetica,sans-serif; color:#16323a;">
+            <h1 style="margin:0 0 20px; font-family:Georgia,'Times New Roman',serif; font-size:20px; font-weight:700; color:#256585; text-align:center;">
+              Novedades en PRIVAS Magazine
+            </h1>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              ${itemsHtml}
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:18px 32px; border-top:1px solid #cec5ac; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#5b747b;">
+            Recibes esto porque te suscribiste en privasmagazine.com ·
+            <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#256585;">Darse de baja</a>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>`;
+}
+
+function filaItem(titulo: string, href: string | null): string {
+  return `
+<tr>
+  <td style="padding:12px 0; border-bottom:1px solid #e3ddc9;">
+    ${
+      href
+        ? `<a href="${href}" style="font-family:Georgia,'Times New Roman',serif; font-size:16px; font-weight:700; color:#256585; text-decoration:none;">${titulo}</a>`
+        : `<span style="font-family:Georgia,'Times New Roman',serif; font-size:16px; font-weight:700; color:#256585;">${titulo}</span>`
+    }
+  </td>
+</tr>`;
+}
+
+/**
  * Manda el newsletter por lo recién publicado.
  * Silencioso si RESEND_API_KEY no está configurada. NO propaga errores.
  */
@@ -57,8 +116,8 @@ export async function notificarNewsletter(
     const siteUrl = Deno.env.get('SITE_URL') ?? 'https://privasmagazine.com';
 
     const items = [
-      ...articulos.map((a) => `<li><a href="${siteUrl}/articulos/${a.slug}">${a.titulo}</a></li>`),
-      ...ediciones.map((e) => `<li>${e.titulo} (nueva edición de la revista)</li>`),
+      ...articulos.map((a) => filaItem(a.titulo, `${siteUrl}/articulos/${a.slug}`)),
+      ...ediciones.map((e) => filaItem(`${e.titulo} — nueva edición de la revista`, `${siteUrl}/revistas`)),
     ].join('');
 
     const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
@@ -70,11 +129,7 @@ export async function notificarNewsletter(
         audience_id: audienceId,
         from,
         subject: 'Novedades en PRIVAS Magazine',
-        // {{{RESEND_UNSUBSCRIBE_URL}}} es el merge tag nativo de Resend — un
-        // broadcast a toda la audiencia no puede llevar un link con nuestro
-        // propio token por destinatario (issue #64).
-        html: `<h1>Nuevas publicaciones</h1><ul>${items}</ul>
-               <p><a href="{{{RESEND_UNSUBSCRIBE_URL}}}">Darse de baja</a></p>`,
+        html: plantillaCorreo(items),
       }),
     });
     if (!crear.ok) {
