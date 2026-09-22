@@ -239,6 +239,9 @@ Documentación de arquitectura que SÍ vive fuera de este archivo:
 - `EDGE_FUNCTIONS_BRIEF.md` — lógica detallada de cada Edge Function.
 - `docs/SECRETS.md` — cada secreto: qué es, dónde se obtiene, dónde se
   configura.
+- `docs/RESTORE_BACKUP.md` — procedimiento para restaurar el backup mensual
+  de la BD (issue #79) — sin probar en vivo todavía, ver nota al inicio del
+  archivo.
 - Carpeta de Documentación en Drive — explicación en lenguaje llano para la
   clienta (no técnica), y el historial de descubrimiento del proyecto
   (propuesta original, respuestas de la clienta).
