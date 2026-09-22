@@ -47,9 +47,9 @@ export class EdicionesLista implements OnInit {
     try {
       if (accion === 'eliminar') {
         const ok = await this.confirmar.confirm({
-          titulo: '¿Eliminar la edición?',
-          mensaje: `«${ed.titulo}» se borrará de forma permanente.`,
-          cta: 'Eliminar',
+          titulo: '¿Mover a la papelera?',
+          mensaje: `«${ed.titulo}» se moverá a la papelera. Se puede restaurar desde ahí.`,
+          cta: 'Mover a la papelera',
           peligro: true,
         });
         if (!ok) return;

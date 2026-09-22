@@ -19,14 +19,26 @@ export class ArticulosService {
   /** 60s: navegar entre / → /articulos → /revistas no repite la consulta. */
   private readonly cache = conCacheTTL<Articulo[]>(60_000);
 
-  /** Panel: todos los artículos, filtro opcional por estado. */
+  /** Panel: todos los artículos (sin los de la papelera), filtro opcional por estado. */
   async listarAdmin(estado?: EstadoPublicacion | ''): Promise<Articulo[]> {
     let q = this.sb
       .from('articulos')
       .select(SELECT_CON_CATEGORIAS)
+      .is('eliminado_en', null)
       .order('updated_at', { ascending: false });
     if (estado) q = q.eq('estado', estado);
     const { data, error } = await q;
+    if (error) throw error;
+    return data as unknown as Articulo[];
+  }
+
+  /** Panel: solo los de la papelera (issue #77). */
+  async listarPapelera(): Promise<Articulo[]> {
+    const { data, error } = await this.sb
+      .from('articulos')
+      .select(SELECT_CON_CATEGORIAS)
+      .not('eliminado_en', 'is', null)
+      .order('eliminado_en', { ascending: false });
     if (error) throw error;
     return data as unknown as Articulo[];
   }
@@ -136,7 +148,25 @@ export class ArticulosService {
     if (error) throw error;
   }
 
+  /** Mueve a la papelera (issue #77) — no borra la fila. */
   async eliminar(id: string): Promise<void> {
+    const { error } = await this.sb
+      .from('articulos')
+      .update({ eliminado_en: new Date().toISOString() })
+      .eq('id', id);
+    if (error) throw error;
+  }
+
+  async restaurar(id: string): Promise<void> {
+    const { error } = await this.sb
+      .from('articulos')
+      .update({ eliminado_en: null })
+      .eq('id', id);
+    if (error) throw error;
+  }
+
+  /** Borrado real, sin vuelta atrás — solo desde la papelera. */
+  async eliminarDefinitivo(id: string): Promise<void> {
     const { error } = await this.sb.from('articulos').delete().eq('id', id);
     if (error) throw error;
   }

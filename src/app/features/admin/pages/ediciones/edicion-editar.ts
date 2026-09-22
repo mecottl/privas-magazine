@@ -124,9 +124,9 @@ export class EdicionEditar implements OnInit {
   async eliminar() {
     if (!this.id) return;
     const ok = await this.confirmar.confirm({
-      titulo: '¿Eliminar la edición?',
-      mensaje: `«${this.m.titulo}» se borrará de forma permanente.`,
-      cta: 'Eliminar',
+      titulo: '¿Mover a la papelera?',
+      mensaje: `«${this.m.titulo}» se moverá a la papelera. Se puede restaurar desde ahí.`,
+      cta: 'Mover a la papelera',
       peligro: true,
     });
     if (!ok) return;

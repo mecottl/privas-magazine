@@ -131,6 +131,8 @@ export interface Articulo {
   /** Token de vista previa pública (issue #75) — sirve para compartir un
    *  link de borrador/programado sin sesión de admin. */
   token_preview?: string;
+  /** Soft-delete (issue #77): no nulo = está en la papelera. */
+  eliminado_en?: string | null;
 }
 
 export interface EdicionRevista {
@@ -151,6 +153,8 @@ export interface EdicionRevista {
   fecha_publicacion: string | null;
   created_at?: string;
   updated_at?: string;
+  /** Soft-delete (issue #77): no nulo = está en la papelera. */
+  eliminado_en?: string | null;
 }
 
 /** Tipos de red social conocidos para `EnlaceMarca.tipo` (texto libre en la BD). */

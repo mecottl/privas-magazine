@@ -11,7 +11,11 @@
  *        para regenerar el sitio estático con el Open Graph correcto.
  *      - Newsletter vía Resend "marketing" — SOLO si RESEND_API_KEY existe;
  *        envuelto en su propio try/catch para no tumbar la función.
- * 4. 200 con un resumen.
+ * 4. Purga (DELETE real) lo de la papelera con más de 30 días en
+ *    `eliminado_en` (issue #77) — reutiliza este mismo cron de 15 min en vez
+ *    de agregar uno nuevo. El DELETE real ya dispara la limpieza de archivos
+ *    huérfanos existente (trigger → `eliminar-archivo`).
+ * 5. 200 con un resumen.
  *
  * SECRETOS DE ESTA EDGE FUNCTION (Supabase, no GitHub Actions — es Supabase
  * quien llama a GitHub):
@@ -70,6 +74,21 @@ Deno.serve(async (req) => {
     newsletter = await notificarNewsletter(listaArticulos, listaEdiciones);
   }
 
+  // Purga de la papelera (issue #77): 30 días en eliminado_en.
+  const hace30dias = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: articulosPurgados } = await supabase
+    .from('articulos')
+    .delete()
+    .not('eliminado_en', 'is', null)
+    .lte('eliminado_en', hace30dias)
+    .select('id');
+  const { data: edicionesPurgadas } = await supabase
+    .from('ediciones_revista')
+    .delete()
+    .not('eliminado_en', 'is', null)
+    .lte('eliminado_en', hace30dias)
+    .select('id');
+
   return json({
     ok: true,
     publicados: {
@@ -78,5 +97,9 @@ Deno.serve(async (req) => {
     },
     rebuildDisparado,
     newsletter,
+    purgados: {
+      articulos: articulosPurgados?.length ?? 0,
+      ediciones: edicionesPurgadas?.length ?? 0,
+    },
   });
 });

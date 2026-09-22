@@ -124,6 +124,12 @@ export const ADMIN_ROUTES: Routes = [
           ),
       },
       {
+        path: 'papelera',
+        title: 'Papelera · Gestión',
+        loadComponent: () =>
+          import('./pages/papelera/papelera-lista').then((m) => m.PapeleraLista),
+      },
+      {
         path: 'bitacora',
         title: 'Bitácora · Gestión',
         canActivate: [gestionAdminsGuard],

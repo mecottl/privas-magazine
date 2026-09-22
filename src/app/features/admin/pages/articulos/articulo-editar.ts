@@ -156,9 +156,9 @@ export class ArticuloEditar implements OnInit {
   async eliminar() {
     if (!this.id || this.soloLectura()) return;
     const ok = await this.confirmar.confirm({
-      titulo: '¿Eliminar el artículo?',
-      mensaje: `«${this.m.titulo}» se borrará de forma permanente.`,
-      cta: 'Eliminar',
+      titulo: '¿Mover a la papelera?',
+      mensaje: `«${this.m.titulo}» se moverá a la papelera. Se puede restaurar desde ahí.`,
+      cta: 'Mover a la papelera',
       peligro: true,
     });
     if (!ok) return;

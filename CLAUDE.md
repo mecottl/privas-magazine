@@ -122,6 +122,13 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
 - `articulos.token_preview` (issue #75, uuid, `default gen_random_uuid()`):
   token de vista previa pública — sin policy de RLS propia, solo lo valida
   `obtener-articulo-preview` con `service_role`.
+- `eliminado_en` (issue #77, timestamptz nullable) en `articulos` y
+  `ediciones_revista`: soft-delete — "Eliminar" en el panel ya no hace
+  `DELETE`, solo pone esta fecha. La policy de lectura pública ahora exige
+  `estado = 'publicado' AND eliminado_en is null`; un admin (`is_admin()`)
+  sigue viendo todo, incluida la papelera. `programar-publicacion` purga
+  (DELETE real) lo que lleve más de 30 días aquí, en cada corrida del cron
+  — no hay un cron nuevo para esto.
 - `bitacora_admin` (issue #76): quién publicó/despublicó/programó/eliminó
   qué y cuándo, y quién invitó/gestionó/eliminó qué cuenta de admin. Solo
   `dueno`/`admin_total` la leen (policy con `es_admin_total()`/`es_dueno()`).

@@ -1,0 +1,64 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <h1>Papelera</h1>
+  </div>
+
+  <div class="admin-page__scroll">
+    <p class="hint">
+      Lo que se mueve aquí se purga solo a los 30 días. Mientras tanto se
+      puede restaurar o eliminar para siempre.
+    </p>
+
+    @if (error()) { <p class="error">{{ error() }}</p> }
+
+    <h2 class="lado-titulo">Artículos</h2>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Título</th><th>Eliminado</th><th class="col-acciones">Acciones</th></tr></thead>
+        <tbody>
+          @for (a of articulos(); track a.id) {
+            <tr>
+              <td>{{ a.titulo }}</td>
+              <td>{{ a.eliminado_en | date: 'dd MMM y' }}</td>
+              <td class="col-acciones">
+                @if (puedeGestionar(a)) {
+                  <div class="acciones">
+                    <button class="secundario" (click)="restaurarArticulo(a)">Restaurar</button>
+                    <button class="secundario peligro" (click)="eliminarArticuloDefinitivo(a)">Eliminar para siempre</button>
+                  </div>
+                } @else {
+                  <span class="hint">No es tuyo</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="3"><div class="admin-empty">{{ cargando() ? 'Cargando…' : 'La papelera de artículos está vacía.' }}</div></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="lado-titulo">Ediciones</h2>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Título</th><th>Eliminada</th><th class="col-acciones">Acciones</th></tr></thead>
+        <tbody>
+          @for (ed of ediciones(); track ed.id) {
+            <tr>
+              <td>{{ ed.titulo }}</td>
+              <td>{{ ed.eliminado_en | date: 'dd MMM y' }}</td>
+              <td class="col-acciones">
+                <div class="acciones">
+                  <button class="secundario" (click)="restaurarEdicion(ed)">Restaurar</button>
+                  <button class="secundario peligro" (click)="eliminarEdicionDefinitivo(ed)">Eliminar para siempre</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="3"><div class="admin-empty">{{ cargando() ? 'Cargando…' : 'La papelera de ediciones está vacía.' }}</div></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

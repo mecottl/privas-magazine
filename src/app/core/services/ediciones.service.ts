@@ -8,11 +8,24 @@ export class EdicionesService {
   private readonly sb = inject(SupabaseService).client;
   private readonly cache = conCacheTTL<EdicionRevista[]>(60_000);
 
+  /** Panel: todas las ediciones (sin las de la papelera). */
   async listarAdmin(): Promise<EdicionRevista[]> {
     const { data, error } = await this.sb
       .from('ediciones_revista')
       .select('*')
+      .is('eliminado_en', null)
       .order('anio', { ascending: false });
+    if (error) throw error;
+    return data as EdicionRevista[];
+  }
+
+  /** Panel: solo las de la papelera (issue #77). */
+  async listarPapelera(): Promise<EdicionRevista[]> {
+    const { data, error } = await this.sb
+      .from('ediciones_revista')
+      .select('*')
+      .not('eliminado_en', 'is', null)
+      .order('eliminado_en', { ascending: false });
     if (error) throw error;
     return data as EdicionRevista[];
   }
@@ -79,7 +92,25 @@ export class EdicionesService {
     if (error) throw error;
   }
 
+  /** Mueve a la papelera (issue #77) — no borra la fila. */
   async eliminar(id: string): Promise<void> {
+    const { error } = await this.sb
+      .from('ediciones_revista')
+      .update({ eliminado_en: new Date().toISOString() })
+      .eq('id', id);
+    if (error) throw error;
+  }
+
+  async restaurar(id: string): Promise<void> {
+    const { error } = await this.sb
+      .from('ediciones_revista')
+      .update({ eliminado_en: null })
+      .eq('id', id);
+    if (error) throw error;
+  }
+
+  /** Borrado real, sin vuelta atrás — solo desde la papelera. */
+  async eliminarDefinitivo(id: string): Promise<void> {
     const { error } = await this.sb
       .from('ediciones_revista')
       .delete()

@@ -60,9 +60,9 @@ export class ArticulosLista implements OnInit {
     try {
       if (accion === 'eliminar') {
         const ok = await this.confirmar.confirm({
-          titulo: '¿Eliminar el artículo?',
-          mensaje: `«${a.titulo}» se borrará de forma permanente.`,
-          cta: 'Eliminar',
+          titulo: '¿Mover a la papelera?',
+          mensaje: `«${a.titulo}» se moverá a la papelera. Se puede restaurar desde ahí.`,
+          cta: 'Mover a la papelera',
           peligro: true,
         });
         if (!ok) return;

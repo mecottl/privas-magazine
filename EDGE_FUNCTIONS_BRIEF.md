@@ -48,7 +48,12 @@ Quién la llama: `pg_cron` cada 15 min, autenticado con `CRON_SECRET`.
      destinatario, así que la baja por ese link la gestiona Resend en su
      audiencia (no actualiza `suscriptores_newsletter.activo`; para eso está
      nuestro propio flujo de `cancelar-suscripcion`).
-4. 200 con un resumen (cuántos artículos/ediciones se publicaron).
+4. Purga la papelera (issue #77): `delete ... where eliminado_en is not null
+   and eliminado_en <= now() - 30 días` en `articulos` y `ediciones_revista`.
+   Reutiliza este mismo cron de 15 min — no hay un `pg_cron` nuevo para esto.
+   El DELETE real dispara igual la limpieza de archivos huérfanos que ya
+   existía (trigger → `eliminar-archivo`), sin cambios ahí.
+5. 200 con un resumen (cuántos artículos/ediciones se publicaron y purgaron).
 
 ## 2. `invitar-admin`
 
