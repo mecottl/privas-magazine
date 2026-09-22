@@ -36,13 +36,15 @@ Deno.serve(async (req) => {
       : '';
   if (!token) return json({ error: 'Falta el token' }, 400);
 
-  const { data, error } = await adminClient()
+  // Cualquier error (incluye "invalid input syntax for uuid" si el token no
+  // es un UUID válido) se trata igual que "no encontrado" — no hay razón
+  // para exponerle a un visitante público el detalle interno de Postgres.
+  const { data } = await adminClient()
     .from('articulos')
     .select(SELECT_CON_CATEGORIAS)
     .eq('token_preview', token)
     .maybeSingle();
 
-  if (error) return json({ error: error.message }, 500);
   if (!data) return json({ error: 'Vista previa no encontrada o el link ya no es válido.' }, 404);
 
   return json({ articulo: data });
