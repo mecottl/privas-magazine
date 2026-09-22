@@ -124,6 +124,13 @@ export const ADMIN_ROUTES: Routes = [
           ),
       },
       {
+        path: 'bitacora',
+        title: 'Bitácora · Gestión',
+        canActivate: [gestionAdminsGuard],
+        loadComponent: () =>
+          import('./pages/bitacora/bitacora-lista').then((m) => m.BitacoraLista),
+      },
+      {
         path: 'configuracion',
         title: 'Configuración · Gestión',
         loadComponent: () =>

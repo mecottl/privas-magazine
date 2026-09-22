@@ -29,6 +29,7 @@
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
+import { registrarBitacora } from '../_shared/bitacora.ts';
 
 /** Valores admitidos por el CHECK de perfiles_admin.nivel_permiso. */
 const NIVELES_PERMITIDOS = ['dueno', 'admin_total', 'editor'] as const;
@@ -97,6 +98,15 @@ Deno.serve(async (req) => {
       await admin.auth.admin.deleteUser(invited.user.id);
       return json({ error: `No se pudo crear el perfil: ${perfilErr.message}` }, 400);
     }
+
+    await registrarBitacora({
+      adminId: quienLlama.id,
+      adminNombre: quienLlama.nombre_visible,
+      accion: 'invitar_admin',
+      tabla: 'perfiles_admin',
+      registroId: invited.user.id,
+      detalle: { email, nivel_permiso },
+    });
 
     return json({
       ok: true,

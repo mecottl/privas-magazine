@@ -39,6 +39,7 @@
  */
 import { corsHeaders, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
+import { registrarBitacora } from '../_shared/bitacora.ts';
 
 const NIVELES_PERMITIDOS = ['dueno', 'admin_total', 'editor'] as const;
 type NivelPermiso = (typeof NIVELES_PERMITIDOS)[number];
@@ -133,6 +134,14 @@ Deno.serve(async (req) => {
       }
       const { error } = await admin.auth.admin.deleteUser(id);
       if (error) return json({ error: error.message }, 400);
+      await registrarBitacora({
+        adminId: quienLlama.id,
+        adminNombre: quienLlama.nombre_visible,
+        accion: 'eliminar_admin',
+        tabla: 'perfiles_admin',
+        registroId: id,
+        detalle: { nivel_permiso: objetivo.nivel_permiso },
+      });
       return json({ ok: true });
     }
 
@@ -185,6 +194,21 @@ Deno.serve(async (req) => {
       if (error) return json({ error: error.message }, 400);
       if (!data) return json({ error: 'Perfil no encontrado' }, 404);
       perfil = data;
+    }
+
+    const detalleCambios: Record<string, unknown> = {};
+    if (password) detalleCambios['password'] = true;
+    if (activo !== undefined) detalleCambios['activo'] = activo;
+    if (nivel_permiso) detalleCambios['nivel_permiso'] = nivel_permiso;
+    if (Object.keys(detalleCambios).length > 0) {
+      await registrarBitacora({
+        adminId: quienLlama.id,
+        adminNombre: quienLlama.nombre_visible,
+        accion: 'gestionar_admin',
+        tabla: 'perfiles_admin',
+        registroId: id,
+        detalle: detalleCambios,
+      });
     }
 
     return json({ ok: true, perfil });

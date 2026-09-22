@@ -233,3 +233,15 @@ export interface SuscriptorNewsletter {
   token_confirmacion: string;
   fecha_alta: string;
 }
+
+/** Registro de bitácora (issue #76) — quién hizo qué y cuándo. */
+export interface BitacoraEntrada {
+  id: string;
+  admin_id: string | null;
+  admin_nombre: string | null;
+  accion: string;
+  tabla: string | null;
+  registro_id: string | null;
+  detalle: Record<string, unknown>;
+  created_at: string;
+}

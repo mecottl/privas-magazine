@@ -1,0 +1,32 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <h1>Bitácora</h1>
+  </div>
+
+  <div class="admin-page__scroll">
+    <p class="hint">
+      Quién publicó, despublicó, eliminó o gestionó qué y cuándo. Solo se
+      registran acciones hechas por una cuenta de admin — no los cambios
+      automáticos de la publicación programada.
+    </p>
+
+    @if (error()) { <p class="error">{{ error() }}</p> }
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Cuándo</th><th>Quién</th><th>Qué</th></tr></thead>
+        <tbody>
+          @for (e of entradas(); track e.id) {
+            <tr>
+              <td>{{ e.created_at | date: 'dd MMM y, HH:mm' }}</td>
+              <td>{{ e.admin_nombre || 'Cuenta eliminada' }}</td>
+              <td>{{ descripcion(e) }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="3"><div class="admin-empty">{{ cargando() ? 'Cargando…' : 'Sin actividad registrada todavía.' }}</div></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
