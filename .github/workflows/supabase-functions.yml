@@ -23,3 +23,13 @@ jobs:
       # Los secretos de las funciones (FTP_*, RESEND_API_KEY, UPLOAD_TARGET,
       # GH_DISPATCH_TOKEN, GH_DISPATCH_REPO) se configuran una vez desde el
       # dashboard de Supabase o con `supabase secrets set` — ver docs/SECRETS.md.
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Smoke test de permisos contra lo recién desplegado (issue #74)
+        # Pega en vivo a invitar-admin/set-admin-activo YA desplegadas —
+        # confirma que siguen rechazando llamadas sin sesión (requireAdmin).
+        # No necesita ninguna cuenta real, solo prueba el candado de acceso.
+        run: deno test --allow-net supabase/functions/_tests/permisos.test.ts

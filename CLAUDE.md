@@ -242,6 +242,8 @@ Documentación de arquitectura que SÍ vive fuera de este archivo:
 - `docs/RESTORE_BACKUP.md` — procedimiento para restaurar el backup mensual
   de la BD (issue #79) — sin probar en vivo todavía, ver nota al inicio del
   archivo.
+- `docs/CHECKLIST_QA.md` — checklist de "camino feliz" a correr antes de
+  cerrar una issue con flujo de usuario (issue #74).
 - Carpeta de Documentación en Drive — explicación en lenguaje llano para la
   clienta (no técnica), y el historial de descubrimiento del proyecto
   (propuesta original, respuestas de la clienta).

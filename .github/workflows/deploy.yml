@@ -23,6 +23,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Tests unitarios (issue #74)
+        run: npm test -- --watch=false
+
       - name: Build Angular (estático)
         run: npm run build -- --configuration production
 
