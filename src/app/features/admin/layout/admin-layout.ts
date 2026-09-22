@@ -1,4 +1,4 @@
-import { Component, ElementRef, computed, inject, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import {
   Router,
   RouterLink,
@@ -21,6 +21,15 @@ export class AdminLayout {
   private readonly main = viewChild<ElementRef<HTMLElement>>('main');
   private primeraCarga = true;
 
+  /** Sidebar como menú de hamburguesa en mobile (issue #80). */
+  readonly menuAbierto = signal(false);
+  toggleMenu() {
+    this.menuAbierto.update((v) => !v);
+  }
+  cerrarMenu() {
+    this.menuAbierto.set(false);
+  }
+
   /** Nombre visible del admin, o el correo si no tiene. */
   readonly nombre = computed(
     () => this.auth.perfil()?.nombre_visible || this.auth.user()?.email || 'Admin',
@@ -35,6 +44,7 @@ export class AdminLayout {
   }
 
   alActivarRuta() {
+    this.cerrarMenu();
     if (this.primeraCarga) {
       this.primeraCarga = false;
       return;

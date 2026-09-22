@@ -573,36 +573,102 @@ dialog.confirm button.secundario {
 dialog.confirm button.secundario:hover:not(:disabled) { background: var(--teal-wash); }
 dialog.confirm button:disabled { opacity: 0.5; cursor: default; }
 
+/* ------------------------------------------------------- BARRA MÓVIL --- */
+/* Oculta en desktop — el sidebar se vuelve menú de hamburguesa en ≤860px
+   (issue #80: la fila de pastillas envueltas que había antes ahí no era
+   usable, se comía media pantalla antes de llegar al contenido). */
+.admin-topbar { display: none; }
+.admin-sidebar__backdrop { display: none; }
+
 /* --------------------------------------------------------------- MÓVIL --- */
 @media (max-width: 860px) {
   app-admin-layout {
-    grid-template-columns: 1fr;
+    display: block;
     height: auto;
     overflow: visible;
   }
-  .admin-sidebar {
-    height: auto;
-    overflow: visible;
-    flex-direction: row;
-    flex-wrap: wrap;
+
+  .admin-topbar {
+    display: flex;
     align-items: center;
-    gap: var(--space-2xs) var(--space-sm);
-    padding: var(--space-sm);
+    justify-content: space-between;
+    gap: var(--space-sm);
+    position: sticky;
+    top: 0;
+    z-index: 210;
+    padding: 0.7rem var(--space-sm);
+    background: var(--brand);
+    box-shadow: 0 2px 10px rgba(9, 28, 38, 0.25);
   }
-  .admin-sidebar__brand { border: none; padding: 0; }
-  .admin-sidebar nav { flex-direction: row; flex-wrap: wrap; flex: 1 1 100%; gap: 4px; }
-  .admin-sidebar nav a.active::before { display: none; }
-  .admin-sidebar__foot {
-    margin: 0;
+  .admin-topbar img { height: 1.5rem; width: auto; }
+  .admin-topbar__toggle {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: none;
+    border-radius: var(--admin-radio-sm);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--on-brand);
+  }
+  .admin-topbar__toggle svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+  }
+  .admin-topbar__toggle:hover { background: rgba(255, 255, 255, 0.18); }
+
+  .admin-sidebar__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 219;
+    background: rgba(9, 28, 38, 0.5);
     border: none;
     padding: 0;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-sm);
-    flex: 1 1 100%;
+    cursor: pointer;
   }
-  .admin-sidebar__user { flex: 1; }
-  .admin-sidebar__salir { width: auto; flex: none; }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 220;
+    width: min(82vw, 19rem);
+    height: 100dvh;
+    overflow-y: auto;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: var(--space-md);
+    padding: var(--space-md) 0.9rem;
+    transform: translateX(-100%);
+    transition: transform var(--t);
+    box-shadow: 4px 0 24px rgba(9, 28, 38, 0.35);
+  }
+  .admin-sidebar--abierto { transform: translateX(0); }
+  .admin-sidebar__brand {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.5rem 0.9rem;
+  }
+  .admin-sidebar nav { flex-direction: column; flex-wrap: nowrap; flex: none; gap: 2px; }
+  .admin-sidebar nav a { min-height: 44px; }
+  .admin-sidebar__foot {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: var(--space-sm);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+    flex: none;
+  }
+  .admin-sidebar__user { flex: none; }
+  .admin-sidebar__salir { width: 100%; flex: none; min-height: 44px; }
+
   .admin-main {
     height: auto;
     overflow: visible;
@@ -617,4 +683,8 @@ dialog.confirm button:disabled { opacity: 0.5; cursor: default; }
   .admin-page__scroll,
   .admin-page__fill { flex: none; }
   .admin-page-head { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-sidebar { transition: none; }
 }

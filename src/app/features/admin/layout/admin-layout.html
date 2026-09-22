@@ -1,4 +1,22 @@
-<aside class="admin-sidebar">
+<header class="admin-topbar">
+  <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
+  <button
+    type="button"
+    class="admin-topbar__toggle"
+    (click)="toggleMenu()"
+    [attr.aria-expanded]="menuAbierto()"
+    aria-controls="admin-sidebar"
+    aria-label="Abrir menú"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+  </button>
+</header>
+
+@if (menuAbierto()) {
+  <button type="button" class="admin-sidebar__backdrop" (click)="cerrarMenu()" aria-label="Cerrar menú"></button>
+}
+
+<aside class="admin-sidebar" id="admin-sidebar" [class.admin-sidebar--abierto]="menuAbierto()">
   <div class="admin-sidebar__brand">
     <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
     <span>Gestión</span>
