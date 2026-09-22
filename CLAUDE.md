@@ -140,7 +140,7 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   directo con `service_role` (`_shared/bitacora.ts`). Guarda `admin_nombre`
   como snapshot para no perder el rastro si esa cuenta se elimina después.
 
-## Piezas de arquitectura — Edge Functions (12 en total)
+## Piezas de arquitectura — Edge Functions (13 en total)
 
 Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 
@@ -158,6 +158,7 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `mfa-verificar-codigo` | admin logueado (panel) | Verifica el código contra `mfa_codigos`. El frontend decide cuánto "recordar" el dispositivo (localStorage, 30 días). |
 | `notificar-publicacion` | admin logueado (panel) | Issue #64: dispara rebuild + newsletter para "Publicar ahora" (inmediato) — antes solo `programar-publicacion` (cron) lo hacía, y solo para contenido programado. Misma lógica compartida (`_shared/publicacion.ts`). |
 | `obtener-articulo-preview` | público (link de vista previa) | Issue #75: devuelve un artículo de cualquier `estado` por `articulos.token_preview`, para que la clienta lo revise antes de publicar sin sesión de admin. Sin policy de RLS pública nueva — el token se valida en código con `service_role`. |
+| `auditar-huerfanos` | dueno/admin_total (panel), a demanda | Issue #66: compara el árbol real de `uploads/` por FTP contra lo que la BD dice que debería existir (`*_path` con `*_target='ftp'` + logos de marcas). Solo reporta huérfanos/rotos — nunca borra nada. |
 
 ### Editor de contenido de artículos
 Constructor de bloques libre: texto, imágenes, video embebido, layout libre

@@ -1,6 +1,6 @@
 # Brief: lógica real de las Edge Functions
 
-Las **12 funciones** viven en `supabase/functions/`. Este documento detalla la
+Las **13 funciones** viven en `supabase/functions/`. Este documento detalla la
 lógica real de cada una. Léelo junto con `CLAUDE.md` — no repite el contexto
 general, solo añade el detalle de implementación.
 
@@ -307,6 +307,31 @@ sin sesión. El "acceso" es el propio token, no un rol.
 El frontend (`/preview/:token`, mismo componente que `/articulos/:slug`)
 marca la página `noindex` y muestra un aviso visible de "vista previa" — no
 carga "Sigue leyendo" (esa sección es solo para el artículo real).
+
+## 13. `auditar-huerfanos`
+
+Quién la llama: `dueno`/`admin_total` desde el panel (`/gestion-privas/archivos-huerfanos`),
+a demanda — sin cron, es una revisión periódica manual (issue #66, después de
+la limpieza puntual de la issue #62).
+
+1. `requireAdmin` + rechaza `editor` (403).
+2. Junta las rutas que la BD dice que deberían existir en el FTP:
+   `articulos.imagen_portada_path` (si `imagen_portada_target = 'ftp'`),
+   `ediciones_revista.pdf_path`/`portada_path` (mismo criterio), y
+   `marcas.logo_url` si la URL empieza con `FTP_PUBLIC_BASE_URL` (se le
+   resta el prefijo para sacar la ruta relativa a `uploads/`).
+3. Se conecta por FTP (mismo patrón FTPS-primero-luego-plano que
+   `subir-archivo`/`eliminar-archivo`) y recorre `uploads/` recursivo con
+   `client.list()`.
+4. Compara los dos conjuntos:
+   - **huérfanos**: están en el FTP pero ninguna fila los referencia.
+   - **rotos**: la BD dice que deberían existir pero no están en el FTP.
+5. 200 con ambas listas. A propósito **nunca borra nada** — el borrado
+   sigue siendo manual desde el File Manager de cPanel, mismo criterio que
+   `deploy.yml` nunca toca `uploads/`.
+
+Secretos: los mismos de `subir-archivo` (`FTP_HOST`/`USER`/`PASSWORD`,
+`FTP_REMOTE_PREFIX`, `FTP_PUBLIC_BASE_URL`) — no agrega ninguno nuevo.
 
 ## Nota general sobre pruebas
 

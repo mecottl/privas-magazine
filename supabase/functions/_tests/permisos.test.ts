@@ -33,6 +33,12 @@ Deno.test('set-admin-activo rechaza una llamada sin sesión (401)', async () => 
   await res.body?.cancel();
 });
 
+Deno.test('auditar-huerfanos rechaza una llamada sin sesión (401)', async () => {
+  const res = await llamarSinSesion('auditar-huerfanos');
+  assertEquals(res.status, 401);
+  await res.body?.cancel();
+});
+
 Deno.test('invitar-admin rechaza un token inválido (401)', async () => {
   const res = await fetch(`${BASE}/invitar-admin`, {
     method: 'POST',

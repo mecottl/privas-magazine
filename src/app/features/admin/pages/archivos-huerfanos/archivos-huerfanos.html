@@ -1,0 +1,61 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <h1>
+      Archivos huérfanos
+      <app-info-tip>
+        Compara lo que la base de datos dice que debería existir en el FTP
+        de Akky contra lo que de verdad hay ahí. Solo reporta — nunca borra
+        nada, eso se hace a mano desde el File Manager de cPanel.
+      </app-info-tip>
+    </h1>
+    <div class="admin-page-head__acciones">
+      <button type="button" (click)="auditar()" [disabled]="cargando()">
+        {{ cargando() ? 'Auditando…' : 'Auditar ahora' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-page__scroll">
+    @if (error()) { <p class="error">{{ error() }}</p> }
+
+    @if (reporte(); as r) {
+      <p class="hint">
+        Última revisión: {{ r.revisado | date: 'dd MMM y, HH:mm' }} ·
+        {{ r.totalRemotos }} archivos en el FTP ·
+        {{ r.totalReferenciados }} referenciados en la base de datos.
+      </p>
+
+      <h2 class="lado-titulo">Huérfanos ({{ r.huerfanos.length }})</h2>
+      <p class="hint">En el FTP, pero ninguna fila los referencia — candidatos a borrar a mano.</p>
+      <div class="tabla-wrap">
+        <table>
+          <thead><tr><th>Ruta en uploads/</th></tr></thead>
+          <tbody>
+            @for (p of r.huerfanos; track p) {
+              <tr><td>{{ p }}</td></tr>
+            } @empty {
+              <tr><td><div class="admin-empty">Ninguno — todo lo que hay en el FTP está referenciado.</div></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="lado-titulo">Rotos ({{ r.rotos.length }})</h2>
+      <p class="hint">La base de datos dice que deberían existir, pero no están en el FTP.</p>
+      <div class="tabla-wrap">
+        <table>
+          <thead><tr><th>Ruta esperada</th><th>De dónde</th></tr></thead>
+          <tbody>
+            @for (item of r.rotos; track item.path) {
+              <tr><td>{{ item.path }}</td><td>{{ item.origen }}</td></tr>
+            } @empty {
+              <tr><td colspan="2"><div class="admin-empty">Ninguno — todo lo referenciado existe de verdad.</div></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else if (!cargando()) {
+      <p class="hint">Dale a "Auditar ahora" para comparar el FTP contra la base de datos.</p>
+    }
+  </div>
+</div>
