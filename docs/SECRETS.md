@@ -19,7 +19,8 @@ ninguno de esos valores debe seguir siendo el vigente:
 | Secreto | Rotado | Verificado en vivo |
 | --- | --- | --- |
 | `RESEND_API_KEY` | ✅ 22 sep 2026 (key nueva creada y actualizada en Supabase) | ✅ 22 sep 2026 — correo de confirmación de newsletter recibido con la key nueva |
-| `FTP_PASSWORD` (Akky) | ❌ **pendiente** — sigue siendo la contraseña expuesta en chat, solo se confirmó que el deploy funciona con ella | — |
+| `FTP_PASSWORD` (Akky) | ❌ **pendiente, se pospuso a la transferencia (#13)** — sigue siendo la contraseña expuesta en chat, solo se confirmó que el deploy funciona con ella | — |
+| `GH_DISPATCH_TOKEN` / `SUPABASE_ACCESS_TOKEN` | Son PAT de las cuentas personales del desarrollador, no del repo/proyecto — aunque no se compartieron por chat, se deben regenerar desde las cuentas de la clienta como parte de la transferencia (#13), no antes (antes no tiene cuentas propias todavía) | — |
 | `SUPABASE_SERVICE_ROLE_KEY` | Sin evidencia de haberse compartido por chat en esta sesión; rotar solo si hay duda (ver issue #67) | — |
 | `GH_DISPATCH_TOKEN` | No se compartió por chat; confirmado vigente (dispatch de rebuild funcionando) | ✅ |
 | `CRON_SECRET` | No se comparte por chat; confirmado vigente (`programar-publicacion` responde 200 cada 15 min sin 401) | ✅ |
