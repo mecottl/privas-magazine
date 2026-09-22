@@ -25,6 +25,14 @@
  *   - GH_DISPATCH_REPO   : opcional, "owner/repo" (default mecottl/privas-magazine).
  *   - RESEND_API_KEY     : opcional hoy (sin dominio) — si falta, se salta el envío.
  *   - NEWSLETTER_FROM / RESEND_AUDIENCE_ID : remitente y audiencia de Resend.
+ *   - HEALTHCHECK_URL    : issue #78, opcional. URL de ping de un servicio de
+ *                          heartbeat externo (ej. healthchecks.io, plan
+ *                          gratis) — se le pega al final de cada corrida
+ *                          exitosa, y a `${HEALTHCHECK_URL}/fail` si algo
+ *                          sale mal. Si el servicio no recibe un ping a
+ *                          tiempo (el pg_cron dejó de correr, o esta función
+ *                          empezó a fallar), él manda la alerta por correo —
+ *                          no se construyó monitoreo propio para esto.
  */
 import { json } from '../_shared/cors.ts';
 import { adminClient, requireCronSecret } from '../_shared/clients.ts';
@@ -34,6 +42,17 @@ import {
   dispararRebuild,
   notificarNewsletter,
 } from '../_shared/publicacion.ts';
+
+/** Heartbeat externo (issue #78) — no fatal, nunca debe tumbar el cron real. */
+async function avisarHeartbeat(ok: boolean): Promise<void> {
+  const url = Deno.env.get('HEALTHCHECK_URL');
+  if (!url) return;
+  try {
+    await fetch(ok ? url : `${url}/fail`);
+  } catch (e) {
+    console.error('avisarHeartbeat: no se pudo avisar (no fatal)', e);
+  }
+}
 
 Deno.serve(async (req) => {
   try {
@@ -60,6 +79,7 @@ Deno.serve(async (req) => {
     .select('id, titulo');
 
   if (errA || errE) {
+    await avisarHeartbeat(false);
     return json({ error: errA?.message ?? errE?.message }, 500);
   }
 
@@ -88,6 +108,8 @@ Deno.serve(async (req) => {
     .not('eliminado_en', 'is', null)
     .lte('eliminado_en', hace30dias)
     .select('id');
+
+  await avisarHeartbeat(true);
 
   return json({
     ok: true,

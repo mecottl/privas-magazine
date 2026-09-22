@@ -53,7 +53,12 @@ Quién la llama: `pg_cron` cada 15 min, autenticado con `CRON_SECRET`.
    Reutiliza este mismo cron de 15 min — no hay un `pg_cron` nuevo para esto.
    El DELETE real dispara igual la limpieza de archivos huérfanos que ya
    existía (trigger → `eliminar-archivo`), sin cambios ahí.
-5. 200 con un resumen (cuántos artículos/ediciones se publicaron y purgaron).
+5. Heartbeat externo (issue #78): si `HEALTHCHECK_URL` existe, le pega al
+   terminar (`/fail` si el paso 2 dio error). Si el ping no llega a tiempo
+   (pg_cron dejó de correr, o la función empezó a fallar), la alerta la
+   manda el propio servicio externo (healthchecks.io o similar) — no hay
+   monitoreo propio construido para esto a propósito.
+6. 200 con un resumen (cuántos artículos/ediciones se publicaron y purgaron).
 
 ## 2. `invitar-admin`
 

@@ -30,6 +30,7 @@ NO son secretos de GitHub Actions: es Supabase quien llama a GitHub, no al revé
 | `RESEND_AUDIENCE_ID` / `NEWSLETTER_FROM` | `programar-publicacion`, `notificar-publicacion`, `suscribirse`, `confirmar-suscripcion`, `cancelar-suscripcion` | audiencia de Resend "marketing" y remitente. `confirmar`/`cancelar-suscripcion` sincronizan ahí el estado del contacto (issue #64) — sin `RESEND_AUDIENCE_ID` la confirmación se guarda en `suscriptores_newsletter` pero el contacto nunca entra a la audiencia que recibe el broadcast |
 | `MFA_EMAIL_FROM` | `mfa-enviar-codigo` | opcional, default `PRIVAS Magazine <contacto@privasmagazine.com>` |
 | `SITE_URL` | `programar-publicacion`, `notificar-publicacion`, `invitar-admin` | base pública para armar links (default `https://privasmagazine.com`). `invitar-admin` la usa para el `redirectTo` del correo de invitación — **esa URL completa (`SITE_URL/gestion-privas/aceptar-invitacion`) debe estar en Supabase → Authentication → URL Configuration → Redirect URLs**, o Supabase la ignora en silencio (issue #61) |
+| `HEALTHCHECK_URL` | `programar-publicacion` | opcional (issue #78). URL de ping de una cuenta gratis en healthchecks.io (o similar): la función le pega al terminar cada corrida (`/fail` si algo salió mal). Configurar el check ahí con periodo 15 min y algo de gracia (ej. 20-30 min) — si no llega el ping a tiempo, ese servicio manda la alerta por correo solo, sin nada más que construir aquí. Tolerante: si falta, simplemente no avisa a nadie externo |
 
 ## Rate limiting (issue #15)
 
