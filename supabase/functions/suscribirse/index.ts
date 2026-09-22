@@ -51,7 +51,7 @@ function plantillaCorreo(linkConfirmacion: string): string {
             </a>
 
             <p style="margin:24px 0 0; font-size:13px; line-height:1.5; color:#5b747b;">
-              Si no fuiste tú quien lo pidió, ignora este correo — no pasa nada más.
+              Si no fuiste tú quien lo pidió, ignora este correo, no pasa nada más.
             </p>
           </td>
         </tr>

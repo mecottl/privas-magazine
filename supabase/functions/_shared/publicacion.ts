@@ -120,7 +120,7 @@ export async function notificarNewsletter(
 
     const items = [
       ...articulos.map((a) => filaItem(a.titulo, `${siteUrl}/articulos/${a.slug}`)),
-      ...ediciones.map((e) => filaItem(`${e.titulo} — nueva edición de la revista`, `${siteUrl}/revistas`)),
+      ...ediciones.map((e) => filaItem(`${e.titulo} (nueva edición de la revista)`, `${siteUrl}/revistas`)),
     ].join('');
 
     const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };

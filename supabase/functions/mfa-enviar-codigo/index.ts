@@ -58,7 +58,7 @@ function plantillaCorreo(codigo: string): string {
             </div>
 
             <p style="margin:24px 0 0; font-size:13px; line-height:1.5; color:#5b747b;">
-              Vence en 10 minutos. Si no fuiste tú quien lo pidió, ignora este correo —
+              Vence en 10 minutos. Si no fuiste tú quien lo pidió, ignora este correo,
               tu cuenta sigue protegida por tu contraseña.
             </p>
           </td>
@@ -66,7 +66,7 @@ function plantillaCorreo(codigo: string): string {
 
         <tr>
           <td align="center" style="padding:18px 32px; border-top:1px solid #cec5ac; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#5b747b;">
-            Este código es personal — nunca lo compartas con nadie.
+            Este código es personal, nunca lo compartas con nadie.
           </td>
         </tr>
 
@@ -117,7 +117,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from,
           to: userData.user.email,
-          subject: `${codigo} — tu código para entrar a PRIVAS`,
+          subject: `${codigo}: tu código para entrar a PRIVAS`,
           html: plantillaCorreo(codigo),
         }),
       });

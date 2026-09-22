@@ -65,7 +65,7 @@
               <td>{{ a.created_at | date: 'dd MMM y' }}</td>
               <td class="col-acciones">
                 @if (a.id === miId()) {
-                  <span class="hint">—</span>
+                  <span class="hint">Tu cuenta</span>
                 } @else if (restableciendoId() === a.id) {
                   <form class="acciones" (ngSubmit)="guardarReset(a)">
                     <input

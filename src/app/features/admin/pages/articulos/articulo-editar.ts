@@ -231,7 +231,7 @@ export class ArticuloEditar implements OnInit {
   private validar(): boolean {
     this.error.set('');
     if (this.soloLectura()) {
-      this.error.set('No puedes editar este artículo — no eres su autor.');
+      this.error.set('No puedes editar este artículo, no eres su autor.');
       return false;
     }
     if (!this.m.titulo?.trim()) {

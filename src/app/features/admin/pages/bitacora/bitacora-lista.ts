@@ -60,6 +60,6 @@ export class BitacoraLista implements OnInit {
       const cambios = Object.keys(e.detalle ?? {}).join(', ');
       return `${accion} (${cambios})`;
     }
-    return `${accion}${tabla ? ' — ' + tabla : ''}`;
+    return `${accion}${tabla ? ' en ' + tabla : ''}`;
   }
 }

@@ -5,10 +5,10 @@
     [href]="e.pdf_url"
     target="_blank"
     rel="noopener"
-    [attr.aria-label]="'Ver PDF — ' + e.titulo"
+    [attr.aria-label]="'Ver PDF: ' + e.titulo"
   >
     <span class="edicion-card__marco">
-      <img class="edicion-card__portada" [src]="e.portada_url" [alt]="'Portada — ' + e.titulo" loading="lazy" />
+      <img class="edicion-card__portada" [src]="e.portada_url" [alt]="'Portada: ' + e.titulo" loading="lazy" />
       @if (!mostrarTitulo()) {
         <span class="edicion-card__num">{{ sello() }}</span>
       }

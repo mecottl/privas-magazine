@@ -39,9 +39,9 @@
                     {{ a.titulo }}
                   }
                 </td>
-                <td>{{ a.categorias | categoriasNombre: '—' }}</td>
+                <td>{{ a.categorias | categoriasNombre: '' }}</td>
                 <td><span class="badge badge--{{ a.estado }}">{{ a.estado }}</span></td>
-                <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'dd MMM y') : '—' }}</td>
+                <td>{{ a.fecha_publicacion ? (a.fecha_publicacion | date: 'dd MMM y') : '' }}</td>
                 <td class="col-acciones">
                   @if (puedeEditar(a)) {
                     <div class="acciones">
