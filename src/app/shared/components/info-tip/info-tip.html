@@ -1,0 +1,14 @@
+<button
+  type="button"
+  class="info-tip__btn"
+  (click)="toggle()"
+  [attr.aria-expanded]="abierto()"
+  aria-label="Más información"
+>
+  i
+</button>
+@if (abierto()) {
+  <span class="info-tip__bubble" role="tooltip">
+    <ng-content />
+  </span>
+}

@@ -1,14 +1,15 @@
 <div class="admin-page">
   <div class="admin-page-head">
-    <h1>Papelera</h1>
+    <h1>
+      Papelera
+      <app-info-tip>
+        Lo que se mueve aquí se purga solo a los 30 días. Mientras tanto se
+        puede restaurar o eliminar para siempre.
+      </app-info-tip>
+    </h1>
   </div>
 
   <div class="admin-page__scroll">
-    <p class="hint">
-      Lo que se mueve aquí se purga solo a los 30 días. Mientras tanto se
-      puede restaurar o eliminar para siempre.
-    </p>
-
     @if (error()) { <p class="error">{{ error() }}</p> }
 
     <h2 class="lado-titulo">Artículos</h2>

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { BitacoraService } from '../../../../core/services/bitacora.service';
 import { mensajeError } from '../../../../core/services/errores';
+import { InfoTip } from '../../../../shared/components/info-tip/info-tip';
 import type { BitacoraEntrada } from '../../../../core/models';
 
 const NOMBRE_ACCION: Record<string, string> = {
@@ -25,7 +26,7 @@ const NOMBRE_TABLA: Record<string, string> = {
 @Component({
   selector: 'app-admin-bitacora-lista',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, InfoTip],
   templateUrl: './bitacora-lista.html',
 })
 export class BitacoraLista implements OnInit {

@@ -4,6 +4,7 @@ import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { InfoTip } from '../../../../shared/components/info-tip/info-tip';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, EdicionRevista } from '../../../../core/models';
 
@@ -15,7 +16,7 @@ import type { Articulo, EdicionRevista } from '../../../../core/models';
 @Component({
   selector: 'app-admin-papelera-lista',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, InfoTip],
   templateUrl: './papelera-lista.html',
 })
 export class PapeleraLista implements OnInit {

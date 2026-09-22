@@ -59,19 +59,23 @@
     </fieldset>
 
     <fieldset class="panel">
-      <legend>Verificación en dos pasos</legend>
-      @if (auth.esDueno()) {
-        <p class="hint">
-          Por tu nivel de acceso, esta cuenta siempre pide un código por
-          correo al entrar desde un dispositivo nuevo. No se puede
-          desactivar.
-        </p>
-      } @else {
-        <p class="hint">
-          Al entrar te pedimos un código de 6 dígitos por correo, además de
-          tu contraseña. Una vez verificado, no se vuelve a pedir en este
-          dispositivo por 30 días.
-        </p>
+      <legend>
+        Verificación en dos pasos
+        @if (auth.esDueno()) {
+          <app-info-tip>
+            Por tu nivel de acceso, esta cuenta siempre pide un código por
+            correo al entrar desde un dispositivo nuevo. No se puede
+            desactivar.
+          </app-info-tip>
+        } @else {
+          <app-info-tip>
+            Al entrar te pedimos un código de 6 dígitos por correo, además de
+            tu contraseña. Una vez verificado, no se vuelve a pedir en este
+            dispositivo por 30 días.
+          </app-info-tip>
+        }
+      </legend>
+      @if (!auth.esDueno()) {
         <div class="row" style="margin-bottom:0">
           @if (auth.perfil()?.mfa_activo) {
             <button type="button" class="secundario" [disabled]="guardandoMfa()" (click)="cambiarMfa(false)">

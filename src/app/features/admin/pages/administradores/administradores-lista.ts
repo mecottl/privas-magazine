@@ -4,6 +4,7 @@ import { DatePipe } from '@angular/common';
 import { AdminsService } from '../../../../core/services/admins.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { InfoTip } from '../../../../shared/components/info-tip/info-tip';
 import { mensajeError } from '../../../../core/services/errores';
 import {
   NIVELES_PERMISO,
@@ -15,7 +16,7 @@ import {
 @Component({
   selector: 'app-admin-administradores-lista',
   standalone: true,
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, InfoTip],
   templateUrl: './administradores-lista.html',
 })
 export class AdministradoresLista implements OnInit {

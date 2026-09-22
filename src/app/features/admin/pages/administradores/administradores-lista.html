@@ -5,7 +5,12 @@
 
   <div class="admin-page__scroll">
     <fieldset class="panel">
-      <legend>Invitar {{ auth.esDueno() ? 'cuenta' : 'editor' }}</legend>
+      <legend>
+        Invitar {{ auth.esDueno() ? 'cuenta' : 'editor' }}
+        @if (!auth.esDueno()) {
+          <app-info-tip>Como administrador solo puedes invitar cuentas de Editor.</app-info-tip>
+        }
+      </legend>
       <div class="campos-grid">
         <label>Correo <input type="email" [(ngModel)]="email" name="email" /></label>
         <label>Nombre visible <input [(ngModel)]="nombre" name="nombre" /></label>
@@ -17,9 +22,6 @@
           </label>
         }
       </div>
-      @if (!auth.esDueno()) {
-        <p class="hint">Como administrador solo puedes invitar cuentas de Editor.</p>
-      }
       <div class="row" style="margin-bottom:0">
         <button (click)="invitar()" [disabled]="enviando()">
           {{ enviando() ? 'Enviando…' : 'Enviar invitación' }}
