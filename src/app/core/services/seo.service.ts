@@ -45,4 +45,9 @@ export class SeoService {
       this.meta.updateTag({ content }, selector);
     }
   }
+
+  /** Links de vista previa (issue #75) — nunca deben indexarse ni compartirse como si fueran el artículo real. */
+  noIndexar(): void {
+    this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+  }
 }

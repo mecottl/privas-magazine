@@ -16,6 +16,11 @@
     <a routerLink="/articulos" class="btn btn--primario">Ver todos los artículos</a>
   </div>
 } @else if (articulo(); as a) {
+  @if (esVistaPrevia()) {
+    <div class="art-preview-banner" role="note">
+      Vista previa — este artículo está en <strong>{{ a.estado }}</strong>, no es la página pública final.
+    </div>
+  }
   <span class="art-progreso" aria-hidden="true"><span class="art-progreso__fill"></span></span>
 
   <article class="art">

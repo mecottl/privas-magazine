@@ -14,7 +14,8 @@ const SELECT_CON_CATEGORIAS =
 
 @Injectable({ providedIn: 'root' })
 export class ArticulosService {
-  private readonly sb = inject(SupabaseService).client;
+  private readonly supabase = inject(SupabaseService);
+  private readonly sb = this.supabase.client;
   /** 60s: navegar entre / → /articulos → /revistas no repite la consulta. */
   private readonly cache = conCacheTTL<Articulo[]>(60_000);
 
@@ -63,6 +64,18 @@ export class ArticulosService {
       );
     }
     return arts;
+  }
+
+  /** Público, vía token de vista previa (issue #75) — cualquier estado. */
+  async obtenerPorTokenPreview(token: string): Promise<Articulo> {
+    const { data, error } = await this.supabase.invokeFunction<{
+      articulo?: Articulo;
+      error?: string;
+    }>('obtener-articulo-preview', { token });
+    if (error || !data?.articulo) {
+      throw new Error(data?.error ?? error?.message ?? 'No se pudo cargar la vista previa.');
+    }
+    return data.articulo;
   }
 
   async obtenerPublicoPorSlug(slug: string): Promise<Articulo | null> {

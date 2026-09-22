@@ -119,8 +119,11 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   vive ESE archivo específico, distinto de la URL (necesario para poder
   borrarlo luego). Renombrado de `'sftp'` a `'ftp'` el 4 sep 2026 (ver
   migración `20260904220000_renombrar_target_sftp_a_ftp.sql`).
+- `articulos.token_preview` (issue #75, uuid, `default gen_random_uuid()`):
+  token de vista previa pública — sin policy de RLS propia, solo lo valida
+  `obtener-articulo-preview` con `service_role`.
 
-## Piezas de arquitectura — Edge Functions (11 en total)
+## Piezas de arquitectura — Edge Functions (12 en total)
 
 Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 
@@ -137,6 +140,7 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `mfa-enviar-codigo` | admin logueado (panel) | MFA propio por correo (issue #17, no el TOTP nativo de Supabase): genera un código de 6 dígitos y lo manda por Resend. |
 | `mfa-verificar-codigo` | admin logueado (panel) | Verifica el código contra `mfa_codigos`. El frontend decide cuánto "recordar" el dispositivo (localStorage, 30 días). |
 | `notificar-publicacion` | admin logueado (panel) | Issue #64: dispara rebuild + newsletter para "Publicar ahora" (inmediato) — antes solo `programar-publicacion` (cron) lo hacía, y solo para contenido programado. Misma lógica compartida (`_shared/publicacion.ts`). |
+| `obtener-articulo-preview` | público (link de vista previa) | Issue #75: devuelve un artículo de cualquier `estado` por `articulos.token_preview`, para que la clienta lo revise antes de publicar sin sesión de admin. Sin policy de RLS pública nueva — el token se valida en código con `service_role`. |
 
 ### Editor de contenido de artículos
 Constructor de bloques libre: texto, imágenes, video embebido, layout libre

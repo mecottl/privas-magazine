@@ -29,6 +29,14 @@ export const PUBLIC_ROUTES: Routes = [
           ),
       },
       {
+        path: 'preview/:token',
+        data: { hero: true },
+        loadComponent: () =>
+          import('./pages/articulo-detalle/articulo-detalle').then(
+            (m) => m.ArticuloDetalle,
+          ),
+      },
+      {
         path: 'revistas',
         title: 'Ediciones de la revista',
         data: { hero: true },

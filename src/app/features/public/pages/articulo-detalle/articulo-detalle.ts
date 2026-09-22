@@ -28,6 +28,8 @@ export class ArticuloDetalle implements OnInit {
   readonly relacionados = signal<Articulo[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
+  /** true si se entró por /preview/:token (issue #75) en vez de /articulos/:slug. */
+  readonly esVistaPrevia = signal(false);
 
   // --- helpers de render de bloques Editor.js ---
 
@@ -99,25 +101,34 @@ export class ArticuloDetalle implements OnInit {
     await this.cargar();
   }
 
-  /** Reintentar (issue #52) — mismo slug de la ruta actual. */
+  /** Reintentar (issue #52) — mismo slug/token de la ruta actual. */
   async cargar() {
+    const token = this.route.snapshot.paramMap.get('token');
     const slug = this.route.snapshot.paramMap.get('slug') ?? '';
+    this.esVistaPrevia.set(!!token);
     this.error.set('');
     this.cargando.set(true);
     try {
-      const a = await this.srv.obtenerPublicoPorSlug(slug);
+      const a = token
+        ? await this.srv.obtenerPorTokenPreview(token)
+        : await this.srv.obtenerPublicoPorSlug(slug);
       if (!a) {
         this.error.set('No encontramos este artículo. Puede que se haya despublicado.');
         this.title.setTitle('Artículo no encontrado · PRIVAS Magazine');
       } else {
         this.articulo.set(a);
-        this.seo.actualizar({
-          titulo: a.titulo,
-          descripcion: a.extracto || 'Una revista para los amantes de los viajes.',
-          imagenUrl: a.imagen_portada_url,
-          tipo: 'article',
-        });
-        void this.cargarRelacionados(a);
+        if (token) {
+          this.title.setTitle(`Vista previa: ${a.titulo} · PRIVAS Magazine`);
+          this.seo.noIndexar();
+        } else {
+          this.seo.actualizar({
+            titulo: a.titulo,
+            descripcion: a.extracto || 'Una revista para los amantes de los viajes.',
+            imagenUrl: a.imagen_portada_url,
+            tipo: 'article',
+          });
+          void this.cargarRelacionados(a);
+        }
       }
     } catch (e) {
       this.error.set(mensajeError(e));

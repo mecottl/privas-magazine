@@ -51,6 +51,11 @@
               <button type="button" class="secundario peligro" (click)="eliminar()">Eliminar</button>
             }
           </div>
+          @if (id && m.token_preview) {
+            <button type="button" class="secundario editor-preview-btn" (click)="copiarLinkPreview()">
+              {{ previewCopiado() ? 'Copiado ✓' : 'Copiar link de vista previa' }}
+            </button>
+          }
         </div>
 
         <div class="lado-panel">

@@ -1,6 +1,6 @@
 # Brief: lógica real de las Edge Functions
 
-Las **11 funciones** viven en `supabase/functions/`. Este documento detalla la
+Las **12 funciones** viven en `supabase/functions/`. Este documento detalla la
 lógica real de cada una. Léelo junto con `CLAUDE.md` — no repite el contexto
 general, solo añade el detalle de implementación.
 
@@ -274,6 +274,29 @@ ahora" haga lo mismo.
 
 El frontend (`NotificarPublicacionService`) la llama en paralelo sin
 bloquear la navegación — si falla, no rompe el flujo de publicar.
+
+## 12. `obtener-articulo-preview`
+
+Quién la llama: cualquiera con el link de vista previa (issue #75) — pública,
+sin sesión. El "acceso" es el propio token, no un rol.
+
+1. Rate limit: `dentroDelLimite('obtener-articulo-preview', ipDeRequest(req), 20, 10)`.
+2. Body: `{ token }`.
+3. Con `service_role`: busca en `articulos` por `token_preview` — de
+   CUALQUIER `estado` (borrador/programado/publicado/despublicado), a
+   diferencia de `obtenerPublicoPorSlug` que solo trae publicados. A
+   propósito no hay policy de RLS pública para esto: abrir una policy de
+   lectura por columna sería una superficie pública permanente sobre
+   `articulos`; en cambio, validar el token aquí en código es una función
+   que se puede quitar/cambiar sin tocar RLS.
+4. 404 genérico si no hay coincidencia (no distingue "token inválido" de
+   "no existe", igual que `confirmar-suscripcion`).
+5. 200 `{ articulo }` con el mismo shape que usa el resto del sitio
+   (incluye categorías).
+
+El frontend (`/preview/:token`, mismo componente que `/articulos/:slug`)
+marca la página `noindex` y muestra un aviso visible de "vista previa" — no
+carga "Sigue leyendo" (esa sección es solo para el artículo real).
 
 ## Nota general sobre pruebas
 

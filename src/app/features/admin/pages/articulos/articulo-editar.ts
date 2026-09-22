@@ -54,6 +54,7 @@ export class ArticuloEditar implements OnInit {
   readonly subiendo = signal(false);
   readonly modo = signal<Modo | null>(null);
   readonly errorModal = signal('');
+  readonly previewCopiado = signal(false);
   /** true si un editor abrió por URL directa un artículo que no es suyo — RLS
    *  bloquearía el guardado igual, esto solo evita la confusión de un error
    *  al intentar guardar en vez de avisar desde que carga. */
@@ -295,6 +296,18 @@ export class ArticuloEditar implements OnInit {
       return false;
     } finally {
       this.guardando.set(false);
+    }
+  }
+
+  async copiarLinkPreview() {
+    if (!this.m.token_preview) return;
+    const link = `${location.origin}/preview/${this.m.token_preview}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      this.previewCopiado.set(true);
+      setTimeout(() => this.previewCopiado.set(false), 2000);
+    } catch {
+      this.error.set(`No se pudo copiar. Aquí está el link: ${link}`);
     }
   }
 

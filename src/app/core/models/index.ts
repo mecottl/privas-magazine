@@ -128,6 +128,9 @@ export interface Articulo {
    * editar/borrar artículos donde `creado_por` sea su propio id (RLS).
    */
   creado_por?: string | null;
+  /** Token de vista previa pública (issue #75) — sirve para compartir un
+   *  link de borrador/programado sin sesión de admin. */
+  token_preview?: string;
 }
 
 export interface EdicionRevista {
