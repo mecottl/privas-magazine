@@ -10,6 +10,20 @@
 > convención `public_html/`. Ver `FTP_REMOTE_PREFIX` abajo (vacío por
 > default) e issue #55.
 
+## Rotación de secretos (issue #67 — previo a la transferencia final #13)
+
+Varios secretos se compartieron en texto plano durante troubleshooting en
+sesiones de chat anteriores. Antes de transferir el proyecto a la clienta,
+ninguno de esos valores debe seguir siendo el vigente:
+
+| Secreto | Rotado | Verificado en vivo |
+| --- | --- | --- |
+| `RESEND_API_KEY` | ✅ 22 sep 2026 (key nueva creada y actualizada en Supabase) | ✅ 22 sep 2026 — correo de confirmación de newsletter recibido con la key nueva |
+| `FTP_PASSWORD` (Akky) | ❌ **pendiente** — sigue siendo la contraseña expuesta en chat, solo se confirmó que el deploy funciona con ella | — |
+| `SUPABASE_SERVICE_ROLE_KEY` | Sin evidencia de haberse compartido por chat en esta sesión; rotar solo si hay duda (ver issue #67) | — |
+| `GH_DISPATCH_TOKEN` | No se compartió por chat; confirmado vigente (dispatch de rebuild funcionando) | ✅ |
+| `CRON_SECRET` | No se comparte por chat; confirmado vigente (`programar-publicacion` responde 200 cada 15 min sin 401) | ✅ |
+
 ## Secretos de Edge Functions (Supabase)
 
 Supabase → Project Settings → Edge Functions → Secrets, o `supabase secrets set`.
