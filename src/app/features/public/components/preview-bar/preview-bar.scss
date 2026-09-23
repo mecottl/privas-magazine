@@ -1,0 +1,72 @@
+/* Barra fija de modo vista previa (issue #82). Ámbar = "esto es una vista
+   previa", el mismo color del aviso de vista previa de borradores (#75).
+   z-index por debajo del header (200) para no tapar el menú móvil. */
+.pv {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 190;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: max-content;
+  max-width: calc(100vw - 1.5rem);
+  padding: 0.5rem 0.55rem 0.5rem 0.9rem;
+  border-radius: var(--r-pill);
+  background: var(--navy);
+  color: var(--on-brand);
+  font-family: var(--sans);
+  box-shadow:
+    0 0 0 1px rgba(244, 183, 64, 0.55),
+    0 10px 30px rgba(6, 20, 28, 0.45);
+}
+
+.pv__estado { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+.pv__estado svg {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: #f4b740;
+  stroke-width: 1.8;
+}
+.pv__texto { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.pv__texto strong { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.02em; }
+.pv__detalle { font-size: var(--fs-3xs); color: var(--on-brand-dim); }
+
+.pv__volver {
+  flex: none;
+  padding: 0.5rem 0.95rem;
+  border: none;
+  border-radius: var(--r-pill);
+  background: #f4b740;
+  color: #16323a;
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  cursor: pointer;
+  transition: background var(--t);
+}
+.pv__volver:hover { background: #ffc95c; }
+
+.pv__cerrar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--on-brand);
+  cursor: pointer;
+}
+.pv__cerrar:hover { background: rgba(255, 255, 255, 0.2); }
+.pv__cerrar svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 2; }
+
+@media (max-width: 560px) {
+  .pv { gap: 0.5rem; padding-left: 0.75rem; }
+  .pv__detalle { display: none; }
+}

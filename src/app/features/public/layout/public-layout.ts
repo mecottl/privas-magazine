@@ -17,6 +17,8 @@ import { filter } from 'rxjs';
 import { SiteHeader } from '../components/site-header/site-header';
 import { SiteFooter } from '../components/site-footer/site-footer';
 import { ModalEdicion } from '../components/modal-edicion/modal-edicion';
+import { PreviewBar } from '../components/preview-bar/preview-bar';
+import { modoPreviewActivo } from '../../../core/preview-mode';
 
 /**
  * Cascarón del sitio público: header fijo (`app-site-header`), contenido
@@ -28,7 +30,7 @@ import { ModalEdicion } from '../components/modal-edicion/modal-edicion';
 @Component({
   selector: 'app-public-layout',
   standalone: true,
-  imports: [RouterOutlet, SiteHeader, SiteFooter, ModalEdicion],
+  imports: [RouterOutlet, SiteHeader, SiteFooter, ModalEdicion, PreviewBar],
   templateUrl: './public-layout.html',
   styleUrl: './public-layout.scss',
 })
@@ -36,6 +38,9 @@ export class PublicLayout {
   private readonly main = viewChild<ElementRef<HTMLElement>>('main');
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+
+  /** Modo vista previa activo (issue #82): solo lee una bandera de sessionStorage. */
+  readonly modoPreview = modoPreviewActivo();
 
   /** La ruta activa dibuja un hero a sangre detrás del header. */
   readonly conHero = signal(this.rutaConHero());

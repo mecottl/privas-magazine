@@ -6,6 +6,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { activarModoPreview } from '../../../core/preview-mode';
 import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 
 /** Shell del panel de administración: sidebar (marca + navegación + sesión) + contenido. */
@@ -37,6 +38,13 @@ export class AdminLayout {
   /** Inicial para el avatar. */
   readonly inicial = computed(() => this.nombre().charAt(0).toUpperCase());
   readonly correo = computed(() => this.auth.user()?.email ?? '');
+
+  /** "Ver el sitio" (issue #82): abre el sitio público sin cerrar la sesión. */
+  verSitio(e: Event) {
+    e.preventDefault();
+    activarModoPreview();
+    this.router.navigateByUrl('/');
+  }
 
   async salir() {
     await this.auth.cerrarSesion();

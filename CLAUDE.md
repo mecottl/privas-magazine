@@ -200,6 +200,12 @@ estática sin servidor Node en producción.
   detalle de artículo, catálogo/biblioteca de todas las ediciones de revista
   (no solo la más reciente), Nuestras Marcas (enlaces a redes sociales del
   grupo), footer con aviso de privacidad.
+- **Modo vista previa del sitio estando logueado** (issue #82): el link "Ver el
+  sitio" del sidebar del panel activa una bandera en `sessionStorage`
+  (`core/preview-mode.ts`) y abre `/`; `PublicLayout` monta `app-preview-bar`
+  (barra ámbar fija con "Volver al panel") solo si la bandera está puesta y
+  además hay sesión de admin real. Es solo cosmética: no cambia lo que se ve
+  ni concede permisos. Distinto de la vista previa de borradores por token (#75).
 - Meta tags dinámicos (Open Graph) por artículo — depende de la estrategia de
   recompilación descrita arriba.
 
