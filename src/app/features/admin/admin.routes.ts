@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/auth/admin.guard';
 import { gestionAdminsGuard } from '../../core/auth/gestion-admins.guard';
+import { duenoGuard } from '../../core/auth/dueno.guard';
 import { AdminLayout } from './layout/admin-layout';
 
 /** Rutas del panel de administración (protegidas por `adminGuard`). */
@@ -135,6 +136,13 @@ export const ADMIN_ROUTES: Routes = [
         canActivate: [gestionAdminsGuard],
         loadComponent: () =>
           import('./pages/bitacora/bitacora-lista').then((m) => m.BitacoraLista),
+      },
+      {
+        path: 'documentacion',
+        title: 'Documentación · Gestión',
+        canActivate: [duenoGuard],
+        loadComponent: () =>
+          import('./pages/documentacion/documentacion').then((m) => m.Documentacion),
       },
       {
         path: 'configuracion',

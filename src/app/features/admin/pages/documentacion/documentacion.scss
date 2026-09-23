@@ -1,0 +1,125 @@
+:host { display: block; }
+
+.doc {
+  display: grid;
+  grid-template-columns: 13.5rem minmax(0, 1fr);
+  gap: var(--space-lg);
+  align-items: start;
+  padding-bottom: var(--space-2xl);
+}
+
+/* --- Índice ---------------------------------------------------------------- */
+.doc-indice {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-sm);
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--admin-radio);
+  box-shadow: var(--sombra-1);
+}
+.doc-indice__titulo {
+  padding: 0.2rem 0.6rem 0.5rem;
+  font-family: var(--sans);
+  font-size: var(--fs-3xs);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-55);
+}
+.doc-indice button {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  font: inherit;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-80);
+  background: transparent;
+  border: none;
+  border-radius: var(--admin-radio-sm);
+  cursor: pointer;
+}
+.doc-indice button:hover { background: var(--teal-wash); color: var(--brand); }
+.doc-indice button.activa { background: var(--teal-wash); color: var(--brand); }
+
+/* --- Contenido ------------------------------------------------------------- */
+.doc-cuerpo { min-width: 0; max-width: 62rem; }
+
+.doc-seccion {
+  padding: var(--space-md) 0 var(--space-lg);
+  border-bottom: 1px solid var(--line-2);
+  scroll-margin-top: var(--space-sm);
+}
+.doc-seccion:last-child { border-bottom: none; }
+
+.doc-seccion h2 {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(1.4rem, 1.15rem + 0.9vw, 1.8rem);
+  color: var(--brand);
+}
+.doc-seccion h3 {
+  margin: var(--space-md) 0 var(--space-2xs);
+  font-family: var(--sans);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--ink);
+}
+.doc-seccion p,
+.doc-seccion li {
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  color: var(--ink-80);
+}
+.doc-seccion p { margin: 0 0 var(--space-sm); }
+.doc-seccion strong { color: var(--ink); }
+.doc-seccion ul,
+.doc-seccion ol { margin: 0 0 var(--space-sm); padding-left: 1.3rem; }
+.doc-seccion li { margin-bottom: 0.35rem; }
+.doc-pasos li::marker { font-weight: 700; color: var(--brand); }
+.doc-seccion .tabla-wrap { margin: var(--space-sm) 0; }
+.doc-seccion td { vertical-align: top; line-height: 1.55; }
+.doc-seccion code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--paper-2);
+  font-size: 0.9em;
+}
+
+.doc-nota {
+  margin: var(--space-sm) 0;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--brand);
+  border-radius: 0 var(--admin-radio-sm) var(--admin-radio-sm) 0;
+  background: var(--teal-wash);
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--ink-80);
+}
+
+/* --- Móvil: el índice pasa arriba como fila de chips ----------------------- */
+@media (max-width: 860px) {
+  .doc { grid-template-columns: 1fr; gap: var(--space-sm); }
+  .doc-indice {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .doc-indice__titulo { width: 100%; padding-bottom: 0.1rem; }
+  .doc-indice button {
+    width: auto;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-pill);
+    font-size: var(--fs-xs);
+  }
+}

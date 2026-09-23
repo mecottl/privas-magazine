@@ -1,0 +1,442 @@
+<div class="admin-page">
+  <div class="admin-page-head">
+    <h1>Documentación</h1>
+  </div>
+
+  <div class="admin-page__scroll">
+    <div class="doc">
+      <nav class="doc-indice" aria-label="Secciones de la documentación">
+        <span class="doc-indice__titulo">En esta página</span>
+        @for (s of secciones; track s.id) {
+          <button type="button" [class.activa]="activa() === s.id" (click)="ir(s.id)">{{ s.titulo }}</button>
+        }
+      </nav>
+
+      <div class="doc-cuerpo">
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-inicio">
+          <h2>Qué es esta aplicación</h2>
+          <p>
+            PRIVAS Magazine tiene dos caras que trabajan juntas. La primera es el
+            <strong>sitio público</strong> (privasmagazine.com), lo que ve cualquier
+            lector: artículos, ediciones de la revista, marcas del grupo y el
+            boletín. La segunda es este <strong>panel de gestión</strong>, que solo
+            ve quien tiene una cuenta: aquí se escriben y publican los artículos, se
+            suben las ediciones y se administra quién puede hacer qué.
+          </p>
+          <p>
+            Lo que se publica aquí aparece en el sitio público de forma inmediata (o en
+            la fecha que se programe). No hace falta ningún paso técnico extra.
+          </p>
+          <div class="doc-nota">
+            Esta documentación solo la ve el dueño. Está escrita para que puedas entender
+            cómo funciona todo sin depender de nadie, incluidos los servicios que hay
+            detrás y lo que cuestan.
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-roles">
+          <h2>Roles y permisos</h2>
+          <p>Cada cuenta tiene uno de tres niveles. El nivel decide qué se puede hacer.</p>
+          <div class="tabla-wrap">
+            <table>
+              <thead>
+                <tr><th>Nivel</th><th>Qué puede hacer</th><th>Qué no puede</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Dueño</strong></td>
+                  <td>
+                    Todo. Invita y gestiona cuentas de cualquier nivel, cambia el nivel
+                    de otras personas, restablece contraseñas ajenas, edita y borra
+                    cualquier artículo, y ve la Bitácora y esta Documentación.
+                  </td>
+                  <td>Nada está bloqueado. No puede desactivarse ni eliminarse a sí mismo.</td>
+                </tr>
+                <tr>
+                  <td><strong>Administrador</strong></td>
+                  <td>
+                    Edita y borra cualquier artículo. Invita a editores y puede activar,
+                    desactivar o eliminar cuentas de editor. Ve la Bitácora.
+                  </td>
+                  <td>
+                    No toca cuentas de otros administradores ni del dueño, no cambia
+                    niveles y no restablece contraseñas ajenas.
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Editor</strong></td>
+                  <td>
+                    Crea artículos y edita o borra solo los suyos. También gestiona
+                    ediciones de la revista, marcas y categorías.
+                  </td>
+                  <td>
+                    No ve Administradores ni Bitácora. No puede editar artículos de otras
+                    personas.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Siempre debe quedar al menos un dueño activo. El sistema no deja desactivar,
+            eliminar ni degradar a la última persona de un nivel importante, para que
+            nadie se quede sin acceso por accidente.
+          </p>
+          <h3>Cómo invitar a alguien</h3>
+          <ol class="doc-pasos">
+            <li>Entra a <strong>Administradores</strong>.</li>
+            <li>Escribe su correo, su nombre y elige el nivel (solo el dueño elige el nivel; un administrador solo puede invitar editores).</li>
+            <li>Dale a <strong>Enviar invitación</strong>. La persona recibe un correo con un botón para crear su contraseña.</li>
+            <li>Al aceptar, ya puede entrar al panel con su correo y contraseña.</li>
+          </ol>
+          <p>
+            Una cuenta desactivada no puede entrar pero conserva su historial. Una cuenta
+            eliminada desaparece por completo (sus artículos se quedan, sin dueño).
+          </p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-articulos">
+          <h2>Artículos</h2>
+          <h3>Crear un artículo</h3>
+          <ol class="doc-pasos">
+            <li>Entra a <strong>Artículos</strong> y dale a <strong>Nuevo artículo</strong>.</li>
+            <li>Escribe el <strong>título</strong>. El enlace (la dirección web) se genera solo a partir del título.</li>
+            <li>
+              Escribe el contenido en el <strong>editor de bloques</strong>: cada párrafo,
+              título, imagen, lista o cita es un bloque. Puedes acomodarlos como quieras.
+            </li>
+            <li>En el panel derecho elige la <strong>categoría</strong>, escribe el <strong>autor</strong> (el nombre que verá el lector) y sube la <strong>portada</strong>.</li>
+            <li>Dale a <strong>Guardar borrador</strong>. El artículo queda guardado pero nadie más lo ve todavía.</li>
+          </ol>
+          <div class="doc-nota">
+            El resumen que aparece en las tarjetas del sitio se genera solo con las
+            primeras líneas del artículo, no hay que escribirlo.
+          </div>
+
+          <h3>Publicar, programar o despublicar</h3>
+          <ul>
+            <li><strong>Publicar ahora</strong>: el artículo aparece en el sitio de inmediato y se avisa a los suscriptores del boletín.</li>
+            <li><strong>Programar</strong>: eliges fecha y hora futura. Un proceso automático (corre cada 15 minutos) lo publica cuando llegue el momento y también avisa al boletín. La hora real puede variar hasta 15 minutos.</li>
+            <li><strong>Despublicar</strong>: el artículo deja de verse en el sitio pero se conserva completo.</li>
+          </ul>
+
+          <h3>Compartir un borrador para revisión</h3>
+          <p>
+            En un artículo ya guardado hay un botón <strong>Copiar link de vista previa</strong>.
+            Ese enlace permite ver el artículo tal como quedará, aunque siga en borrador,
+            sin necesidad de tener cuenta. Sirve para mandárselo por WhatsApp a alguien que
+            lo revise. Tiene un aviso visible de "Vista previa" y no aparece en Google.
+          </p>
+
+          <h3>Eliminar y recuperar</h3>
+          <p>
+            "Mover a la papelera" no borra nada de inmediato. El artículo sale del sitio y de
+            la lista, pero puede restaurarse desde <strong>Papelera</strong> durante
+            30 días. Pasado ese tiempo se elimina definitivamente junto con sus imágenes.
+            También puedes usar "Eliminar para siempre" desde la Papelera si estás segura.
+          </p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-ediciones">
+          <h2>Ediciones de la revista</h2>
+          <p>
+            Cada edición es un PDF de la revista con su portada. Se guardan todas: el sitio
+            muestra el catálogo completo en la sección "La revista".
+          </p>
+          <ol class="doc-pasos">
+            <li>Entra a <strong>Ediciones</strong> y dale a <strong>Nueva edición</strong>.</li>
+            <li>Escribe el título, elige la temporada (Primavera Verano u Otoño Invierno) y el año.</li>
+            <li>Sube el <strong>PDF</strong> y la <strong>portada</strong>. Ambos son obligatorios.</li>
+            <li>Publica igual que un artículo: ahora, programada o como borrador.</li>
+          </ol>
+          <p>
+            Cuando publicas una edición nueva, los visitantes que entran a un artículo ven
+            una ventana con la última revista (máximo dos veces por navegador y una por
+            visita), y los suscriptores reciben el aviso por correo. Si reemplazas el PDF o la
+            portada, el archivo anterior se borra solo del servidor.
+          </p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-marcas">
+          <h2>Marcas y categorías</h2>
+          <h3>Categorías</h3>
+          <p>
+            Son las secciones del sitio (Turismo, Gastronomía, Cultura, Arte,
+            Entretenimiento). Se administran en <strong>Categorías</strong>: puedes agregar,
+            renombrar o quitar una. Si quitas una, los artículos que la tenían pierden esa
+            etiqueta pero no se borran.
+          </p>
+          <h3>Marcas</h3>
+          <p>
+            Son los proyectos del grupo que aparecen en "Nuestras marcas" y en el
+            directorio. Para cada una puedes poner logo, descripción, su sitio web y todas
+            sus redes sociales. El orden en el sitio se cambia arrastrando las filas en la
+            lista.
+          </p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-correos">
+          <h2>Correos</h2>
+          <p>La aplicación manda cuatro tipos de correo. Todos salen con el diseño de la revista.</p>
+          <div class="tabla-wrap">
+            <table>
+              <thead>
+                <tr><th>Correo</th><th>Cuándo se manda</th><th>Para qué sirve</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Invitación</strong></td>
+                  <td>Cuando invitas a alguien desde Administradores.</td>
+                  <td>Trae un botón para crear su contraseña. El enlace es de un solo uso.</td>
+                </tr>
+                <tr>
+                  <td><strong>Código de verificación</strong></td>
+                  <td>Cada vez que entras a un dispositivo nuevo (si tu cuenta lo requiere).</td>
+                  <td>Un código de 6 dígitos que vence en 10 minutos. Protege la cuenta aunque alguien sepa tu contraseña.</td>
+                </tr>
+                <tr>
+                  <td><strong>Confirmar suscripción</strong></td>
+                  <td>Cuando un lector se suscribe al boletín desde el pie del sitio.</td>
+                  <td>Confirma que el correo es suyo. Hasta que no da clic, no recibe nada.</td>
+                </tr>
+                <tr>
+                  <td><strong>Novedades del boletín</strong></td>
+                  <td>Cada vez que se publica un artículo o una edición.</td>
+                  <td>Llega solo a quienes ya confirmaron. Trae un enlace para darse de baja.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Verificación en dos pasos</h3>
+          <p>
+            Para el <strong>dueño es obligatoria</strong>: siempre se pide el código al entrar
+            desde un dispositivo nuevo, y no se puede desactivar. Para administradores y
+            editores es opcional y cada quien la activa en su propia Configuración. Una vez
+            verificado, el navegador se recuerda por 30 días para no pedirlo cada vez.
+          </p>
+          <div class="doc-nota">
+            Los correos del boletín salen de un remitente de noticias y los códigos de
+            verificación del remitente de contacto, ambos del dominio de la revista. El
+            servicio que los envía es Resend (ver "Tecnologías y servicios").
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-seguridad">
+          <h2>Seguridad y respaldos</h2>
+          <ul>
+            <li><strong>Bitácora</strong>: registra quién publicó, despublicó, eliminó o gestionó algo, y cuándo. La ven el dueño y los administradores. Sirve para aclarar cualquier duda de "quién hizo esto".</li>
+            <li><strong>Papelera</strong>: nada se borra al instante, hay 30 días para arrepentirse.</li>
+            <li><strong>Permisos por nivel</strong>: aunque alguien descubra una dirección interna, la base de datos rechaza lo que su nivel no permite.</li>
+            <li><strong>Respaldo mensual</strong>: el día 1 de cada mes se genera una copia completa de la base de datos (artículos, cuentas, marcas, suscriptores). GitHub la conserva 90 días. Ojo: cubre los datos, no los archivos subidos (PDFs e imágenes), que viven en el hosting.</li>
+            <li><strong>Límite de intentos</strong>: el formulario del boletín y los enlaces de confirmación limitan cuántas veces se pueden usar seguidas, para evitar abuso.</li>
+          </ul>
+          <div class="doc-nota">
+            Los respaldos existen pero todavía no se ha hecho una prueba real de restaurarlos.
+            Es un pendiente conocido: conviene hacerla antes de cualquier cambio grande.
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-tecnologias">
+          <h2>Tecnologías y servicios</h2>
+          <p>La aplicación se apoya en varios servicios. Cada uno hace una cosa:</p>
+          <div class="tabla-wrap">
+            <table>
+              <thead>
+                <tr><th>Servicio</th><th>Qué hace</th><th>Dónde lo administras</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Akky</strong></td>
+                  <td>Es el <strong>hosting</strong>: donde vive el sitio web y donde se guardan los PDFs e imágenes que se suben. También administra el dominio y los correos del dominio.</td>
+                  <td>Panel de Akky (cPanel)</td>
+                </tr>
+                <tr>
+                  <td><strong>Supabase</strong></td>
+                  <td>Es la <strong>base de datos y el sistema de cuentas</strong>: guarda artículos, ediciones, marcas, suscriptores y usuarios, y corre los procesos automáticos.</td>
+                  <td>supabase.com</td>
+                </tr>
+                <tr>
+                  <td><strong>GitHub</strong></td>
+                  <td>Guarda el <strong>código</strong> de toda la aplicación y ejecuta las actualizaciones automáticas del sitio (le llaman "Actions").</td>
+                  <td>github.com</td>
+                </tr>
+                <tr>
+                  <td><strong>Resend</strong></td>
+                  <td>Es quien <strong>envía los correos</strong> (invitaciones, códigos, boletín).</td>
+                  <td>resend.com</td>
+                </tr>
+                <tr>
+                  <td><strong>Angular</strong></td>
+                  <td>Es la tecnología con la que está construido el sitio y este panel. No es un servicio ni tiene costo, solo es el "material" del que está hecho.</td>
+                  <td>No se administra</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            En resumen: <strong>Akky</strong> muestra el sitio, <strong>Supabase</strong>
+            guarda la información, <strong>GitHub</strong> mantiene el código y publica
+            cambios, y <strong>Resend</strong> manda los correos.
+          </p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-automatico">
+          <h2>Lo que pasa solo</h2>
+          <p>Hay tareas que nadie tiene que hacer a mano:</p>
+          <ul>
+            <li><strong>Publicar lo programado</strong>: cada 15 minutos se revisa si algo programado ya debe salir.</li>
+            <li><strong>Actualizar el sitio</strong>: cuando se publica algo, GitHub reconstruye y sube el sitio a Akky en menos de un minuto.</li>
+            <li><strong>Avisar al boletín</strong>: al publicar, se manda el correo de novedades a los suscriptores confirmados.</li>
+            <li><strong>Borrar archivos viejos</strong>: si reemplazas o eliminas una portada o PDF, el archivo se quita del hosting solo.</li>
+            <li><strong>Vaciar la papelera</strong>: lo que lleva 30 días ahí se elimina definitivamente.</li>
+            <li><strong>Respaldo</strong>: una copia de la base de datos cada día 1 del mes.</li>
+          </ul>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-llaves">
+          <h2>Llaves y contraseñas</h2>
+          <p>
+            Para que los servicios se hablen entre sí usan "llaves" (contraseñas para
+            programas, no para personas). Nunca están escritas en el código: cada una vive
+            guardada en el servicio que la necesita. <strong>Aquí solo se explica qué son;
+            los valores nunca se muestran.</strong>
+          </p>
+          <div class="tabla-wrap">
+            <table>
+              <thead>
+                <tr><th>Llave</th><th>Para qué sirve</th><th>Dónde está guardada</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Contraseña de FTP de Akky</td><td>Permite subir el sitio y los archivos al hosting.</td><td>GitHub (para publicar el sitio) y Supabase (para subir archivos desde el panel)</td></tr>
+                <tr><td>Llave de Resend</td><td>Permite enviar correos.</td><td>Supabase</td></tr>
+                <tr><td>Llave de servicio de Supabase</td><td>Acceso total a la base de datos. La más delicada.</td><td>Solo dentro de Supabase</td></tr>
+                <tr><td>Token de GitHub para reconstruir</td><td>Permite que Supabase le pida a GitHub actualizar el sitio.</td><td>Supabase</td></tr>
+                <tr><td>Token de acceso de Supabase</td><td>Permite que GitHub publique las funciones y haga el respaldo mensual.</td><td>GitHub</td></tr>
+                <tr><td>Clave del proceso automático</td><td>Confirma que el cron de 15 minutos es legítimo.</td><td>Supabase</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="doc-nota">
+            <strong>Regla de oro:</strong> nunca compartas una llave por chat, correo o
+            captura de pantalla. Si alguna vez se comparte por error, se considera expuesta y
+            hay que cambiarla (crear una nueva y borrar la vieja). El detalle técnico de cada
+            una está en el archivo <code>docs/SECRETS.md</code> del repositorio.
+          </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-costos">
+          <h2>Costos</h2>
+          <p>
+            Hoy la aplicación funciona casi por completo con planes gratuitos. Estos son los
+            servicios, qué cubre lo gratis y cuándo podría empezar a costar.
+          </p>
+          <div class="tabla-wrap">
+            <table>
+              <thead>
+                <tr><th>Servicio</th><th>Plan actual</th><th>Límite aproximado del plan gratis</th><th>Cuándo podría costar</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Akky</strong></td>
+                  <td>Plan contratado</td>
+                  <td>Depende del plan que se contrató</td>
+                  <td>Es un costo recurrente. Revisa la renovación del hosting y del dominio en el panel de Akky.</td>
+                </tr>
+                <tr>
+                  <td><strong>Supabase</strong></td>
+                  <td>Free</td>
+                  <td>Alrededor de 500 MB de base de datos, 1 GB de archivos y 50 mil usuarios activos al mes</td>
+                  <td>Si el sitio crece mucho. El siguiente plan (Pro) parte de unos 25 dólares al mes. Los proyectos gratis pueden pausarse tras una semana sin actividad.</td>
+                </tr>
+                <tr>
+                  <td><strong>GitHub</strong></td>
+                  <td>Free</td>
+                  <td>Repositorios privados y unos 2,000 minutos de automatización al mes</td>
+                  <td>Difícil que cueste. Cada actualización del sitio usa menos de un minuto.</td>
+                </tr>
+                <tr>
+                  <td><strong>Resend</strong></td>
+                  <td>Free</td>
+                  <td>Alrededor de 3,000 correos al mes y 100 al día</td>
+                  <td>Si el boletín supera esa cantidad. El plan de pago parte de unos 20 dólares al mes.</td>
+                </tr>
+                <tr>
+                  <td><strong>Dominio</strong></td>
+                  <td>privasmagazine.com</td>
+                  <td>No aplica</td>
+                  <td>Se renueva cada año, sin renovarlo el sitio deja de funcionar.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="doc-nota">
+            Las cifras de los planes gratuitos y los precios son aproximados y cada proveedor
+            puede cambiarlos. Confirma siempre en su página oficial antes de decidir algo.
+          </div>
+          <p>
+            Lo más probable que cambie con el tiempo: si el boletín crece, Resend será el
+            primero en pedir un plan de pago; si el sitio recibe muchísimas visitas o guarda
+            muchos archivos, sería Supabase.
+          </p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section class="doc-seccion" id="doc-problemas">
+          <h2>Si algo falla</h2>
+          <div class="tabla-wrap">
+            <table>
+              <thead>
+                <tr><th>Problema</th><th>Qué revisar</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Publiqué algo y no se ve en el sitio</td>
+                  <td>Refresca la página con Ctrl+F5. Revisa que el estado sea "publicado" (no "borrador" ni "programado"). Si era programado, espera hasta 15 minutos pasada la hora.</td>
+                </tr>
+                <tr>
+                  <td>No me llega el código de verificación</td>
+                  <td>Revisa spam. Pide "Reenviar código". Si nunca llega, el servicio de correos (Resend) puede estar fallando o su llave venció.</td>
+                </tr>
+                <tr>
+                  <td>Una persona invitada no recibió el correo</td>
+                  <td>Pídele que revise spam y confirma que el correo esté bien escrito. Puedes eliminar la cuenta e invitarla otra vez.</td>
+                </tr>
+                <tr>
+                  <td>Borré algo por error</td>
+                  <td>Entra a Papelera. Si tiene menos de 30 días, se restaura con un clic.</td>
+                </tr>
+                <tr>
+                  <td>No puedo subir una imagen o PDF</td>
+                  <td>Revisa el tamaño y el formato. Si falla siempre, puede que la contraseña de FTP de Akky haya cambiado y haya que actualizarla en GitHub y Supabase.</td>
+                </tr>
+                <tr>
+                  <td>El sitio no carga nada</td>
+                  <td>Revisa que el dominio y el hosting de Akky estén vigentes. Si el sitio carga pero sin contenido, revisa que el proyecto de Supabase no esté pausado.</td>
+                </tr>
+                <tr>
+                  <td>Ya no puedo entrar al panel</td>
+                  <td>Todavía no existe un botón de "olvidé mi contraseña". Otra cuenta de dueño puede restablecerla desde Administradores. Si eres la única cuenta de dueño, hay que resolverlo desde el panel de Supabase (Authentication, Users).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Para cualquier cosa técnica que no esté aquí, el historial de GitHub (pestaña
+            Actions) y los paneles de Supabase y Akky guardan el registro de lo que pasó.
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

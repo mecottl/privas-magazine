@@ -244,6 +244,10 @@ Documentación de arquitectura que SÍ vive fuera de este archivo:
   archivo.
 - `docs/CHECKLIST_QA.md` — checklist de "camino feliz" a correr antes de
   cerrar una issue con flujo de usuario (issue #74).
+- `src/app/features/admin/pages/documentacion/` — documentación in-app solo
+  para el dueño (issue #81, `/gestion-privas/documentacion`). Está escrita a
+  mano en lenguaje llano: **si cambian permisos, correos, servicios, costos o
+  secretos, hay que actualizarla también ahí** (no se genera de ningún lado).
 - Carpeta de Documentación en Drive — explicación en lenguaje llano para la
   clienta (no técnica), y el historial de descubrimiento del proyecto
   (propuesta original, respuestas de la clienta).
