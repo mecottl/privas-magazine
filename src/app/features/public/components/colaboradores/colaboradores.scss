@@ -65,3 +65,12 @@
   font-size: var(--fs-md);
   font-weight: 700;
 }
+
+.colaboradores__enlace {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: text-decoration-color var(--t);
+}
+.colaboradores__enlace:hover,
+.colaboradores__enlace:focus-visible { text-decoration-color: currentColor; }

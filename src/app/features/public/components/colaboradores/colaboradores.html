@@ -6,7 +6,11 @@
       @for (c of equipo; track c.nombre) {
         <li class="colaboradores__item">
           <span class="colaboradores__rol">{{ c.rol }}</span>
-          <span class="colaboradores__nombre">{{ c.nombre }}</span>
+          @if (c.url) {
+            <a class="colaboradores__nombre colaboradores__enlace" [href]="c.url" target="_blank" rel="noopener">{{ c.nombre }}</a>
+          } @else {
+            <span class="colaboradores__nombre">{{ c.nombre }}</span>
+          }
         </li>
       }
     </ul>

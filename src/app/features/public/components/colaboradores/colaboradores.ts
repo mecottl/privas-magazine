@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 interface Colaborador {
   nombre: string;
   rol: string;
+  url?: string;
 }
 
 /**
@@ -14,7 +15,7 @@ const EQUIPO: Colaborador[] = [
   { nombre: 'Roxana Rivas', rol: 'CEO' },
   { nombre: 'Moisés Prieto', rol: 'Director de Ventas' },
   { nombre: 'Majo Prieto', rol: 'Diseño Gráfico' },
-  { nombre: 'Gerardo Mecott', rol: 'Ingeniero Web' },
+  { nombre: 'Gerardo Mecott', rol: 'Ingeniero Web', url: 'https://gerardomecott.dev' },
 ];
 
 @Component({
