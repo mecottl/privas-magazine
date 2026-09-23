@@ -140,14 +140,14 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   directo con `service_role` (`_shared/bitacora.ts`). Guarda `admin_nombre`
   como snapshot para no perder el rastro si esa cuenta se elimina después.
 
-## Piezas de arquitectura — Edge Functions (13 en total)
+## Piezas de arquitectura — Edge Functions (12 en total)
 
 Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 
 | Función | Quién la llama | Qué hace |
 | --- | --- | --- |
 | `subir-archivo` | admin (panel) | Sube a Supabase Storage o FTP (Akky) según `UPLOAD_TARGET`. |
-| `eliminar-archivo` | triggers de BD (`pg_net`) | Limpieza automática de archivos huérfanos al reemplazar/borrar. |
+| `eliminar-archivo` | triggers de BD (`pg_net`) | Limpieza automática de archivos huérfanos al reemplazar/borrar. **Bug real corregido 23 sep 2026** (issue #66): usaba `client.removeQuiet()`, que no existe en `basic-ftp` — todo borrado por FTP fallaba en silencio desde que se escribió (el trigger sí disparaba, pero el borrado remoto nunca ocurría). Ahora usa `client.remove()` con catch del código 550 ("no existe"). Verificado en vivo insertando y borrando una fila de prueba. |
 | `programar-publicacion` | `pg_cron` cada 15 min | Publica lo programado, dispara rebuild + newsletter. |
 | `invitar-admin` | dueno/admin_total (panel) | Única vía autorizada para crear cuentas nuevas de admin. `admin_total` solo invita `editor`; `editor` no puede llamarla. |
 | `set-admin-activo` | dueno/admin_total (panel) | Activar/desactivar/eliminar OTRO admin, cambiar su nivel, o restablecerle la contraseña (RLS de `perfiles_admin` no lo permite desde el cliente). `admin_total` solo gestiona cuentas `editor` y no cambia niveles ni contraseñas ajenas — eso es solo del `dueno`. Bloquea auto-gestión y dejar 0 admins/admin_total/dueno activos. |
@@ -158,7 +158,6 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `mfa-verificar-codigo` | admin logueado (panel) | Verifica el código contra `mfa_codigos`. El frontend decide cuánto "recordar" el dispositivo (localStorage, 30 días). |
 | `notificar-publicacion` | admin logueado (panel) | Issue #64: dispara rebuild + newsletter para "Publicar ahora" (inmediato) — antes solo `programar-publicacion` (cron) lo hacía, y solo para contenido programado. Misma lógica compartida (`_shared/publicacion.ts`). |
 | `obtener-articulo-preview` | público (link de vista previa) | Issue #75: devuelve un artículo de cualquier `estado` por `articulos.token_preview`, para que la clienta lo revise antes de publicar sin sesión de admin. Sin policy de RLS pública nueva — el token se valida en código con `service_role`. |
-| `auditar-huerfanos` | dueno/admin_total (panel), a demanda | Issue #66: compara el árbol real de `uploads/` por FTP contra lo que la BD dice que debería existir (`*_path` con `*_target='ftp'` + logos de marcas). Solo reporta huérfanos/rotos — nunca borra nada. |
 
 ### Editor de contenido de artículos
 Constructor de bloques libre: texto, imágenes, video embebido, layout libre

@@ -137,15 +137,6 @@ export const ADMIN_ROUTES: Routes = [
           import('./pages/bitacora/bitacora-lista').then((m) => m.BitacoraLista),
       },
       {
-        path: 'archivos-huerfanos',
-        title: 'Archivos huérfanos · Gestión',
-        canActivate: [gestionAdminsGuard],
-        loadComponent: () =>
-          import('./pages/archivos-huerfanos/archivos-huerfanos').then(
-            (m) => m.ArchivosHuerfanos,
-          ),
-      },
-      {
         path: 'configuracion',
         title: 'Configuración · Gestión',
         loadComponent: () =>
