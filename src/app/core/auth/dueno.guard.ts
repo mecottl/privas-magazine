@@ -1,19 +1,20 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 
 /**
- * Rutas exclusivas del `dueno` (hoy: Documentación). Igual que
- * `gestionAdminsGuard`, va junto con `adminGuard` en la ruta: quien no sea
- * dueño cae al dashboard, no a un error.
+ * Rutas exclusivas del `dueno` (hoy: `/documentacion`). Es autosuficiente, no
+ * se combina con `adminGuard` a propósito: quien no tenga una sesión de dueño
+ * completa (sesión + nivel + MFA ya verificado en este dispositivo) vuelve al
+ * landing `/`, sin pasar por el login ni el dashboard — así la ruta no revela
+ * que hay un panel detrás.
  */
 export const duenoGuard: CanActivateFn = async () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
   await auth.init();
-  if (auth.esDueno()) return true;
-
-  return router.createUrlTree([environment.adminBasePath, 'dashboard']);
+  const completo =
+    auth.esDueno() && (!auth.mfaRequerido() || auth.mfaEsDispositivoConfiable());
+  return completo ? true : router.createUrlTree(['/']);
 };
