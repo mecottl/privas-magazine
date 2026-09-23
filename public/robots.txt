@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /gestion-privas
+Disallow: /preview/
+Disallow: /documentacion
+
+Sitemap: https://privasmagazine.com/sitemap.xml

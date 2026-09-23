@@ -39,6 +39,11 @@ jobs:
           grep -rl '__SUPABASE_ANON_KEY__' dist/privas-magazine/browser --include='*.js' \
             | xargs -r sed -i "s|__SUPABASE_ANON_KEY__|${SUPABASE_ANON_KEY}|g"
 
+      - name: Generar sitemap.xml (issue #84)
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: node scripts/generar-sitemap.mjs
+
       - name: Deploy a Akky por FTP
         # La cuenta FTP de Akky apunta DIRECTO a la raíz pública del dominio,
         # sin la carpeta public_html/ de la convención estándar de cPanel
