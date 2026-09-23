@@ -96,9 +96,20 @@ async function borrarPorFtp(path: string): Promise<void> {
   }
   try {
     if (!conectado) await client.access({ host, user, password, secure: false });
-    // basic-ftp no tiene un "exists()" directo: removeQuiet no falla si el
-    // archivo no existe (a diferencia de client.remove(), que sí lanza).
-    await client.removeQuiet(remotePath);
+    // BUG real encontrado en vivo (issue #66 — reporte del cliente de
+    // ediciones que nunca se limpiaban): `client.removeQuiet` NO EXISTE en
+    // basic-ftp@5 — todo borrado por FTP tiraba "TypeError: client.removeQuiet
+    // is not a function" desde que se escribió esta función, silencioso
+    // porque el trigger llama a esto vía pg_net (fire-and-forget) y la
+    // respuesta 200 de arriba no distinguía este error interno. `remove()`
+    // sí existe pero lanza si el archivo ya no está — lo tratamos como éxito
+    // (código 550, "no existe") igual que se pretendía con removeQuiet.
+    try {
+      await client.remove(remotePath);
+    } catch (e) {
+      const codigo = (e as { code?: number })?.code;
+      if (codigo !== 550) throw e;
+    }
   } finally {
     client.close();
   }
