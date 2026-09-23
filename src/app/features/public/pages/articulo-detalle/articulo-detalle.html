@@ -119,6 +119,9 @@
         <p class="art-fin__firma">
           Publicado por <strong>{{ a.autor_texto || 'Redacción PRIVAS' }}</strong>
         </p>
+        @if (!esVistaPrevia()) {
+          <app-compartir class="art-fin__compartir" [url]="urlArticulo(a)" [titulo]="a.titulo" />
+        }
         <a routerLink="/articulos" class="leer">← Volver a todos los artículos</a>
       </footer>
     </div>

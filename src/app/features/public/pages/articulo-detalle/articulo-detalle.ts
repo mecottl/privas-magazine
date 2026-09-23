@@ -8,12 +8,13 @@ import { mensajeError } from '../../../../core/services/errores';
 import { RevealDirective } from '../../../../shared/directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
+import { Compartir } from '../../components/compartir/compartir';
 import { mismoSlug, type Articulo, type BloqueContenido } from '../../../../core/models';
 
 @Component({
   selector: 'app-articulo-detalle',
   standalone: true,
-  imports: [DatePipe, RouterLink, RevealDirective, ArticuloCard, ErrorAviso],
+  imports: [DatePipe, RouterLink, RevealDirective, ArticuloCard, ErrorAviso, Compartir],
   templateUrl: './articulo-detalle.html',
   styleUrl: './articulo-detalle.scss',
 })
@@ -81,6 +82,11 @@ export class ArticuloDetalle implements OnInit {
     const d = this.data(b);
     const file = d['file'] as { url?: string } | undefined;
     return file?.url ?? String(d['url'] ?? '');
+  }
+
+  /** Enlace público del artículo, para compartir (issue #83). */
+  urlArticulo(a: Articulo): string {
+    return `${location.origin}/articulos/${a.slug}`;
   }
 
   /** Minutos de lectura estimados (≈200 palabras/min sobre el texto plano). */

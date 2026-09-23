@@ -28,6 +28,14 @@
       </span>
     </span>
   </a>
+  @if (compartible()) {
+    <app-compartir
+      class="edicion-card__compartir"
+      [compacto]="true"
+      [url]="e.pdf_url"
+      [titulo]="e.titulo + ' · PRIVAS Magazine'"
+    />
+  }
 } @else {
   <div class="edicion-card__link edicion-card__link--proxima">
     <span class="edicion-card__marco edicion-card__marco--vacio">

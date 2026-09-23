@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import type { EdicionRevista } from '../../../../core/models';
+import { Compartir } from '../compartir/compartir';
 
 const NOMBRE_TEMPORADA: Record<string, string> = {
   'primavera-verano': 'Primavera · Verano',
@@ -16,6 +17,7 @@ const NOMBRE_TEMPORADA: Record<string, string> = {
 @Component({
   selector: 'app-edicion-card',
   standalone: true,
+  imports: [Compartir],
   templateUrl: './edicion-card.html',
   styleUrl: './edicion-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +29,8 @@ export class EdicionCard {
   readonly anioEsperado = input<number | null>(null);
   /** Muestra el título de la revista y oculta el sello «Edición 0X». */
   readonly mostrarTitulo = input(false);
+  /** Muestra los botones de compartir bajo la ficha (issue #83). */
+  readonly compartible = input(false);
 
   /** Etiqueta «Temporada Año» en mayúsculas. */
   readonly etiqueta = computed(() => {
