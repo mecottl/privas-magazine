@@ -1,18 +1,54 @@
-<div class="admin-page">
-  <div class="admin-page-head">
-    <h1>Documentación</h1>
+<header class="docs-top">
+  <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
+  <button
+    type="button"
+    class="docs-top__toggle"
+    (click)="menuAbierto.set(!menuAbierto())"
+    [attr.aria-expanded]="menuAbierto()"
+    aria-controls="docs-side"
+    aria-label="Abrir índice"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+  </button>
+</header>
+
+@if (menuAbierto()) {
+  <button type="button" class="docs-backdrop" (click)="menuAbierto.set(false)" aria-label="Cerrar índice"></button>
+}
+
+<aside class="docs-side" id="docs-side" [class.docs-side--abierto]="menuAbierto()">
+  <div class="docs-side__brand">
+    <img src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
+    <span>Documentación</span>
   </div>
 
-  <div class="admin-page__scroll">
-    <div class="doc">
-      <nav class="doc-indice" aria-label="Secciones de la documentación">
-        <span class="doc-indice__titulo">En esta página</span>
-        @for (s of secciones; track s.id) {
-          <button type="button" [class.activa]="activa() === s.id" (click)="ir(s.id)">{{ s.titulo }}</button>
-        }
-      </nav>
+  <nav class="docs-side__nav" aria-label="Secciones de la documentación">
+    @for (s of secciones; track s.id; let i = $index) {
+      <button type="button" [class.activa]="activa() === s.id" (click)="ir(s.id)">
+        <span class="docs-side__num">{{ i + 1 < 10 ? '0' + (i + 1) : i + 1 }}</span>
+        {{ s.titulo }}
+      </button>
+    }
+  </nav>
 
-      <div class="doc-cuerpo">
+  <a class="docs-side__volver" routerLink="/gestion-privas/dashboard">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Volver al panel
+  </a>
+</aside>
+
+<main class="docs-main" #main tabindex="-1">
+  <article class="docs-article">
+    <header class="docs-hero">
+      <span class="docs-hero__eyebrow">Solo para el dueño</span>
+      <h1>Cómo funciona PRIVAS Magazine</h1>
+      <p>
+        Todo lo que necesitas saber de tu aplicación en un solo lugar: quién puede hacer qué,
+        cómo publicar, qué correos se mandan, qué servicios hay detrás y cuánto cuestan.
+      </p>
+    </header>
+
+    <div class="doc-cuerpo">
         <!-- ============================================================ -->
         <section class="doc-seccion" id="doc-inicio">
           <h2>Qué es esta aplicación</h2>
@@ -436,7 +472,6 @@
             Actions) y los paneles de Supabase y Akky guardan el registro de lo que pasó.
           </p>
         </section>
-      </div>
     </div>
-  </div>
-</div>
+  </article>
+</main>

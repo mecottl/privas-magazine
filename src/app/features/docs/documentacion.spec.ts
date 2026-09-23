@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { Documentacion } from './documentacion';
 
 /**
@@ -7,6 +8,10 @@ import { Documentacion } from './documentacion';
  * sin destino. Este test lo detecta.
  */
 describe('Documentacion', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+  });
+
   it('cada entrada del índice tiene su sección en la página', () => {
     const fixture = TestBed.createComponent(Documentacion);
     fixture.detectChanges();
@@ -17,15 +22,17 @@ describe('Documentacion', () => {
     }
   });
 
-  it('ir() marca la sección activa y hace scroll a ella', () => {
+  it('ir() marca la sección activa, cierra el menú y hace scroll a ella', () => {
     const fixture = TestBed.createComponent(Documentacion);
     fixture.detectChanges();
     const scroll = vi.fn();
     Element.prototype.scrollIntoView = scroll;
+    fixture.componentInstance.menuAbierto.set(true);
 
     fixture.componentInstance.ir('costos');
 
     expect(fixture.componentInstance.activa()).toBe('costos');
+    expect(fixture.componentInstance.menuAbierto()).toBe(false);
     expect(scroll).toHaveBeenCalled();
   });
 });
