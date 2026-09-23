@@ -1,0 +1,22 @@
+<section class="hero hero--seccion">
+  <app-hero-media class="hero__media" nombre="cat-archivo" alt="" [prioridad]="true" />
+
+  <div class="hero__inner">
+    <span class="hero__eyebrow">{{ doc.eyebrow }}</span>
+    <h1 class="hero__title">{{ doc.titulo }}</h1>
+    <p class="hero__texto">Última actualización: pendiente.</p>
+  </div>
+</section>
+
+<section class="franja franja--fin">
+  <div class="franja__wrap legal-wrap">
+    <p class="legal-intro">{{ doc.intro }}</p>
+
+    @for (s of doc.secciones; track s.titulo; let i = $index) {
+      <h2>{{ i + 1 }}. {{ s.titulo }}</h2>
+      @for (p of s.parrafos; track $index) {
+        <p>{{ p }}</p>
+      }
+    }
+  </div>
+</section>

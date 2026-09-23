@@ -52,10 +52,16 @@ export const PUBLIC_ROUTES: Routes = [
       {
         path: 'aviso-de-privacidad',
         title: 'Aviso de Privacidad',
+        data: { hero: true, doc: 'privacidad' },
         loadComponent: () =>
-          import('./pages/aviso-privacidad/aviso-privacidad').then(
-            (m) => m.AvisoPrivacidad,
-          ),
+          import('./pages/legal/pagina-legal').then((m) => m.PaginaLegal),
+      },
+      {
+        path: 'terminos-y-condiciones',
+        title: 'Términos y Condiciones',
+        data: { hero: true, doc: 'terminos' },
+        loadComponent: () =>
+          import('./pages/legal/pagina-legal').then((m) => m.PaginaLegal),
       },
       {
         path: 'newsletter/confirmar',

@@ -1,0 +1,16 @@
+:host { display: block; }
+
+/* La franja ya pone color: var(--on-brand); aquí solo el ancho de lectura y
+   el tono de los párrafos (mismo criterio que el Directorio). */
+.legal-wrap { max-width: 62ch; }
+.legal-wrap p { color: var(--on-brand-dim); }
+.legal-wrap .legal-intro {
+  color: var(--on-brand);
+  font-size: var(--fs-md);
+}
+.legal-wrap h2 {
+  margin: var(--space-lg) 0 var(--space-2xs);
+  color: var(--on-brand);
+  font-weight: 500;
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.55rem);
+}
