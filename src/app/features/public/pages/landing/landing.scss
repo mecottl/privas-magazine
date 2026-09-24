@@ -4,6 +4,9 @@
 
 /* --- Encabezado de sección (dentro de los paneles teal) --- */
 .seccion-head {
+  /* Por encima del carrusel, cuyo margen negativo se le encima (si no, tapa el link y muestra su cursor). */
+  position: relative;
+  z-index: 1;
   text-align: center;
   margin-bottom: var(--space-md);
 }
@@ -107,6 +110,8 @@
   cursor: grab;
 }
 .carrusel__pista::-webkit-scrollbar { display: none; }
+/* Sin nada que desplazar (pocas tarjetas) no tiene sentido el cursor de agarre. */
+.carrusel.is-inicio.is-fin .carrusel__pista { cursor: default; }
 /* El outline global usa --brand-hi (pensado para fondos claros) — sobre el
    teal del carrusel casi no se distingue (issue #46). */
 .carrusel__pista:focus-visible,

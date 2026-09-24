@@ -227,6 +227,8 @@ export class Landing implements OnInit {
     }
     // Deja que el @for pinte las tarjetas antes de medir la pista.
     setTimeout(() => this.alScroll(), 60);
+    // Y otra vez cuando las tipografías cambian el ancho de las tarjetas.
+    document.fonts?.ready.then(() => this.alScroll());
   }
 
   /** Reintentar del carrusel de "Últimos Artículos" (issue #52). */
