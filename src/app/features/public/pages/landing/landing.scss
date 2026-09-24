@@ -107,11 +107,8 @@
   padding-block: 2rem;
   margin-block: -2rem;
   scrollbar-width: none;
-  cursor: grab;
 }
 .carrusel__pista::-webkit-scrollbar { display: none; }
-/* Sin nada que desplazar (pocas tarjetas) no tiene sentido el cursor de agarre. */
-.carrusel.is-inicio.is-fin .carrusel__pista { cursor: default; }
 /* El outline global usa --brand-hi (pensado para fondos claros) — sobre el
    teal del carrusel casi no se distingue (issue #46). */
 .carrusel__pista:focus-visible,
@@ -122,7 +119,6 @@
 
 /* Durante el arrastre: sin snap, cursor de agarre y las tarjetas no navegan. */
 .carrusel__pista.arrastrando {
-  cursor: grabbing;
   scroll-snap-type: none;
   scroll-behavior: auto;
 }
