@@ -718,3 +718,20 @@ dialog.confirm button:disabled { opacity: 0.5; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   .admin-sidebar { transition: none; }
 }
+
+/* Tablas en móvil (≤760px), sin scroll horizontal:
+   .tabla-simple    → solo la 1ª columna (nombre/título) y Acciones.
+   .tabla-sin-alta  → oculta la 4ª columna (fecha de alta).
+   .solo-movil      → aparece solo aquí (p. ej. el estado junto al título). */
+.solo-movil { display: none; }
+@media (max-width: 760px) {
+  .admin-main .tabla-simple,
+  .admin-main .tabla-sin-alta { min-width: 0; }
+  .tabla-simple th:not(:first-child):not(.col-acciones),
+  .tabla-simple td:not(:first-child):not(.col-acciones),
+  .tabla-sin-alta th:nth-child(4),
+  .tabla-sin-alta td:nth-child(4) { display: none; }
+  .tabla-simple .acciones,
+  .tabla-sin-alta .acciones { flex-wrap: wrap; justify-content: flex-end; }
+  .solo-movil { display: inline-block; margin-left: 0.5rem; vertical-align: middle; }
+}

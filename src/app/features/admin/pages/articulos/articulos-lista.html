@@ -19,7 +19,7 @@
     @if (error()) { <p class="error">{{ error() }}</p> }
 
     <div class="tabla-wrap">
-      <table>
+      <table class="tabla-simple">
         <thead>
           <tr>
             <th>Título</th><th>Categoría</th><th>Estado</th><th>Fecha pub.</th>
@@ -38,6 +38,7 @@
                   } @else {
                     {{ a.titulo }}
                   }
+                  <span class="badge badge--{{ a.estado }} solo-movil">{{ a.estado }}</span>
                 </td>
                 <td>{{ a.categorias | categoriasNombre: '' }}</td>
                 <td><span class="badge badge--{{ a.estado }}">{{ a.estado }}</span></td>

@@ -14,7 +14,7 @@
 
     <h2 class="lado-titulo">Artículos</h2>
     <div class="tabla-wrap">
-      <table>
+      <table class="tabla-simple">
         <thead><tr><th>Título</th><th>Eliminado</th><th class="col-acciones">Acciones</th></tr></thead>
         <tbody>
           @for (a of articulos(); track a.id) {
@@ -41,7 +41,7 @@
 
     <h2 class="lado-titulo">Ediciones</h2>
     <div class="tabla-wrap">
-      <table>
+      <table class="tabla-simple">
         <thead><tr><th>Título</th><th>Eliminada</th><th class="col-acciones">Acciones</th></tr></thead>
         <tbody>
           @for (ed of ediciones(); track ed.id) {

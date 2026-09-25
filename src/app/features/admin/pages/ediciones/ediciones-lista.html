@@ -10,7 +10,7 @@
     @if (error()) { <p class="error">{{ error() }}</p> }
 
     <div class="tabla-wrap">
-      <table>
+      <table class="tabla-simple">
         <thead>
           <tr>
             <th>Título</th><th>Temporada</th><th>Año</th><th>Estado</th>
@@ -23,7 +23,10 @@
           } @else {
             @for (ed of ediciones(); track ed.id) {
               <tr>
-                <td><a [routerLink]="[ed.id]">{{ ed.titulo }}</a></td>
+                <td>
+                  <a [routerLink]="[ed.id]">{{ ed.titulo }}</a>
+                  <span class="badge badge--{{ ed.estado }} solo-movil">{{ ed.estado }}</span>
+                </td>
                 <td>{{ ed.temporada }}</td>
                 <td>{{ ed.anio }}</td>
                 <td><span class="badge badge--{{ ed.estado }}">{{ ed.estado }}</span></td>
