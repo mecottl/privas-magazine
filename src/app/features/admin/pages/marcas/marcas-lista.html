@@ -8,10 +8,7 @@
 
   <div class="admin-page__fill">
     @if (error()) { <p class="error">{{ error() }}</p> }
-    <p class="mk-ayuda">
-      Usa las flechas ↑ ↓ (o arrastra las filas) para cambiar el orden en que se muestran en el sitio.
-      @if (guardandoOrden()) { <span> · guardando…</span> }
-    </p>
+    @if (guardandoOrden()) { <p class="mk-ayuda">Guardando orden…</p> }
 
     <div class="tabla-wrap">
       <table>
