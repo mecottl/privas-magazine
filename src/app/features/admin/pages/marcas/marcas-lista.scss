@@ -38,3 +38,17 @@ tr[draggable='true']:hover .mk-handle { color: var(--brand); }
 
 tr.mk-arrastrando { opacity: 0.4; }
 tr.mk-arrastrando td { background: var(--teal-wash); }
+
+/* Celular/tablet angosta: solo Nombre y Acciones (sin asa, sitio web ni redes),
+   para no hacer scroll horizontal. El orden se cambia con los botones ↑ ↓. */
+@media (max-width: 760px) {
+  .tabla-wrap table { min-width: 0; }
+  .tabla-wrap th:nth-child(1),
+  .tabla-wrap td:nth-child(1),
+  .tabla-wrap th:nth-child(3),
+  .tabla-wrap td:nth-child(3),
+  .tabla-wrap th:nth-child(4),
+  .tabla-wrap td:nth-child(4) { display: none; }
+  .tabla-wrap td:nth-child(2) { min-width: 0; }
+  .tabla-wrap .acciones { flex-wrap: wrap; justify-content: flex-end; }
+}
