@@ -21,6 +21,44 @@ export interface ArchivoSubido {
   target: DestinoArchivo;
 }
 
+/** Lado mayor máximo de un logo: se muestran a ~100 px, 1024 sobra incluso en pantallas retina. */
+const LOGO_MAX_PX = 1024;
+
+/**
+ * Reduce un logo enorme (p. ej. 6250×6250, 2.1 MB, exportado de Canva) antes
+ * de subirlo: pesa menos, no pasa el tope de 2 MB y sube sin fallar en
+ * celular. `createImageBitmap` con resize decodifica ya reducido (no carga los
+ * 39 MP en memoria). Conserva la transparencia (PNG). Si algo falla, se sube
+ * el original tal cual.
+ */
+async function reducirLogo(archivo: File): Promise<File> {
+  try {
+    const bmp = await createImageBitmap(archivo);
+    const lado = Math.max(bmp.width, bmp.height);
+    bmp.close();
+    if (lado <= LOGO_MAX_PX && archivo.size <= 1.5 * 1024 * 1024) return archivo;
+
+    const esc = Math.min(1, LOGO_MAX_PX / lado);
+    const ancho = Math.round(bmp.width * esc);
+    const alto = Math.round(bmp.height * esc);
+    const chico = await createImageBitmap(archivo, {
+      resizeWidth: ancho,
+      resizeHeight: alto,
+      resizeQuality: 'high',
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = ancho;
+    canvas.height = alto;
+    canvas.getContext('2d')!.drawImage(chico, 0, 0);
+    chico.close();
+    const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'));
+    if (!blob || blob.size >= archivo.size) return archivo;
+    return new File([blob], archivo.name.replace(/\.\w+$/, '') + '.png', { type: 'image/png' });
+  } catch {
+    return archivo;
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class UploadsService {
   private readonly supabase = inject(SupabaseService);
@@ -34,6 +72,7 @@ export class UploadsService {
     // que vive en la nube (Fotos, iCloud, Drive) y aún no se descargó falla a
     // media subida y el servidor recibe un cuerpo cortado ("Unable to parse
     // body as form data"). Así el error sale aquí, claro, y no en el servidor.
+    if (tipo === 'marca-logo') archivo = await reducirLogo(archivo);
     let bytes: ArrayBuffer;
     try {
       bytes = await archivo.arrayBuffer();
