@@ -32,13 +32,12 @@
 
         <p class="lado-titulo">Logo</p>
         <div class="mc-logo">
-          <input [(ngModel)]="m.logo_url" name="logo" placeholder="Pega una URL de imagen…" aria-label="URL del logo" />
           <div class="mc-logo__subir">
             <app-campo-archivo
               [url]="m.logo_url || null"
               [imagen]="true"
               accept="image/*"
-              etiqueta="…o subir imagen"
+              etiqueta="Subir imagen"
               [subiendo]="subiendoLogo()"
               (elegido)="subirLogo($event)"
             />

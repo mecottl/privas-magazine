@@ -30,8 +30,20 @@ export class UploadsService {
    * MIME y tamaño) y devuelve { url, path, target } para guardar en la fila.
    */
   async subir(archivo: File, tipo: TipoArchivo): Promise<ArchivoSubido> {
+    // Se lee el archivo completo ANTES de enviarlo: en celulares, un archivo
+    // que vive en la nube (Fotos, iCloud, Drive) y aún no se descargó falla a
+    // media subida y el servidor recibe un cuerpo cortado ("Unable to parse
+    // body as form data"). Así el error sale aquí, claro, y no en el servidor.
+    let bytes: ArrayBuffer;
+    try {
+      bytes = await archivo.arrayBuffer();
+    } catch {
+      throw new Error(
+        'No se pudo leer el archivo. Si está en la nube, descárgalo al dispositivo e inténtalo de nuevo.',
+      );
+    }
     const form = new FormData();
-    form.append('archivo', archivo);
+    form.append('archivo', new File([bytes], archivo.name, { type: archivo.type }));
     form.append('tipo', tipo);
 
     const { data, error } = await this.supabase.invokeFunction<{
@@ -44,7 +56,12 @@ export class UploadsService {
 
     if (error) {
       const detalle = (data as { error?: string } | null)?.error;
-      throw new Error(detalle ?? error.message);
+      const msg = detalle ?? error.message;
+      throw new Error(
+        /form data/i.test(msg)
+          ? 'El archivo no llegó completo. Inténtalo de nuevo; si sigue fallando, prueba con una imagen más liviana.'
+          : msg,
+      );
     }
     if (!data?.url || !data?.ruta) {
       throw new Error('La función no devolvió la URL y la ruta del archivo');
