@@ -37,6 +37,18 @@ export class AdminLayout {
   );
   /** Inicial para el avatar. */
   readonly inicial = computed(() => this.nombre().charAt(0).toUpperCase());
+  /**
+   * Avatar generado por Kodama (kodama.sh): mismo id → misma carita, animada.
+   * Se pide con el id de la cuenta, no con el nombre, para no mandar datos
+   * personales a un tercero. Si el servicio no responde, se queda la inicial.
+   */
+  readonly avatarUrl = computed(() => {
+    const id = this.auth.user()?.id;
+    return id
+      ? `https://api.kodama.sh/${encodeURIComponent(id)}?size=96&animations=blink,float`
+      : '';
+  });
+  readonly avatarFalla = signal(false);
   readonly correo = computed(() => this.auth.user()?.email ?? '');
 
   /** "Ver el sitio" (issue #82): abre el sitio público sin cerrar la sesión. */

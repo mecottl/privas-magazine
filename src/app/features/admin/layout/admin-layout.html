@@ -71,7 +71,11 @@
 
   <div class="admin-sidebar__foot">
     <div class="admin-sidebar__user">
-      <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
+      @if (avatarUrl() && !avatarFalla()) {
+        <img class="admin-sidebar__avatar" [src]="avatarUrl()" alt="" width="42" height="42" (error)="avatarFalla.set(true)" />
+      } @else {
+        <span class="admin-sidebar__avatar" aria-hidden="true">{{ inicial() }}</span>
+      }
       <p>
         {{ nombre() }}
         @if (correo() && correo() !== nombre()) { <small>{{ correo() }}</small> }
