@@ -45,10 +45,17 @@ export class MarcasLista implements OnInit {
   alSoltarEn(i: number) {
     const desde = this.arrastrado();
     this.arrastrado.set(null);
-    if (desde === null || desde === i) return;
+    if (desde !== null) this.reubicar(desde, i);
+  }
+  /** Botones ↑ ↓ (el arrastre nativo no es fiable en celular/iPad). */
+  mover(i: number, delta: -1 | 1) {
+    this.reubicar(i, i + delta);
+  }
+  private reubicar(desde: number, hasta: number) {
+    if (desde === hasta || hasta < 0 || hasta >= this.marcas().length) return;
     const arr = [...this.marcas()];
     const [m] = arr.splice(desde, 1);
-    arr.splice(i, 0, m);
+    arr.splice(hasta, 0, m);
     this.marcas.set(arr);
     void this.persistirOrden(arr);
   }

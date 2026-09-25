@@ -9,7 +9,7 @@
   <div class="admin-page__fill">
     @if (error()) { <p class="error">{{ error() }}</p> }
     <p class="mk-ayuda">
-      Arrastra las filas para cambiar el orden en que se muestran en el sitio.
+      Usa las flechas ↑ ↓ (o arrastra las filas) para cambiar el orden en que se muestran en el sitio.
       @if (guardandoOrden()) { <span> · guardando…</span> }
     </p>
 
@@ -45,6 +45,8 @@
                 <td>{{ m.enlaces?.length || 0 }}</td>
                 <td class="col-acciones">
                   <div class="acciones">
+                    <button type="button" class="secundario" (click)="mover(i, -1)" [disabled]="i === 0 || guardandoOrden()" [attr.aria-label]="'Subir ' + m.nombre">↑</button>
+                    <button type="button" class="secundario" (click)="mover(i, 1)" [disabled]="i === marcas().length - 1 || guardandoOrden()" [attr.aria-label]="'Bajar ' + m.nombre">↓</button>
                     <a [routerLink]="[m.id]"><button class="secundario">Editar</button></a>
                     <button class="secundario peligro" (click)="eliminar(m)">Eliminar</button>
                   </div>
