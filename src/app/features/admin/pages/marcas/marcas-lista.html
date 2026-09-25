@@ -50,6 +50,17 @@
                     <a [routerLink]="[m.id]"><button class="secundario">Editar</button></a>
                     <button class="secundario peligro" (click)="eliminar(m)">Eliminar</button>
                   </div>
+                  <div class="mk-menu">
+                    <button type="button" class="secundario mk-menu__btn" (click)="alternarMenu(i, $event)" [attr.aria-label]="'Opciones de ' + m.nombre" aria-haspopup="menu" [attr.aria-expanded]="menuAbierto() === i">⋯</button>
+                    @if (menuAbierto() === i) {
+                      <div class="mk-menu__lista" [class.mk-menu__lista--arriba]="i >= marcas().length - 2" role="menu">
+                        <button type="button" role="menuitem" (click)="mover(i, -1)" [disabled]="i === 0 || guardandoOrden()">↑ Subir</button>
+                        <button type="button" role="menuitem" (click)="mover(i, 1)" [disabled]="i === marcas().length - 1 || guardandoOrden()">↓ Bajar</button>
+                        <a role="menuitem" [routerLink]="[m.id]">Editar</a>
+                        <button type="button" role="menuitem" class="mk-menu__peligro" (click)="eliminar(m)">Eliminar</button>
+                      </div>
+                    }
+                  </div>
                 </td>
               </tr>
             } @empty {
