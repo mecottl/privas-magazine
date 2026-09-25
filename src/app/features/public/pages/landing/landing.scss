@@ -378,8 +378,11 @@
   display: grid;
   place-items: center;
   min-width: 11rem;
-  height: 6.5rem;
+  min-height: 8.5rem;
   padding: 0.9rem 1.4rem;
+  align-content: center;
+  justify-items: center;
+  gap: 0.6rem;
   border: none;
   border-radius: 16px;
   background: rgba(251, 247, 238, 0.08);
@@ -391,7 +394,8 @@
   transition: transform var(--t), background var(--t);
 }
 .marcas-teaser__lista button:hover { transform: translateY(-3px); background: rgba(251, 247, 238, 0.14); }
-.marcas-teaser__lista img { max-height: 4.2rem; max-width: 9rem; width: auto; object-fit: contain; }
+.marcas-teaser__nombre { font-family: var(--sans); font-size: var(--fs-sm); font-weight: 600; color: var(--on-brand-dim); text-align: center; }
+.marcas-teaser__lista img { max-height: 3.6rem; max-width: 9rem; width: auto; object-fit: contain; }
 @media (max-width: 760px) {
   .marcas-teaser { grid-template-columns: 1fr; }
 }
