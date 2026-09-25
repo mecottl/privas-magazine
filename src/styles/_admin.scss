@@ -731,7 +731,7 @@ dialog.confirm button:disabled { opacity: 0.5; cursor: default; }
   .tabla-simple td:not(:first-child):not(.col-acciones),
   .tabla-sin-alta th:nth-child(4),
   .tabla-sin-alta td:nth-child(4) { display: none; }
-  .tabla-simple .acciones,
+  .tabla-simple .acciones { display: none; }
   .tabla-sin-alta .acciones { flex-wrap: wrap; justify-content: flex-end; }
   .solo-movil { display: inline-block; margin-left: 0.5rem; vertical-align: middle; }
 }

@@ -1,5 +1,6 @@
-import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
 import { MarcasService } from '../../../../core/services/marcas.service';
 import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
@@ -8,7 +9,7 @@ import type { Marca } from '../../../../core/models';
 @Component({
   selector: 'app-admin-marcas-lista',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MenuOpciones],
   templateUrl: './marcas-lista.html',
   styleUrl: './marcas-lista.scss',
 })
@@ -22,16 +23,6 @@ export class MarcasLista implements OnInit {
   readonly guardandoOrden = signal(false);
   /** Índice de la fila que se está arrastrando. */
   readonly arrastrado = signal<number | null>(null);
-
-  /** Fila cuyo menú "⋯" está abierto (solo en móvil). */
-  readonly menuAbierto = signal<number | null>(null);
-  @HostListener('document:click') cerrarMenu() {
-    this.menuAbierto.set(null);
-  }
-  alternarMenu(i: number, ev: Event) {
-    ev.stopPropagation();
-    this.menuAbierto.update((a) => (a === i ? null : i));
-  }
 
   ngOnInit() {
     this.cargar();

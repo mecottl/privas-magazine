@@ -27,6 +27,10 @@
                     <button class="secundario" (click)="restaurarArticulo(a)">Restaurar</button>
                     <button class="secundario peligro" (click)="eliminarArticuloDefinitivo(a)">Eliminar para siempre</button>
                   </div>
+                  <app-menu-opciones [etiqueta]="'Opciones de ' + a.titulo" [arriba]="$last">
+                    <button type="button" role="menuitem" (click)="restaurarArticulo(a)">Restaurar</button>
+                    <button type="button" role="menuitem" class="peligro" (click)="eliminarArticuloDefinitivo(a)">Eliminar para siempre</button>
+                  </app-menu-opciones>
                 } @else {
                   <span class="hint">No es tuyo</span>
                 }
@@ -53,6 +57,10 @@
                   <button class="secundario" (click)="restaurarEdicion(ed)">Restaurar</button>
                   <button class="secundario peligro" (click)="eliminarEdicionDefinitivo(ed)">Eliminar para siempre</button>
                 </div>
+                <app-menu-opciones [etiqueta]="'Opciones de ' + ed.titulo" [arriba]="$last">
+                  <button type="button" role="menuitem" (click)="restaurarEdicion(ed)">Restaurar</button>
+                  <button type="button" role="menuitem" class="peligro" (click)="eliminarEdicionDefinitivo(ed)">Eliminar para siempre</button>
+                </app-menu-opciones>
               </td>
             </tr>
           } @empty {

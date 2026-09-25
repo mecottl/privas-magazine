@@ -13,10 +13,12 @@ import type { Articulo, EdicionRevista } from '../../../../core/models';
  * Se purgan solos a los 30 días (`programar-publicacion`) o se pueden
  * restaurar/eliminar para siempre desde aquí.
  */
+import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
+
 @Component({
   selector: 'app-admin-papelera-lista',
   standalone: true,
-  imports: [DatePipe, InfoTip],
+  imports: [DatePipe, InfoTip, MenuOpciones],
   templateUrl: './papelera-lista.html',
 })
 export class PapeleraLista implements OnInit {

@@ -55,6 +55,13 @@
                         <option value="eliminar">Mover a la papelera</option>
                       </select>
                     </div>
+                    <app-menu-opciones [etiqueta]="'Opciones de ' + a.titulo" [arriba]="$last">
+                      <a role="menuitem" [routerLink]="[a.id]">Editar</a>
+                      @if (a.estado !== 'publicado') { <button type="button" role="menuitem" (click)="ejecutar(a, 'publicado')">Publicar</button> }
+                      @if (a.estado === 'publicado') { <button type="button" role="menuitem" (click)="ejecutar(a, 'despublicado')">Despublicar</button> }
+                      @if (a.estado !== 'borrador') { <button type="button" role="menuitem" (click)="ejecutar(a, 'borrador')">Pasar a borrador</button> }
+                      <button type="button" role="menuitem" class="peligro" (click)="ejecutar(a, 'eliminar')">Mover a la papelera</button>
+                    </app-menu-opciones>
                   } @else {
                     <span class="hint" title="Solo quien lo creó (o un administrador) puede editarlo">De otro autor</span>
                   }

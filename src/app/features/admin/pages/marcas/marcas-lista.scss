@@ -51,42 +51,5 @@ tr.mk-arrastrando td { background: var(--teal-wash); }
   .tabla-wrap td:nth-child(4) { display: none; }
   .tabla-wrap td:nth-child(2) { min-width: 0; }
   .tabla-wrap .acciones { display: none; }
-  .mk-menu { display: block; }
 }
 
-.mk-menu { display: none; position: relative; text-align: right; }
-.mk-menu__btn { width: 2.4rem; height: 2.4rem; padding: 0; font-size: 1.3rem; line-height: 1; }
-.mk-menu__lista {
-  position: absolute;
-  z-index: 20;
-  right: 0;
-  top: calc(100% + 0.25rem);
-  display: flex;
-  flex-direction: column;
-  min-width: 9.5rem;
-  padding: 0.3rem;
-  border-radius: 12px;
-  background: var(--white);
-  box-shadow: 0 10px 30px rgba(9, 28, 38, 0.22), 0 0 0 1px var(--line);
-}
-.mk-menu__lista--arriba { top: auto; bottom: calc(100% + 0.25rem); }
-.mk-menu__lista button,
-.mk-menu__lista a {
-  display: block;
-  width: 100%;
-  padding: 0.65rem 0.8rem;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-}
-.mk-menu__lista button:hover:not(:disabled),
-.mk-menu__lista a:hover { background: var(--teal-wash); }
-.mk-menu__lista button:disabled { opacity: 0.4; cursor: default; }
-.mk-menu__lista .mk-menu__peligro { color: var(--danger, #b3261e); }

@@ -41,6 +41,13 @@
                       <option value="eliminar">Mover a la papelera</option>
                     </select>
                   </div>
+                  <app-menu-opciones [etiqueta]="'Opciones de ' + ed.titulo" [arriba]="$last">
+                    <a role="menuitem" [routerLink]="[ed.id]">Editar</a>
+                    @if (ed.pdf_url) { <button type="button" role="menuitem" (click)="ejecutar(ed, 'pdf')">Ver PDF</button> }
+                    @if (ed.estado !== 'publicado') { <button type="button" role="menuitem" (click)="ejecutar(ed, 'publicado')">Publicar</button> }
+                    @if (ed.estado === 'publicado') { <button type="button" role="menuitem" (click)="ejecutar(ed, 'despublicado')">Despublicar</button> }
+                    <button type="button" role="menuitem" class="peligro" (click)="ejecutar(ed, 'eliminar')">Mover a la papelera</button>
+                  </app-menu-opciones>
                 </td>
               </tr>
             } @empty {

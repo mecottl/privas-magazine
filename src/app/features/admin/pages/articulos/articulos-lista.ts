@@ -10,11 +10,12 @@ import { mensajeError } from '../../../../core/services/errores';
 import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core/models';
 
 type Accion = 'publicado' | 'despublicado' | 'borrador' | 'eliminar';
+import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
 
 @Component({
   selector: 'app-admin-articulos-lista',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, CategoriasNombrePipe],
+  imports: [FormsModule, RouterLink, DatePipe, CategoriasNombrePipe, MenuOpciones],
   templateUrl: './articulos-lista.html',
 })
 export class ArticulosLista implements OnInit {

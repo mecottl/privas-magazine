@@ -6,11 +6,12 @@ import { mensajeError } from '../../../../core/services/errores';
 import type { EdicionRevista, EstadoPublicacion } from '../../../../core/models';
 
 type Accion = 'publicado' | 'despublicado' | 'eliminar' | 'pdf';
+import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
 
 @Component({
   selector: 'app-admin-ediciones-lista',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MenuOpciones],
   templateUrl: './ediciones-lista.html',
 })
 export class EdicionesLista implements OnInit {

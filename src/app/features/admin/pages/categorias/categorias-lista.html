@@ -26,6 +26,10 @@
                   <button class="secundario" (click)="guardar(c)">Guardar</button>
                   <button class="secundario peligro" (click)="eliminar(c)">Eliminar</button>
                 </div>
+                <app-menu-opciones [etiqueta]="'Opciones de ' + c.nombre" [arriba]="$last">
+                  <button type="button" role="menuitem" (click)="guardar(c)">Guardar</button>
+                  <button type="button" role="menuitem" class="peligro" (click)="eliminar(c)">Eliminar</button>
+                </app-menu-opciones>
               </td>
             </tr>
           } @empty {
