@@ -38,6 +38,7 @@ export class Documentacion {
     { id: 'articulos', titulo: 'Artículos' },
     { id: 'ediciones', titulo: 'Ediciones de la revista' },
     { id: 'marcas', titulo: 'Marcas y categorías' },
+    { id: 'imagenes', titulo: 'Tamaños de imágenes' },
     { id: 'correos', titulo: 'Correos' },
     { id: 'seguridad', titulo: 'Seguridad y respaldos' },
     { id: 'tecnologias', titulo: 'Tecnologías y servicios' },
