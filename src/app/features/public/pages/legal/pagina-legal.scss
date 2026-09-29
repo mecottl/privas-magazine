@@ -2,8 +2,9 @@
 
 /* La franja ya pone color: var(--on-brand); aquí solo el ancho de lectura y
    el tono de los párrafos (mismo criterio que el Directorio). */
-.legal-wrap { max-width: 62ch; }
+.legal-wrap { max-width: 78ch; }
 .legal-wrap p { color: var(--on-brand-dim); }
+.legal-wrap a { color: var(--on-brand); text-decoration: underline; text-underline-offset: 0.2em; }
 .legal-wrap .legal-intro {
   color: var(--on-brand);
   font-size: var(--fs-md);

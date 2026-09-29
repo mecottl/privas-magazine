@@ -10,12 +10,12 @@
 
 <section class="franja franja--fin">
   <div class="franja__wrap legal-wrap">
-    <p class="legal-intro">{{ doc.intro }}</p>
+    <p class="legal-intro" [innerHTML]="doc.intro"></p>
 
     @for (s of doc.secciones; track s.titulo; let i = $index) {
       <h2>{{ i + 1 }}. {{ s.titulo }}</h2>
       @for (p of s.parrafos; track $index) {
-        <p>{{ p }}</p>
+        <p [innerHTML]="p"></p>
       }
     }
   </div>
