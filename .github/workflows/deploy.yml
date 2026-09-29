@@ -10,6 +10,9 @@ on:
     types: [rebuild-sitio] # disparado por la Edge Function programar-publicacion
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,11 +36,26 @@ jobs:
         env:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
+          set -euo pipefail
           # environment.ts se compila con el placeholder '__SUPABASE_ANON_KEY__'
           # (clave PÚBLICA). Lo reemplazamos por el valor real del secreto en
           # los .js ya generados, sin recompilar.
-          grep -rl '__SUPABASE_ANON_KEY__' dist/privas-magazine/browser --include='*.js' \
-            | xargs -r sed -i "s|__SUPABASE_ANON_KEY__|${SUPABASE_ANON_KEY}|g"
+          #
+          # issue #86: si el secreto llegara vacío, el sed de abajo "funciona"
+          # y deja supabaseAnonKey: '' en el bundle — el sitio completo queda
+          # sin poder hablar con Supabase para TODOS los visitantes, con este
+          # workflow en verde. Cortar aquí antes de que eso pase.
+          if [ -z "${SUPABASE_ANON_KEY}" ]; then
+            echo "::error::El secreto SUPABASE_ANON_KEY está vacío o no configurado."
+            exit 1
+          fi
+
+          archivos=$(grep -rl '__SUPABASE_ANON_KEY__' dist/privas-magazine/browser --include='*.js' || true)
+          if [ -z "$archivos" ]; then
+            echo "::error::No se encontró el placeholder __SUPABASE_ANON_KEY__ en el build — ¿cambió environment.ts?"
+            exit 1
+          fi
+          echo "$archivos" | xargs sed -i "s|__SUPABASE_ANON_KEY__|${SUPABASE_ANON_KEY}|g"
 
       - name: Generar sitemap.xml (issue #84)
         env:
