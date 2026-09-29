@@ -82,7 +82,9 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
   try {
-    const quienLlama = await requireAdmin(req);
+    // issue #85: exigirMfa:false — pedir el código es un paso PREVIO a
+    // haber pasado el MFA, no algo que dependa de haberlo pasado ya.
+    const quienLlama = await requireAdmin(req, { exigirMfa: false });
     const admin = adminClient();
 
     const codigo = String(Math.floor(100000 + Math.random() * 900000));

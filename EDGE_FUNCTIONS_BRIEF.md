@@ -15,11 +15,19 @@ Cualquier Edge Function es una URL pública. Que use `service_role` para saltars
 RLS no significa que cualquiera pueda llamarla — cada función valida por su
 cuenta quién la llama, antes de hacer nada.
 
-- **Solo admin logueado** (`invitar-admin`, `subir-archivo`): leer el JWT del
-  header `Authorization`, verificar el usuario contra Auth y confirmar que
-  existe en `perfiles_admin` con `activo = true` (mismo criterio que
-  `is_admin()` en SQL, repetido aquí porque corre con `service_role`).
-  → `requireAdmin()` en `_shared/clients.ts`.
+- **Solo admin logueado** (`invitar-admin`, `subir-archivo`, `set-admin-activo`,
+  `notificar-publicacion`, `mfa-enviar-codigo`, `mfa-verificar-codigo`): leer
+  el JWT del header `Authorization`, verificar el usuario contra Auth y
+  confirmar que existe en `perfiles_admin` con `activo = true` (mismo
+  criterio que `is_admin()` en SQL, repetido aquí porque corre con
+  `service_role`). → `requireAdmin()` en `_shared/clients.ts`.
+  **Issue #85**: además exige MFA vigente (`user_metadata.mfa_verificado_hasta`
+  en Auth, lo escribe `mfa-verificar-codigo`) para quien lo tenga obligatorio
+  (`dueno`) u opcionalmente activado (`mfa_activo`) — antes esto SOLO lo
+  verificaba el frontend, un JWT robado se saltaba el segundo factor por
+  completo. `mfa-enviar-codigo`/`mfa-verificar-codigo` llaman
+  `requireAdmin(req, { exigirMfa: false })`: exigir el MFA para poder pasar
+  el MFA sería un candado sin llave.
 - **Solo el sistema** (`programar-publicacion`): validar
   `Authorization: Bearer <CRON_SECRET>` contra la variable de entorno. Si no
   coincide → 401. → `requireCronSecret()` en `_shared/clients.ts`.
@@ -243,7 +251,8 @@ el TOTP nativo de Supabase — se decidió así para que no sea tedioso para
 `dueno` (sin apps de autenticador ni QR) y porque permite "recordar este
 dispositivo" un tiempo, algo que el MFA nativo de Supabase no soporta.
 
-1. `requireAdmin`.
+1. `requireAdmin(req, { exigirMfa: false })` — pedir el código es el paso
+   previo a haberlo pasado, no algo que dependa de eso.
 2. Invalida (`usado = true`) cualquier código previo sin usar de esa cuenta.
 3. Genera un código de 6 dígitos, vence en 10 min, se guarda en
    `mfa_codigos` con `service_role`.
@@ -257,13 +266,18 @@ dispositivo" un tiempo, algo que el MFA nativo de Supabase no soporta.
 
 Quién la llama: la misma pantalla, al escribir el código.
 
-1. `requireAdmin`.
+1. `requireAdmin(req, { exigirMfa: false })` — sin esto, nadie podría
+   completar el MFA para pasarlo.
 2. Body: `{ codigo }`.
 3. Busca el código MÁS RECIENTE de esa cuenta: debe coincidir, no estar
    usado, y no haber vencido (10 min).
-4. Si es válido, lo marca usado (un código sirve una sola vez) y 200
-   `{ ok: true }`. Esta función no sabe nada de "recordar el dispositivo"
-   — eso lo decide el frontend (`AuthService`, localStorage, 30 días).
+4. Si es válido, lo marca usado (un código sirve una sola vez), guarda
+   `user_metadata.mfa_verificado_hasta = ahora + 30 días` en Auth (issue #85
+   — es lo que `requireAdmin` de las demás funciones exige) y 200
+   `{ ok: true }`. El frontend decide aparte cuánto "recordar el dispositivo"
+   en SU propio localStorage (`AuthService`, mismos 30 días) — son dos
+   relojes independientes que coinciden en el número por convención, no
+   porque uno dependa del otro.
 
 Secretos: `RESEND_API_KEY` (ya configurado, ver docs/SECRETS.md),
 `MFA_EMAIL_FROM` (opcional, default `PRIVAS Magazine <contacto@privasmagazine.com>`).

@@ -82,6 +82,15 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   nivel). `mfa_codigos` guarda los códigos de 6 dígitos de un solo uso (10
   min de vigencia) — sin políticas de RLS, solo la tocan `mfa-enviar-codigo`
   / `mfa-verificar-codigo` con `service_role`.
+  **Verificado también del lado del servidor** (issue #85, antes solo lo
+  verificaba el frontend): `requireAdmin()` en `_shared/clients.ts` exige
+  `user_metadata.mfa_verificado_hasta` vigente en Auth (lo escribe
+  `mfa-verificar-codigo` con `service_role`, 30 días — mismo plazo que
+  `AuthService.MFA_RECORDAR_MS`) para toda función de solo-admin, EXCEPTO
+  `mfa-enviar-codigo`/`mfa-verificar-codigo` (`requireAdmin(req, { exigirMfa: false })`,
+  si no nadie podría completar el MFA para pasarlo). Si el servidor lo
+  rechaza, `SupabaseService.invokeFunction` olvida el dispositivo recordado
+  en el navegador y manda a `/gestion-privas/verificar-mfa`.
 - `is_admin()` es la función `security definer` que valida permisos en TODAS
   las políticas RLS de escritura — reutilízala, no dupliques la lógica.
 - `estado` en `articulos` y `ediciones_revista`: `borrador` / `programado` /

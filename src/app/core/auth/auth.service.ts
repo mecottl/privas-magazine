@@ -2,6 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import type { Session, User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.client';
 import type { PerfilAdmin } from '../models';
+import { mfaEsDispositivoConfiable, mfaMarcarDispositivoConfiable } from './mfa-dispositivo';
 
 /**
  * Estado de sesión del panel de administración.
@@ -99,33 +100,14 @@ export class AuthService {
   // Obligatorio para 'dueno' sin importar `perfil.mfa_activo` (ver
   // adminGuard); opcional y autoactivable para 'admin_total'/'editor'.
 
-  private static readonly MFA_RECORDAR_MS = 30 * 24 * 60 * 60 * 1000; // 30 días
-
-  private mfaClaveLocalStorage(): string | null {
-    const uid = this.session()?.user?.id;
-    return uid ? `privas-mfa-confiable:${uid}` : null;
-  }
+  /** Mismo valor que usa `mfa-verificar-codigo` al guardar `mfa_verificado_hasta`
+   *  (issue #85) — si se cambia uno, hay que cambiar el otro. */
+  static readonly MFA_RECORDAR_MS = 30 * 24 * 60 * 60 * 1000; // 30 días
 
   /** ¿Este navegador ya pasó el MFA hace poco para esta cuenta? */
   mfaEsDispositivoConfiable(): boolean {
-    const clave = this.mfaClaveLocalStorage();
-    if (!clave) return false;
-    try {
-      const hasta = Number(localStorage.getItem(clave) ?? '0');
-      return hasta > Date.now();
-    } catch {
-      return false; // sin storage disponible, mejor pedir el código
-    }
-  }
-
-  private mfaMarcarDispositivoConfiable(): void {
-    const clave = this.mfaClaveLocalStorage();
-    if (!clave) return;
-    try {
-      localStorage.setItem(clave, String(Date.now() + AuthService.MFA_RECORDAR_MS));
-    } catch {
-      /* si no hay storage, simplemente se volverá a pedir la próxima vez */
-    }
+    const uid = this.session()?.user?.id;
+    return !!uid && mfaEsDispositivoConfiable(uid);
   }
 
   /** ¿Esta cuenta necesita pasar por MFA? Obligatorio para dueño. */
@@ -155,7 +137,8 @@ export class AuthService {
       const detalle = (data as { error?: string } | null)?.error;
       throw new Error(detalle ?? error.message);
     }
-    this.mfaMarcarDispositivoConfiable();
+    const uid = this.session()?.user?.id;
+    if (uid) mfaMarcarDispositivoConfiable(uid, AuthService.MFA_RECORDAR_MS);
   }
 
   /** Autoservicio para admin_total/editor — a 'dueno' no le hace nada (ver

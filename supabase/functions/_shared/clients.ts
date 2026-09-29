@@ -29,18 +29,28 @@ export interface PerfilAdmin {
   nombre_visible: string | null;
   nivel_permiso: string;
   activo: boolean;
+  mfa_activo: boolean;
 }
 
 /**
- * Verifica que quien llama sea un admin ACTIVO.
+ * Verifica que quien llama sea un admin ACTIVO — y, salvo que se pida lo
+ * contrario, que ya haya pasado el MFA (issue #85).
  *
  * Se repite aquí la lógica de `is_admin()` porque la función corre con
  * `service_role` (se salta RLS por diseño). Se resuelve el JWT del header
  * `Authorization` contra Auth y luego se busca su perfil con `service_role`.
  *
+ * `exigirMfa: false` es SOLO para `mfa-enviar-codigo`/`mfa-verificar-codigo`
+ * — exigir un MFA ya pasado para poder pasar el MFA sería un candado sin
+ * llave. El resto de las funciones de solo-admin lo dejan en `true` (default).
+ *
  * Lanza un `Response` (401/403) que el handler debe devolver tal cual.
  */
-export async function requireAdmin(req: Request): Promise<PerfilAdmin> {
+export async function requireAdmin(
+  req: Request,
+  opts: { exigirMfa?: boolean } = {},
+): Promise<PerfilAdmin> {
+  const { exigirMfa = true } = opts;
   const authHeader = req.headers.get('Authorization') ?? '';
   const token = authHeader.replace(/^Bearer\s+/i, '').trim();
   if (!token) throw json({ error: 'Falta el token de sesión' }, 401);
@@ -53,13 +63,34 @@ export async function requireAdmin(req: Request): Promise<PerfilAdmin> {
 
   const { data: perfil } = await admin
     .from('perfiles_admin')
-    .select('id, nombre_visible, nivel_permiso, activo')
+    .select('id, nombre_visible, nivel_permiso, activo, mfa_activo')
     .eq('id', userData.user.id)
     .maybeSingle();
 
   if (!perfil || perfil.activo !== true) {
     throw json({ error: 'No autorizado' }, 403);
   }
+
+  // Antes de esto, el MFA (issue #17) era solo un candado del lado del
+  // cliente: ningún Edge Function lo verificaba, así que un JWT robado o
+  // filtrado se saltaba el segundo factor por completo. `mfa_verificado_hasta`
+  // vive en el `user_metadata` de Auth (no en `perfiles_admin`) porque lo
+  // escribe `mfa-verificar-codigo` con `service_role` — y `admin.auth.getUser(token)`
+  // siempre trae el dato VIGENTE de la cuenta, no el que traía el JWT al
+  // emitirse, así que esto se refresca solo sin tocar el token ni pedir
+  // refresh. Mismo criterio de "recordar 30 días" que ya usaba el frontend
+  // (`AuthService.MFA_RECORDAR_MS`) — con eso los dos quedan sincronizados.
+  const mismoNivelDeMfaQueElFrontend = perfil.nivel_permiso === 'dueno' || perfil.mfa_activo === true;
+  if (exigirMfa && mismoNivelDeMfaQueElFrontend) {
+    const hasta = Number(userData.user.user_metadata?.['mfa_verificado_hasta'] ?? 0);
+    if (!(hasta > Date.now())) {
+      throw json(
+        { error: 'Verificación en dos pasos requerida.', codigo: 'mfa_requerido' },
+        401,
+      );
+    }
+  }
+
   return perfil as PerfilAdmin;
 }
 
