@@ -8,6 +8,9 @@ on:
       - 'supabase/config.toml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy-functions:
     runs-on: ubuntu-latest
@@ -18,7 +21,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Fijo, no "latest" (issue #89): una release nueva del CLI no debe
+          # poder romper o cambiar de comportamiento un deploy sin aviso.
+          # Subir el número a mano cuando convenga revisarlo.
+          version: 2.118.0
       - run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_REF"
       # Los secretos de las funciones (FTP_*, RESEND_API_KEY, UPLOAD_TARGET,
       # GH_DISPATCH_TOKEN, GH_DISPATCH_REPO) se configuran una vez desde el

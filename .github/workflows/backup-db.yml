@@ -9,6 +9,9 @@ on:
     - cron: '0 6 1 * *' # 06:00 UTC el día 1 de cada mes
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   backup:
     runs-on: ubuntu-latest
@@ -18,7 +21,8 @@ jobs:
     steps:
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Fijo, no "latest" (issue #89) — mismo criterio que supabase-functions.yml.
+          version: 2.118.0
 
       - name: Vincular proyecto
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
