@@ -13,7 +13,7 @@ import { CategoriasService } from '../../../../core/services/categorias.service'
 import { UploadsService } from '../../../../core/services/uploads.service';
 import { NotificarPublicacionService } from '../../../../core/services/notificar-publicacion.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
 import { slugify } from '../../../../core/services/slug';
 import { mensajeError } from '../../../../core/services/errores';
 import { EditorContenido } from '../../editor-contenido/editor-contenido';

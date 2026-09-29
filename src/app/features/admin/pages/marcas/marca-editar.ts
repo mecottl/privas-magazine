@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MarcasService } from '../../../../core/services/marcas.service';
 import { UploadsService } from '../../../../core/services/uploads.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import { CampoArchivo } from '../../shared/campo-archivo/campo-archivo';
 import {

@@ -7,7 +7,7 @@ import {
 } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { activarModoPreview } from '../../../core/preview-mode';
-import { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 
 /** Shell del panel de administración: sidebar (marca + navegación + sesión) + contenido. */
 @Component({

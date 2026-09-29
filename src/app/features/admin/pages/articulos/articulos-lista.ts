@@ -4,13 +4,13 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { CategoriasNombrePipe } from '../../../../shared/pipes/categorias-nombre.pipe';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { CategoriasNombrePipe } from '../../shared/categorias-nombre.pipe';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core/models';
 
 type Accion = 'publicado' | 'despublicado' | 'borrador' | 'eliminar';
-import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
+import { MenuOpciones } from '../../shared/menu-opciones/menu-opciones';
 
 @Component({
   selector: 'app-admin-articulos-lista',

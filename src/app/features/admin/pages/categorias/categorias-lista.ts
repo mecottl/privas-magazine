@@ -1,10 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoriasService } from '../../../../core/services/categorias.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Categoria } from '../../../../core/models';
-import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
+import { MenuOpciones } from '../../shared/menu-opciones/menu-opciones';
 
 @Component({
   selector: 'app-admin-categorias-lista',

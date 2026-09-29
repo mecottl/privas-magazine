@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { BitacoraService } from '../../../../core/services/bitacora.service';
 import { mensajeError } from '../../../../core/services/errores';
-import { InfoTip } from '../../../../shared/components/info-tip/info-tip';
+import { InfoTip } from '../../shared/info-tip/info-tip';
 import type { BitacoraEntrada } from '../../../../core/models';
 
 const NOMBRE_ACCION: Record<string, string> = {

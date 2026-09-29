@@ -5,9 +5,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { SeoService } from '../../../../core/services/seo.service';
 import { mensajeError } from '../../../../core/services/errores';
-import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { RevealDirective } from '../../directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
-import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
+import { ErrorAviso } from '../../components/error-aviso/error-aviso';
 import { Compartir } from '../../components/compartir/compartir';
 import { mismoSlug, type Articulo, type BloqueContenido } from '../../../../core/models';
 

@@ -3,8 +3,8 @@ import { DatePipe } from '@angular/common';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { InfoTip } from '../../../../shared/components/info-tip/info-tip';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
+import { InfoTip } from '../../shared/info-tip/info-tip';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Articulo, EdicionRevista } from '../../../../core/models';
 
@@ -13,7 +13,7 @@ import type { Articulo, EdicionRevista } from '../../../../core/models';
  * Se purgan solos a los 30 días (`programar-publicacion`) o se pueden
  * restaurar/eliminar para siempre desde aquí.
  */
-import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
+import { MenuOpciones } from '../../shared/menu-opciones/menu-opciones';
 
 @Component({
   selector: 'app-admin-papelera-lista',

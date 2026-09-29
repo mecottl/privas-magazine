@@ -3,8 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AdminsService } from '../../../../core/services/admins.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { InfoTip } from '../../../../shared/components/info-tip/info-tip';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
+import { InfoTip } from '../../shared/info-tip/info-tip';
 import { mensajeError } from '../../../../core/services/errores';
 import {
   NIVELES_PERMISO,

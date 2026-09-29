@@ -1,9 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
-import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { RevealDirective } from '../../directives/reveal.directive';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
-import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
+import { ErrorAviso } from '../../components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import type { EdicionRevista } from '../../../../core/models';
 

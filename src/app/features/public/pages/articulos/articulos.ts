@@ -10,10 +10,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { CategoriasService } from '../../../../core/services/categorias.service';
-import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { RevealDirective } from '../../directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
-import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
+import { ErrorAviso } from '../../components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import {
   mismoSlug,

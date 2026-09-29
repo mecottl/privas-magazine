@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import type { CategoriaRef } from '../../core/models';
+import type { CategoriaRef } from '../../../core/models';
 
 /**
  * Lista de categorías de un artículo → texto.

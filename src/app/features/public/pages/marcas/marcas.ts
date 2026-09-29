@@ -1,9 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MarcasService } from '../../../../core/services/marcas.service';
-import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { RevealDirective } from '../../directives/reveal.directive';
 import { HeroMedia } from '../../components/hero-media/hero-media';
 import { MarcaLinktree } from '../../components/marca-linktree/marca-linktree';
-import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
+import { ErrorAviso } from '../../components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Marca } from '../../../../core/models';
 

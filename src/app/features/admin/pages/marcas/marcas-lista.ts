@@ -1,8 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
+import { MenuOpciones } from '../../shared/menu-opciones/menu-opciones';
 import { MarcasService } from '../../../../core/services/marcas.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import type { Marca } from '../../../../core/models';
 

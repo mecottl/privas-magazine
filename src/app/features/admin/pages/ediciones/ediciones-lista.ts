@@ -1,12 +1,12 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
-import { ConfirmService } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
 import { mensajeError } from '../../../../core/services/errores';
 import type { EdicionRevista, EstadoPublicacion } from '../../../../core/models';
 
 type Accion = 'publicado' | 'despublicado' | 'eliminar' | 'pdf';
-import { MenuOpciones } from '../../../../shared/components/menu-opciones/menu-opciones';
+import { MenuOpciones } from '../../shared/menu-opciones/menu-opciones';
 
 @Component({
   selector: 'app-admin-ediciones-lista',

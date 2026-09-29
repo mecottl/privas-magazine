@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { mensajeError } from '../../../../core/services/errores';
 import { NOMBRE_NIVEL_PERMISO } from '../../../../core/models';
-import { InfoTip } from '../../../../shared/components/info-tip/info-tip';
+import { InfoTip } from '../../shared/info-tip/info-tip';
 
 /** Cuenta propia: nombre visible, contraseña y MFA — antes vivía suelto en el sidebar. */
 @Component({

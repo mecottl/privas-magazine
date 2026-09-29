@@ -13,12 +13,12 @@ import { RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { EdicionesService } from '../../../../core/services/ediciones.service';
 import { MarcasService } from '../../../../core/services/marcas.service';
-import { RevealDirective } from '../../../../shared/directives/reveal.directive';
+import { RevealDirective } from '../../directives/reveal.directive';
 import { ArticuloCard } from '../../components/articulo-card/articulo-card';
 import { EdicionCard } from '../../components/edicion-card/edicion-card';
 import { HeroMedia } from '../../components/hero-media/hero-media';
 import { MarcaLinktree } from '../../components/marca-linktree/marca-linktree';
-import { ErrorAviso } from '../../../../shared/components/error-aviso/error-aviso';
+import { ErrorAviso } from '../../components/error-aviso/error-aviso';
 import { mensajeError } from '../../../../core/services/errores';
 import {
   SECCIONES,
