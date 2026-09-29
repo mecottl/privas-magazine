@@ -149,7 +149,7 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   directo con `service_role` (`_shared/bitacora.ts`). Guarda `admin_nombre`
   como snapshot para no perder el rastro si esa cuenta se elimina después.
 
-## Piezas de arquitectura — Edge Functions (12 en total)
+## Piezas de arquitectura — Edge Functions (13 en total)
 
 Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 
@@ -167,22 +167,43 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `mfa-verificar-codigo` | admin logueado (panel) | Verifica el código contra `mfa_codigos`. El frontend decide cuánto "recordar" el dispositivo (localStorage, 30 días). |
 | `notificar-publicacion` | admin logueado (panel) | Issue #64: dispara rebuild + newsletter para "Publicar ahora" (inmediato) — antes solo `programar-publicacion` (cron) lo hacía, y solo para contenido programado. Misma lógica compartida (`_shared/publicacion.ts`). |
 | `obtener-articulo-preview` | público (link de vista previa) | Issue #75: devuelve un artículo de cualquier `estado` por `articulos.token_preview`, para que la clienta lo revise antes de publicar sin sesión de admin. Sin policy de RLS pública nueva — el token se valida en código con `service_role`. |
+| `obtener-vista-previa-link` | público, la usa el editor del panel | Issue #95: trae título/descripción/imagen de una URL para la herramienta "linkTool" del editor de bloques. Pública porque `@editorjs/link` la llama con un GET plano del navegador sin adjuntar el JWT — con rate limiting (15/10min por IP) y validaciones contra usarla como proxy hacia direcciones internas (`_shared/link_preview.ts`, con su propio test sin red en `_tests/vista-previa-link.test.ts`). |
 
 ### Editor de contenido de artículos
 Constructor de bloques con Editor.js (`editor-contenido/`) — se evaluó una
 librería existente antes de construir un editor propio, como pedía la idea
 original de la clienta de libertad tipo "arma tu página como quieras".
-Herramientas ya construidas: encabezado (h2–h4), párrafo, cita, lista
-(viñetas/numerada) e imagen (sube por `UploadsService` → `subir-archivo`).
-El contenido se guarda como JSON en `articulos.contenido_json` y
-`articulo-detalle.ts` lo pinta con `[innerHTML]` **sin** `bypassSecurityTrustHtml`
-— Angular sanitiza automáticamente, no cambiar eso al tocar el renderer.
 
-**Pendiente de negocio, no construido todavía** (issue #95): video embebido
-(YouTube/Vimeo) y layout más libre que la secuencia vertical de bloques.
-Nadie lo ha pedido como necesidad activa — si se retoma, definir primero qué
-proveedores de video se aceptan y cómo se sanitiza el embed antes de tocar
-el renderer público.
+Herramientas: párrafo, encabezado (h2–h4), cita, lista (viñetas/numerada),
+checklist, tabla, aviso (warning), separador, imagen (sube por
+`UploadsService` → `subir-archivo`) y embed (YouTube/Vimeo/Instagram/
+Twitter/etc. — issue #95, ya construido). "linkTool" pega una URL sola y
+arma una tarjeta con su vista previa (título/descripción/imagen) vía la
+Edge Function `obtener-vista-previa-link`. Negritas, cursivas y "link con
+texto propio" (seleccionar palabras y ponerles un link — lo que antes se
+llamaba "URL con sobrenombre") **ya vienen de fábrica con Editor.js**, sin
+librería aparte; marcador y subrayado sí son paquetes aparte
+(`@editorjs/marker`, `@editorjs/underline`). Alineación
+(izquierda/centro/derecha/justificado) es una Tune propia
+(`editor-contenido/herramientas/alineacion.tune.ts`) — ninguna oficial de
+Editor.js trae "justificado", así que se escribió a mano en vez de forzar
+una librería de la comunidad a medias (se evaluó `editorjs-hyperlink` para
+el link con texto propio y se descartó: usaba `eval()` en el bundle
+compilado, además de ser innecesaria una vez confirmado que Editor.js ya
+trae esa herramienta).
+
+El contenido se guarda como JSON en `articulos.contenido_json` (bloques con
+su propio `tunes.alineacion`) y `articulo-detalle.ts` lo pinta con
+`[innerHTML]` **sin** `bypassSecurityTrustHtml` — Angular sanitiza
+automáticamente, no cambiar eso al tocar el renderer. La excepción es el
+`<iframe>` del embed: `[src]` de un iframe exige `SafeResourceUrl`, así que
+`embedUrl()` solo llama `bypassSecurityTrustResourceUrl` si la URL empieza
+en `https://` (nunca `javascript:` ni similares) — el contenido lo escribe
+un admin (RLS ya exige `is_admin()` para guardar un artículo), mismo
+criterio de confianza que el resto del cuerpo.
+
+**Layout libre más allá de la secuencia vertical de bloques** sigue sin
+construirse — nadie lo ha pedido como necesidad activa.
 
 El `extracto` se genera automáticamente a partir del contenido (no lo llena
 el usuario a mano) — resuélvelo en el momento de guardar (frontend o Edge

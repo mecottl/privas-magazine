@@ -308,6 +308,172 @@
   text-align: center;
 }
 
+/* --- Alineación (Tune propia, ver editor-contenido/herramientas) -------- */
+.art-cuerpo .align-centro { text-align: center; }
+.art-cuerpo .align-derecha { text-align: right; }
+.art-cuerpo .align-justificado { text-align: justify; text-wrap: pretty; }
+.art-cuerpo figure.align-centro img { margin-inline: auto; }
+.art-cuerpo figure.align-derecha img { margin-inline: 0 0 0 auto; }
+
+/* --- Marcador y subrayado (inline) — el <style> que el editor inyecta en
+   su propia UI no viaja con el HTML guardado, así que el estilo va aquí. */
+.art-cuerpo mark.cdx-marker { background: #fdf3b0; padding: 0.05em 0; }
+.art-cuerpo .cdx-underline { text-decoration: underline; text-underline-offset: 0.15em; }
+
+/* --- Checklist ------------------------------------------------------------ */
+.art-cuerpo .art-checklist {
+  list-style: none;
+  margin: 0 0 1.4em;
+  padding: 0;
+}
+.art-cuerpo .art-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65em;
+  margin-bottom: 0.5em;
+}
+.art-cuerpo .art-checklist__caja {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.15em;
+  border-radius: 5px;
+  border: 1.5px solid var(--line-2);
+  font-size: 0.85em;
+  color: var(--white);
+}
+.art-cuerpo .art-checklist__item--hecho .art-checklist__caja {
+  background: var(--exito);
+  border-color: var(--exito);
+}
+.art-cuerpo .art-checklist__item--hecho { color: var(--ink-55); text-decoration: line-through; }
+
+/* --- Tabla ------------------------------------------------------------- */
+.art-cuerpo .art-tabla-wrap {
+  margin: 2em 0;
+  overflow-x: auto;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+}
+.art-cuerpo .art-tabla {
+  width: 100%;
+  min-width: 24rem;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+.art-cuerpo .art-tabla th,
+.art-cuerpo .art-tabla td {
+  padding: 0.6em 0.85em;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.art-cuerpo .art-tabla thead th {
+  background: var(--teal-wash);
+  color: var(--brand);
+  font-family: var(--sans);
+  font-weight: 700;
+}
+.art-cuerpo .art-tabla tr:last-child td { border-bottom: none; }
+
+/* --- Aviso (warning) ---------------------------------------------------- */
+.art-cuerpo .art-aviso {
+  margin: 2em 0;
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--r-sm);
+  border-left: 3px solid var(--estado-programado);
+  background: color-mix(in srgb, var(--estado-programado) 10%, transparent);
+}
+.art-cuerpo .art-aviso__titulo {
+  margin: 0 0 0.3em;
+  font-family: var(--sans);
+  font-weight: 800;
+  color: var(--estado-programado);
+}
+.art-cuerpo .art-aviso__mensaje { margin: 0; }
+
+/* --- Separador (delimiter) ---------------------------------------------- */
+.art-cuerpo .art-separador {
+  margin: 2.2em 0;
+  text-align: center;
+  letter-spacing: 0.5em;
+  color: var(--brand-hi);
+  font-size: 0.8em;
+}
+
+/* --- Embed (video, etc.) ------------------------------------------------- */
+.art-cuerpo .art-embed { margin: 2em 0; }
+.art-cuerpo .art-embed__marco {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-card);
+  background: var(--ink);
+}
+.art-cuerpo .art-embed__marco iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* --- Tarjeta de link (linkTool) ------------------------------------------ */
+.art-cuerpo .art-link-card {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  margin: 2em 0;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--t), box-shadow var(--t);
+}
+.art-cuerpo .art-link-card:hover {
+  border-color: var(--brand-hi);
+  box-shadow: var(--sombra-1);
+}
+.art-cuerpo .art-link-card__texto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3em;
+  padding: 1rem 1.2rem;
+  min-width: 0;
+}
+.art-cuerpo .art-link-card__titulo {
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--ink);
+}
+.art-cuerpo .art-link-card__desc {
+  font-size: var(--fs-sm);
+  color: var(--ink-55);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.art-cuerpo .art-link-card__dominio {
+  font-size: var(--fs-xs);
+  color: var(--brand-hi);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.art-cuerpo .art-link-card__img {
+  flex: none;
+  width: 8rem;
+  object-fit: cover;
+}
+@media (max-width: 480px) {
+  .art-cuerpo .art-link-card__img { display: none; }
+}
+
 /* --- Cierre del artículo ------------------------------------------------ */
 .art-fin {
   margin-top: clamp(2rem, 5vw, 3rem);

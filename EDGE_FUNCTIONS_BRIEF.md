@@ -329,6 +329,33 @@ El frontend (`/preview/:token`, mismo componente que `/articulos/:slug`)
 marca la página `noindex` y muestra un aviso visible de "vista previa" — no
 carga "Sigue leyendo" (esa sección es solo para el artículo real).
 
+## 13. `obtener-vista-previa-link`
+
+Quién la llama: el editor de bloques del panel (`@editorjs/link`), al pegar
+una URL sola en un artículo — arma una tarjeta con título/descripción/imagen.
+
+Pública por diseño: `@editorjs/link` pide los datos con un GET plano del
+navegador directo al `endpoint` que se le configure (`environment.supabaseUrl`
++ `/functions/v1/obtener-vista-previa-link`), sin adjuntar el JWT del admin —
+exigir sesión aquí obligaría a mantener el token sincronizado a mano en la
+config del editor, y esto no expone nada propio: solo lee metadata pública de
+una URL que el propio admin eligió pegar.
+
+1. Rate limit: `dentroDelLimite('obtener-vista-previa-link', ipDeRequest(req), 15, 10)`.
+2. `?url=` (query, lo que manda el tool) o body `{ url }`.
+3. Valida la URL (`_shared/link_preview.ts`): solo `http`/`https`, y bloquea
+   hosts obvios de red interna (`localhost`, `127.*`, `10.*`, `192.168.*`,
+   `172.16-31.*`, `169.254.*` — metadata de nubes) para que esto no sirva
+   como proxy hacia direcciones internas. Test sin red en
+   `_tests/vista-previa-link.test.ts`.
+4. `fetch()` la URL con timeout de 6s, lee como máximo 500 KB del cuerpo (o
+   hasta encontrar `</head>`, lo que pase antes — no hace falta la página
+   completa) y extrae `og:title`/`<title>`, `og:description`/`description` y
+   `og:image` con regex simples (sin parser de HTML de por medio).
+5. 200 `{ success: 1, meta: { title, description, image: { url } } }` — shape
+   que espera `@editorjs/link`. `{ success: 0 }` si la URL no es válida, el
+   fetch falla, o se excede el rate limit.
+
 ## Nota general sobre pruebas
 
 - `invitar-admin`: probar con una segunda cuenta real, no la del dev.

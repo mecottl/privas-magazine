@@ -100,6 +100,8 @@ export interface BloqueContenido {
   id?: string;
   type: string;
   data: Record<string, unknown>;
+  /** Tunes del bloque (hoy solo `alineacion`, ver editor-contenido/herramientas/alineacion.tune.ts). */
+  tunes?: Record<string, Record<string, unknown>>;
 }
 
 export interface Articulo {

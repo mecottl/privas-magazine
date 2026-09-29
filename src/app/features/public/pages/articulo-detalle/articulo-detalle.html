@@ -73,13 +73,13 @@
           @switch (b.type) {
             @case ('header') {
               @switch (nivel(b)) {
-                @case (2) { <h2 [innerHTML]="html(b, 'text')"></h2> }
-                @case (3) { <h3 [innerHTML]="html(b, 'text')"></h3> }
-                @default { <h4 [innerHTML]="html(b, 'text')"></h4> }
+                @case (2) { <h2 [class]="alineacionClase(b)" [innerHTML]="html(b, 'text')"></h2> }
+                @case (3) { <h3 [class]="alineacionClase(b)" [innerHTML]="html(b, 'text')"></h3> }
+                @default { <h4 [class]="alineacionClase(b)" [innerHTML]="html(b, 'text')"></h4> }
               }
             }
             @case ('quote') {
-              <blockquote>
+              <blockquote [class]="alineacionClase(b)">
                 <p [innerHTML]="html(b, 'text')"></p>
                 @if (dato(b, 'caption')) {
                   <cite [innerHTML]="html(b, 'caption')"></cite>
@@ -88,18 +88,85 @@
             }
             @case ('list') {
               @if (esOrdenada(b)) {
-                <ol>
+                <ol [class]="alineacionClase(b)">
                   @for (item of items(b); track $index) { <li [innerHTML]="item"></li> }
                 </ol>
               } @else {
-                <ul>
+                <ul [class]="alineacionClase(b)">
                   @for (item of items(b); track $index) { <li [innerHTML]="item"></li> }
                 </ul>
               }
             }
+            @case ('checklist') {
+              <ul class="art-checklist">
+                @for (item of checklistItems(b); track $index) {
+                  <li [class.art-checklist__item--hecho]="item.checked">
+                    <span class="art-checklist__caja" aria-hidden="true">@if (item.checked) { ✓ }</span>
+                    <span [innerHTML]="item.text"></span>
+                  </li>
+                }
+              </ul>
+            }
+            @case ('table') {
+              <div class="art-tabla-wrap">
+                <table class="art-tabla">
+                  @if (tablaConEncabezado(b)) {
+                    <thead>
+                      <tr>
+                        @for (celda of tablaFilas(b)[0]; track $index) { <th [innerHTML]="celda"></th> }
+                      </tr>
+                    </thead>
+                  }
+                  <tbody>
+                    @for (fila of tablaFilas(b).slice(tablaConEncabezado(b) ? 1 : 0); track $index) {
+                      <tr>
+                        @for (celda of fila; track $index) { <td [innerHTML]="celda"></td> }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+            @case ('warning') {
+              <div class="art-aviso" role="note">
+                @if (dato(b, 'title')) { <p class="art-aviso__titulo" [innerHTML]="html(b, 'title')"></p> }
+                <p class="art-aviso__mensaje" [innerHTML]="html(b, 'message')"></p>
+              </div>
+            }
+            @case ('delimiter') {
+              <div class="art-separador" aria-hidden="true">✦ ✦ ✦</div>
+            }
+            @case ('embed') {
+              @if (embedUrl(b)) {
+                <figure class="art-embed">
+                  <div class="art-embed__marco">
+                    <iframe [src]="embedUrl(b)" loading="lazy" allowfullscreen title="Contenido incrustado"></iframe>
+                  </div>
+                  @if (dato(b, 'caption')) {
+                    <figcaption [innerHTML]="html(b, 'caption')"></figcaption>
+                  }
+                </figure>
+              }
+            }
+            @case ('linkTool') {
+              @if (linkUrl(b)) {
+                <a class="art-link-card" [href]="linkUrl(b)" target="_blank" rel="noopener noreferrer">
+                  <div class="art-link-card__texto">
+                    <span class="art-link-card__titulo">{{ linkMeta(b).title || linkUrl(b) }}</span>
+                    @if (linkMeta(b).description) {
+                      <span class="art-link-card__desc">{{ linkMeta(b).description }}</span>
+                    }
+                    <span class="art-link-card__dominio">{{ linkDominio(b) }}</span>
+                  </div>
+                  @if (linkMeta(b).image?.url) {
+                    <img class="art-link-card__img" [src]="linkMeta(b).image?.url" alt="" loading="lazy" />
+                  }
+                </a>
+              }
+            }
             @case ('image') {
               @if (imagenUrl(b)) {
-                <figure>
+                <figure [class]="alineacionClase(b)">
                   <img [src]="imagenUrl(b)" [alt]="textoPlano(b, 'caption') || a.titulo" loading="lazy" decoding="async" />
                   @if (dato(b, 'caption')) {
                     <figcaption [innerHTML]="html(b, 'caption')"></figcaption>
@@ -108,7 +175,7 @@
               }
             }
             @default {
-              <p [innerHTML]="html(b, 'text')"></p>
+              <p [class]="alineacionClase(b)" [innerHTML]="html(b, 'text')"></p>
             }
           }
         }

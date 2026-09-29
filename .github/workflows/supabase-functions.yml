@@ -39,3 +39,7 @@ jobs:
         # confirma que siguen rechazando llamadas sin sesión (requireAdmin).
         # No necesita ninguna cuenta real, solo prueba el candado de acceso.
         run: deno test --allow-net supabase/functions/_tests/permisos.test.ts
+
+      - name: Test del candado anti-SSRF de obtener-vista-previa-link
+        # Sin red ni env: solo la lógica de _shared/link_preview.ts (issue #95).
+        run: deno test supabase/functions/_tests/vista-previa-link.test.ts

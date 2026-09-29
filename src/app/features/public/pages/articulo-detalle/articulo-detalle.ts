@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Title } from '@angular/platform-browser';
+import { DomSanitizer, Title, type SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticulosService } from '../../../../core/services/articulos.service';
 import { SeoService } from '../../../../core/services/seo.service';
@@ -24,6 +24,7 @@ export class ArticuloDetalle implements OnInit {
   private readonly title = inject(Title);
   private readonly seo = inject(SeoService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly articulo = signal<Articulo | null>(null);
   readonly relacionados = signal<Articulo[]>([]);
@@ -82,6 +83,53 @@ export class ArticuloDetalle implements OnInit {
     const d = this.data(b);
     const file = d['file'] as { url?: string } | undefined;
     return file?.url ?? String(d['url'] ?? '');
+  }
+
+  /** Clase CSS de la Tune de alineación (izquierda por defecto, sin clase propia). */
+  alineacionClase(b: BloqueContenido): string {
+    const a = b?.tunes?.['alineacion']?.['alineacion'];
+    return typeof a === 'string' && a !== 'izquierda' ? `align-${a}` : '';
+  }
+  checklistItems(b: BloqueContenido): { text: string; checked: boolean }[] {
+    const it = this.data(b)['items'];
+    if (!Array.isArray(it)) return [];
+    return it.map((x) => ({
+      text: String((x as { text?: string })?.text ?? ''),
+      checked: !!(x as { checked?: boolean })?.checked,
+    }));
+  }
+  tablaFilas(b: BloqueContenido): string[][] {
+    const c = this.data(b)['content'];
+    return Array.isArray(c) ? (c as string[][]) : [];
+  }
+  tablaConEncabezado(b: BloqueContenido): boolean {
+    return !!this.data(b)['withHeadings'];
+  }
+  /**
+   * URL para el <iframe> del embed (YouTube/Vimeo/etc. — Editor.js ya la
+   * resuelve al escribir). `[src]` de un iframe exige una URL "de confianza"
+   * para Angular — solo se marca así si de verdad es http(s), nunca
+   * `javascript:` ni nada raro; el contenido lo escribe un admin (RLS ya
+   * exige `is_admin()` para poder guardar un artículo), mismo criterio de
+   * confianza que ya se usa para el resto del cuerpo con [innerHTML].
+   */
+  embedUrl(b: BloqueContenido): SafeResourceUrl | null {
+    const url = String(this.data(b)['embed'] ?? '');
+    if (!/^https:\/\//.test(url)) return null;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+  linkMeta(b: BloqueContenido): { title?: string; description?: string; image?: { url?: string } } {
+    return (this.data(b)['meta'] ?? {}) as { title?: string; description?: string; image?: { url?: string } };
+  }
+  linkUrl(b: BloqueContenido): string {
+    return String(this.data(b)['link'] ?? '');
+  }
+  linkDominio(b: BloqueContenido): string {
+    try {
+      return new URL(this.linkUrl(b)).hostname.replace(/^www\./, '');
+    } catch {
+      return '';
+    }
   }
 
   /** Enlace público del artículo, para compartir (issue #83). */
