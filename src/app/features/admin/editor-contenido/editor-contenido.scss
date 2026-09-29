@@ -71,9 +71,14 @@
   font-family: var(--display);
 }
 
+/* Sin límite de ancho, el texto se estiraba casi todo el panel del editor
+   (issue reportada en vivo: "el contenedor es más grande, se ve raro") —
+   46rem iguala el ancho real de `.art-lectura` en el artículo publicado
+   (`articulo-detalle.scss`), para que se vea igual mientras se escribe. */
 :host ::ng-deep .editorjs-holder .ce-block__content,
 :host ::ng-deep .editorjs-holder .ce-toolbar__content {
-  max-width: none;
+  max-width: 46rem;
+  margin-inline: auto;
 }
 
 :host ::ng-deep .editorjs-holder .cdx-quote,
