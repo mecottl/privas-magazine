@@ -134,6 +134,17 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
           tools: {
             link: { 'Add a link': 'Pega un link…' },
             stub: { 'The block can not be displayed correctly.': 'Este bloque no se puede mostrar.' },
+            // Tunes propias del bloque de imagen (issue reportada en vivo:
+            // seguían en inglés — toolNames no las cubre, son namespace
+            // aparte por tool, como 'link'/'stub' arriba).
+            image: {
+              'With border': 'Con borde',
+              'Stretch image': 'Ajustar al ancho',
+              'With background': 'Con fondo',
+              'Select an Image': 'Selecciona una imagen',
+              Caption: 'Pie de foto',
+              'With caption': 'Con pie de foto',
+            },
           },
           blockTunes: {
             delete: { Delete: 'Eliminar', 'Click to delete': 'Confirmar borrado' },

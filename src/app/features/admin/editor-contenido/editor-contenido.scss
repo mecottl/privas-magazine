@@ -90,6 +90,48 @@
   color: var(--ink-35);
 }
 
+/* El pie de foto de Editor.js viene por defecto SUPERPUESTO a la imagen
+   (position: absolute; bottom: 0 — pensado como overlay estilo Instagram),
+   no debajo — issue reportada en vivo ("el texto se sobrepone"). Se pinta
+   como texto normal después de la imagen, que es como se ve luego en el
+   artículo publicado (`articulo-detalle.scss`), para no sorprender al
+   escribir. Los !important pisan el propio <style> de Editor.js, que
+   también usa !important en una de sus reglas para esto mismo. */
+:host ::ng-deep .editorjs-holder .image-tool__caption {
+  position: static !important;
+  visibility: visible !important;
+  margin: 0.5rem 0 0 !important;
+  color: var(--ink-55);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
+/* Barra flotante de negritas/cursiva/link/marcador/subrayado al seleccionar
+   texto — con solo `all: revert` (arriba) quedaba con el estilo crudo del
+   navegador, sin relación visual con el resto del panel (issue reportada en
+   vivo: "agregale diseño a la barra de opciones de texto"). */
+:host ::ng-deep .editorjs-holder .ce-inline-toolbar {
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+:host ::ng-deep .editorjs-holder .ce-inline-toolbar__buttons {
+  padding: 0.2rem;
+}
+
+:host ::ng-deep .editorjs-holder .ce-inline-tool {
+  border-radius: 6px;
+  width: 2rem;
+  height: 2rem;
+}
+
+:host ::ng-deep .editorjs-holder .ce-inline-tool:hover,
+:host ::ng-deep .editorjs-holder .ce-inline-tool--active {
+  background: color-mix(in srgb, var(--teal) 12%, transparent);
+  color: var(--teal);
+}
+
 /* Tune de alineación (herramientas/alineacion.tune.ts): sin esto, elegir
    centro/derecha/justificado guardaba bien el dato (se ve correcto en el
    artículo publicado, que usa sus propias clases align-*) pero no se veía
@@ -98,3 +140,20 @@
 :host ::ng-deep .editorjs-holder .ce-align-centro { text-align: center; }
 :host ::ng-deep .editorjs-holder .ce-align-derecha { text-align: right; }
 :host ::ng-deep .editorjs-holder .ce-align-justificado { text-align: justify; }
+
+/* Móvil: el "+" y el "⋮" de cada bloque viven a la izquierda del texto,
+   corridos -2rem — en una pantalla angosta eso los saca del área visible
+   (issue reportada en vivo: "las opciones se cortan"). Sin ese corrimiento
+   quedan pegados al texto, pero al menos se pueden tocar. */
+@media (max-width: 640px) {
+  :host ::ng-deep .editorjs-holder {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+  }
+  :host ::ng-deep .editorjs-holder .ce-toolbar__plus {
+    left: -0.4rem;
+  }
+  :host ::ng-deep .editorjs-holder .ce-toolbar__actions {
+    right: -0.4rem;
+  }
+}
