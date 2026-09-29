@@ -16,12 +16,12 @@ describe('PaginaLegal', () => {
   it('muestra el Aviso de Privacidad con sus secciones', () => {
     const el = montar('privacidad');
     expect(el.querySelector('h1')?.textContent).toContain('Aviso de Privacidad');
-    expect(el.querySelectorAll('h2').length).toBe(8);
+    expect(el.querySelectorAll('h2').length).toBe(7);
   });
 
   it('muestra los Términos y Condiciones', () => {
     const el = montar('terminos');
     expect(el.querySelector('h1')?.textContent).toContain('Términos y Condiciones');
-    expect(el.querySelectorAll('h2').length).toBe(8);
+    expect(el.querySelectorAll('h2').length).toBe(10);
   });
 });

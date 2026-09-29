@@ -6,7 +6,8 @@ import { DOCUMENTOS_LEGALES, type DocumentoLegal } from './contenido-legal';
 /**
  * Página de documento legal (Aviso de Privacidad, Términos y Condiciones).
  * Una sola plantilla: la ruta indica cuál mostrar con `data: { doc }`.
- * El contenido vive en `contenido-legal.ts` (hoy lorem ipsum, ver issues #8 y #70).
+ * El contenido vive en `contenido-legal.ts` — texto real entregado por la clienta
+ * (issues #8 y #70). Si vuelve a cambiar, se edita ahí.
  */
 @Component({
   selector: 'app-pagina-legal',
