@@ -11,11 +11,12 @@ import { ESTADOS, type Articulo, type EstadoPublicacion } from '../../../../core
 
 type Accion = 'publicado' | 'despublicado' | 'borrador' | 'eliminar';
 import { MenuOpciones } from '../../shared/menu-opciones/menu-opciones';
+import { InfoTip } from '../../shared/info-tip/info-tip';
 
 @Component({
   selector: 'app-admin-articulos-lista',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe, CategoriasNombrePipe, MenuOpciones],
+  imports: [FormsModule, RouterLink, DatePipe, CategoriasNombrePipe, MenuOpciones, InfoTip],
   templateUrl: './articulos-lista.html',
 })
 export class ArticulosLista implements OnInit {

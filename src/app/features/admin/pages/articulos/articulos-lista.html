@@ -63,7 +63,10 @@
                       <button type="button" role="menuitem" class="peligro" (click)="ejecutar(a, 'eliminar')">Mover a la papelera</button>
                     </app-menu-opciones>
                   } @else {
-                    <span class="hint" title="Solo quien lo creó (o un administrador) puede editarlo">De otro autor</span>
+                    <span class="hint">
+                      De otro autor
+                      <app-info-tip>Solo quien lo creó (o un administrador) puede editarlo.</app-info-tip>
+                    </span>
                   }
                 </td>
               </tr>
