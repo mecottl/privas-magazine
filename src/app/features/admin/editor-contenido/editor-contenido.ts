@@ -4,7 +4,6 @@ import {
   ElementRef,
   NgZone,
   OnDestroy,
-  ViewEncapsulation,
   effect,
   inject,
   model,
@@ -59,16 +58,14 @@ import { AlineacionTuneClass } from './herramientas/alineacion.tune';
   host: { class: 'editorjs-host' },
   templateUrl: './editor-contenido.html',
   styleUrl: './editor-contenido.scss',
-  // Editor.js crea todo su DOM con document.createElement, fuera de
-  // Angular — ninguno de esos nodos lleva el atributo de encapsulado, así
-  // que con Emulated (el default) NINGUNA regla de editor-contenido.scss
-  // aplicaba de verdad (ni las de antes — fuente de encabezados, tamaño de
-  // imágenes — ni la de alineación nueva). Confirmado viendo el CSS ya
-  // compilado: todo salía como `.editorjs-holder[_ngcontent-x] .ce-header
-  // [_ngcontent-x]`, que nunca matchea porque .ce-header no tiene ese
-  // atributo. Esta hoja SOLO estiliza el DOM que Editor.js inyecta dentro
-  // de `.editorjs-holder`, así que None es lo correcto aquí, no un parche.
-  encapsulation: ViewEncapsulation.None,
+  // NO usar encapsulation: None aquí — se probó y rompió el `:host` propio
+  // del componente (el scroll interior de la página de editar, y con eso
+  // el menú del bloque quedaba recortado por el contenedor): fuera de un
+  // shadow root, `:host` no matchea nada. La hoja usa `:host ::ng-deep`
+  // selector por selector en vez de eso — perfora el encapsulado SOLO
+  // donde hace falta (el DOM que Editor.js inyecta con
+  // document.createElement, fuera del template de Angular), sin tocar
+  // `:host`. Ver el comentario al inicio de editor-contenido.scss.
 })
 export class EditorContenido implements AfterViewInit, OnDestroy {
   private readonly uploads = inject(UploadsService);

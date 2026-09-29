@@ -1,3 +1,6 @@
+/* :host se queda con el encapsulado normal de Angular — gobierna el propio
+   layout del componente (el scroll interior de la página de editar
+   artículo), nada que ver con lo que Editor.js inyecta adentro. */
 :host {
   display: block;
   height: 100%;
@@ -5,42 +8,57 @@
   background: var(--white);
 }
 
-.editorjs-holder {
+/*
+ * Todo lo de abajo SÍ necesita `::ng-deep`: Editor.js crea su DOM con
+ * document.createElement, fuera del template de Angular, así que esos
+ * nodos nunca llevan el atributo de encapsulado — con Emulated (el
+ * default) esas reglas nunca hacían match (confirmado en el CSS ya
+ * compilado: `.editorjs-holder[_ngcontent-x] .ce-header[_ngcontent-x]`
+ * jamás matchea si .ce-header no tiene ese atributo).
+ *
+ * Antes se probó `encapsulation: ViewEncapsulation.None` para todo el
+ * componente — funcionó para esto, pero de paso también invalidó el
+ * `:host` de arriba (fuera de un shadow root, `:host` no matchea nada),
+ * y con eso se perdió el scroll interior y el menú del bloque quedó
+ * recortado por el contenedor. `:host ::ng-deep` es quirúrgico: perfora
+ * el encapsulado SOLO para lo de adentro, sin tocar `:host`.
+ */
+:host ::ng-deep .editorjs-holder {
   background: var(--white);
   padding: 0.9rem 1.25rem 3rem 2.75rem;
   min-height: 100%;
 }
 
-.editorjs-holder .ce-toolbar__plus {
+:host ::ng-deep .editorjs-holder .ce-toolbar__plus {
   left: -2rem;
 }
 
-.editorjs-holder .ce-toolbar__settings-btn {
+:host ::ng-deep .editorjs-holder .ce-toolbar__settings-btn {
   right: 0;
 }
 
-.editorjs-holder :is(h2, h3, h4) {
+:host ::ng-deep .editorjs-holder :is(h2, h3, h4) {
   font-family: var(--display);
 }
 
-.editorjs-holder .ce-block__content,
-.editorjs-holder .ce-toolbar__content {
+:host ::ng-deep .editorjs-holder .ce-block__content,
+:host ::ng-deep .editorjs-holder .ce-toolbar__content {
   max-width: none;
 }
 
-.editorjs-holder .cdx-quote,
-.editorjs-holder .ce-header {
+:host ::ng-deep .editorjs-holder .cdx-quote,
+:host ::ng-deep .editorjs-holder .ce-header {
   font-family: var(--display);
 }
 
-.editorjs-holder ::selection {
+:host ::ng-deep .editorjs-holder ::selection {
   background: var(--teal);
   color: var(--white);
 }
 
-.editorjs-holder .image-tool__image,
-.editorjs-holder .image-tool__image-picture,
-.editorjs-holder .cdx-block img {
+:host ::ng-deep .editorjs-holder .image-tool__image,
+:host ::ng-deep .editorjs-holder .image-tool__image-picture,
+:host ::ng-deep .editorjs-holder .cdx-block img {
   max-height: 320px;
   max-width: 100%;
   width: auto;
@@ -48,11 +66,11 @@
   margin-inline: auto;
 }
 
-.editorjs-holder .image-tool--withBackground .image-tool__image-picture {
+:host ::ng-deep .editorjs-holder .image-tool--withBackground .image-tool__image-picture {
   max-width: 100%;
 }
 
-.editorjs-holder .image-tool__caption:empty::before {
+:host ::ng-deep .editorjs-holder .image-tool__caption:empty::before {
   color: var(--ink-35);
 }
 
@@ -61,6 +79,6 @@
    artículo publicado, que usa sus propias clases align-*) pero no se veía
    reflejado aquí dentro del editor — las clases que pone la Tune (ce-align-*)
    no tenían ningún estilo propio en esta hoja. */
-.editorjs-holder .ce-align-centro { text-align: center; }
-.editorjs-holder .ce-align-derecha { text-align: right; }
-.editorjs-holder .ce-align-justificado { text-align: justify; }
+:host ::ng-deep .editorjs-holder .ce-align-centro { text-align: center; }
+:host ::ng-deep .editorjs-holder .ce-align-derecha { text-align: right; }
+:host ::ng-deep .editorjs-holder .ce-align-justificado { text-align: justify; }
