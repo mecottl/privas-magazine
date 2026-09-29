@@ -33,7 +33,7 @@
  * volver a esta función para cifrar la subida.
  */
 import { Buffer } from 'node:buffer';
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
 type TipoArchivo =
@@ -187,6 +187,7 @@ async function subirPorFtp(ruta: string, bytes: Uint8Array): Promise<string> {
 }
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 

@@ -12,7 +12,7 @@
  *    { ok: true }. El frontend es quien decide cuánto "recordar" el
  *    dispositivo (localStorage) — esta función no sabe nada de eso.
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
 interface Payload {
@@ -20,6 +20,7 @@ interface Payload {
 }
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 

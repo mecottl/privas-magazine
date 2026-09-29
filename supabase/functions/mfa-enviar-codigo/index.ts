@@ -17,7 +17,7 @@
  * Secretos: RESEND_API_KEY, MFA_EMAIL_FROM (default
  * "PRIVAS Magazine <contacto@privasmagazine.com>").
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 
 /**
@@ -77,6 +77,7 @@ function plantillaCorreo(codigo: string): string {
 }
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 

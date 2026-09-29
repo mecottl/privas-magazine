@@ -1,4 +1,4 @@
-import { corsHeaders, json } from './cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from './cors.ts';
 import { adminClient } from './clients.ts';
 import { dentroDelLimite, ipDeRequest } from './rate_limit.ts';
 import { sincronizarContactoAudiencia } from './resend_audience.ts';
@@ -23,6 +23,7 @@ export async function actualizarEstadoSuscripcion(
   req: Request,
   activo: boolean,
 ): Promise<Response> {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   // Rate limit por IP: 10 intentos cada 15 min, separado por ruta (confirmar

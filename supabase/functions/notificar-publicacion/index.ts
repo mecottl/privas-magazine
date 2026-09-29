@@ -15,7 +15,7 @@
  * 200 siempre que el caller esté autorizado (los fallos de rebuild/newsletter
  * son no fatales, igual que en programar-publicacion).
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { requireAdmin } from '../_shared/clients.ts';
 import {
   type ArticuloPub,
@@ -25,6 +25,7 @@ import {
 } from '../_shared/publicacion.ts';
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 

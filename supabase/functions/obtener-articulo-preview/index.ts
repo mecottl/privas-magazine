@@ -13,7 +13,7 @@
  * Body: `{ token }`. Rate limit 20/10min por IP (igual de generoso que un
  * link que se comparte varias veces, pero frena fuerza bruta trivial).
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { adminClient } from '../_shared/clients.ts';
 import { dentroDelLimite, ipDeRequest } from '../_shared/rate_limit.ts';
 
@@ -21,6 +21,7 @@ const SELECT_CON_CATEGORIAS =
   '*, categorias:categorias!articulos_categorias(id, nombre, slug)';
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 

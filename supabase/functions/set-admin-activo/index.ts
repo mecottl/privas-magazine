@@ -37,7 +37,7 @@
  * cascada) e ignora el resto de los campos; sus artículos quedan sin dueño
  * (`creado_por = null`, ver misma migración) en vez de bloquear el borrado.
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 import { registrarBitacora } from '../_shared/bitacora.ts';
 
@@ -53,6 +53,7 @@ interface Payload {
 }
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 

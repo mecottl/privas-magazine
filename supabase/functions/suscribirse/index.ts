@@ -13,7 +13,7 @@
  * `confirmar-suscripcion`. Ahora lo manda por Resend (tolerante: si
  * RESEND_API_KEY falta, la suscripción se guarda igual pero se loguea).
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { adminClient } from '../_shared/clients.ts';
 import { dentroDelLimite, ipDeRequest } from '../_shared/rate_limit.ts';
 
@@ -91,6 +91,7 @@ async function enviarCorreoConfirmacion(email: string, token: string): Promise<v
 }
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 

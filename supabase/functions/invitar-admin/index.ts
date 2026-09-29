@@ -27,7 +27,7 @@
  * 5. Si el insert falla tras crear el usuario → rollback con auth.admin.deleteUser().
  * 6. 200 con los datos del nuevo admin (sin nada sensible).
  */
-import { corsHeaders, json } from '../_shared/cors.ts';
+import { corsHeaders, fijarOrigenCors, json } from '../_shared/cors.ts';
 import { adminClient, requireAdmin } from '../_shared/clients.ts';
 import { registrarBitacora } from '../_shared/bitacora.ts';
 
@@ -42,6 +42,7 @@ interface Payload {
 }
 
 Deno.serve(async (req) => {
+  fijarOrigenCors(req);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405);
 
