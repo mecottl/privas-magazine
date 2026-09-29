@@ -131,12 +131,17 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
             Bold: 'Negrita',
             Italic: 'Cursiva',
           },
+          // Cada paquete de Editor.js guarda sus textos bajo su PROPIO
+          // namespace `tools.<clave con la que se registró abajo>` — no hay
+          // un solo diccionario global, hay que traducir paquete por
+          // paquete (confirmado grepeando `i18n.t(` en cada uno instalado;
+          // issue reportada en vivo: "citas"/tablas/embeds seguían en inglés).
           tools: {
+            // Tool interna de Editor.js (Bold/Italic/Link ya vienen incluidas
+            // sin paquete aparte) — namespace fijo 'link', distinto del
+            // paquete @editorjs/link de abajo (registrado como 'linkTool').
             link: { 'Add a link': 'Pega un link…' },
             stub: { 'The block can not be displayed correctly.': 'Este bloque no se puede mostrar.' },
-            // Tunes propias del bloque de imagen (issue reportada en vivo:
-            // seguían en inglés — toolNames no las cubre, son namespace
-            // aparte por tool, como 'link'/'stub' arriba).
             image: {
               'With border': 'Con borde',
               'Stretch image': 'Ajustar al ancho',
@@ -144,6 +149,34 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
               'Select an Image': 'Selecciona una imagen',
               Caption: 'Pie de foto',
               'With caption': 'Con pie de foto',
+            },
+            // @editorjs/quote trae SU PROPIA alineación (izquierda/centro)
+            // además de la Tune propia de aquí — redundante pero no se puede
+            // apagar desde la config del paquete, así que al menos se traduce.
+            quote: { 'Align Left': 'Alinear a la izquierda', 'Align Center': 'Centrar' },
+            table: {
+              'Add column to left': 'Agregar columna a la izquierda',
+              'Add column to right': 'Agregar columna a la derecha',
+              'Add row above': 'Agregar fila arriba',
+              'Add row below': 'Agregar fila abajo',
+              Collapse: 'Contraer',
+              'Delete column': 'Eliminar columna',
+              'Delete row': 'Eliminar fila',
+              Heading: 'Encabezado',
+              Stretch: 'Ajustar',
+              'With headings': 'Con encabezados',
+              'Without headings': 'Sin encabezados',
+            },
+            embed: { 'Enter a caption': 'Escribe un pie de foto' },
+            list: { Ordered: 'Numerada', Unordered: 'Con viñetas' },
+            header: { 'Heading 2': 'Encabezado 2', 'Heading 3': 'Encabezado 3', 'Heading 4': 'Encabezado 4' },
+            // @editorjs/link (tarjeta con vista previa, registrado como
+            // 'linkTool' abajo) — namespace distinto al 'link' interno.
+            linkTool: {
+              Link: 'Link',
+              "Couldn't fetch the link data": 'No se pudo obtener la información del link',
+              "Couldn't get this link data, try the other one": 'No se pudo obtener este link, intenta con otro',
+              'Wrong response format from the server': 'Formato de respuesta inválido del servidor',
             },
           },
           blockTunes: {

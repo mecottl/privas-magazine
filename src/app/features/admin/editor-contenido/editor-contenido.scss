@@ -30,18 +30,32 @@
 }
 
 /* El panel de administración tiene una regla global `.admin-main button`
- * (círculo teal sólido, padding grande — para los botones DEL panel) que,
- * sin querer, también le cae a los botones que Editor.js dibuja por su
- * cuenta (barra de negritas/cursiva, menú "⋮" del bloque, buscador de
- * herramientas): quedaban como círculos teal sin ícono visible, y el
- * relleno extra hacía que el menú necesitara más scroll del que Editor.js
- * había calculado. `all: revert` deshace SOLO esa regla global dentro del
- * editor, dejando que el <style> que Editor.js inyecta solo (con sus
- * propias clases, ej. .ce-inline-tool) mande otra vez, como debía ser.
+ * (círculo teal sólido, padding grande, border propio — para los botones
+ * DEL panel) que, sin querer, también le cae a los botones que Editor.js
+ * dibuja por su cuenta (marcador/subrayado/cursiva de la barra flotante,
+ * menú "⋮" del bloque): quedaban como círculos teal sin ícono visible.
+ *
+ * Antes esto se resolvía con `all: revert`, pero esas mismas herramientas
+ * "clásicas" (las que crean su propio <button> — marcador, subrayado,
+ * cursiva) NO quedan sueltas dentro del editor: Editor.js las envuelve en
+ * su propio contenedor de popover (`.ce-popover-item__icon--tool`), que ya
+ * trae su tamaño/centrado calculado. `all: revert` también reseteaba
+ * `display`/`width`/`height` ahí adentro, chocando con ese contenedor y
+ * dejando el ícono recortado/invisible otra vez — el síntoma volvió a
+ * aparecer en vivo. Pisar SOLO las propiedades que `.admin-main button`
+ * cambia (fondo, borde, relleno, radio, peso de fuente) es más seguro:
+ * deja que el propio <style> de Editor.js siga controlando todo lo demás
+ * (display, tamaño, centrado) sin pelearse con nuestro reset.
  */
 :host ::ng-deep .editorjs-holder button {
-  all: revert;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
   font: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
+  color: inherit;
   cursor: pointer;
 }
 
@@ -106,40 +120,31 @@
   text-align: center;
 }
 
-/* Barra flotante de negritas/cursiva/link/marcador/subrayado al seleccionar
-   texto — con solo `all: revert` (arriba) quedaba con el estilo crudo del
-   navegador, sin relación visual con el resto del panel (issue reportada en
-   vivo: "agregale diseño a la barra de opciones de texto"). */
-:host ::ng-deep .editorjs-holder .ce-inline-toolbar {
-  border-radius: var(--r-sm);
-  border: 1px solid var(--line);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-:host ::ng-deep .editorjs-holder .ce-inline-toolbar__buttons {
-  padding: 0.2rem;
-}
-
-:host ::ng-deep .editorjs-holder .ce-inline-tool {
-  border-radius: 6px;
-  width: 2rem;
-  height: 2rem;
-}
-
-:host ::ng-deep .editorjs-holder .ce-inline-tool:hover,
+/* La barra flotante de negritas/cursiva/marcador/subrayado y el menú "⋮" ya
+ * vienen bien diseñados de fábrica (Editor.js los pinta con su propio
+ * componente "popover": fondo blanco, sombra, radio — variables CSS que
+ * define él mismo en `.ce-popover`). Ponerle otro fondo/sombra propios
+ * encima solo duplicaba el diseño y competía con su tamaño/centrado
+ * calculado — issue reportada en vivo tras el intento anterior (íconos
+ * recortados de nuevo). Solo hace falta que el color de acento en hover/
+ * activo combine con la marca en vez del azul de Editor.js por defecto.
+ */
+:host ::ng-deep .editorjs-holder .ce-popover-item--active,
 :host ::ng-deep .editorjs-holder .ce-inline-tool--active {
-  background: color-mix(in srgb, var(--teal) 12%, transparent);
-  color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 12%, transparent) !important;
+  color: var(--teal) !important;
 }
 
-/* Tune de alineación (herramientas/alineacion.tune.ts): sin esto, elegir
-   centro/derecha/justificado guardaba bien el dato (se ve correcto en el
-   artículo publicado, que usa sus propias clases align-*) pero no se veía
-   reflejado aquí dentro del editor — las clases que pone la Tune (ce-align-*)
-   no tenían ningún estilo propio en esta hoja. */
-:host ::ng-deep .editorjs-holder .ce-align-centro { text-align: center; }
-:host ::ng-deep .editorjs-holder .ce-align-derecha { text-align: right; }
-:host ::ng-deep .editorjs-holder .ce-align-justificado { text-align: justify; }
+/* Tune de alineación (herramientas/alineacion.tune.ts): elegir centro/
+   derecha/justificado guarda bien el dato (se ve correcto en el artículo
+   publicado, que usa sus propias clases align-*), pero reportado en vivo que
+   no se refleja EN VIVO dentro del editor al hacer clic. `!important` para
+   ganarle a cualquier `text-align` que el propio bloque (párrafo/encabezado/
+   cita) traiga por su cuenta — no hay razón legítima para que algo adentro
+   quiera pisar la alineación que el usuario acaba de elegir. */
+:host ::ng-deep .editorjs-holder .ce-align-centro { text-align: center !important; }
+:host ::ng-deep .editorjs-holder .ce-align-derecha { text-align: right !important; }
+:host ::ng-deep .editorjs-holder .ce-align-justificado { text-align: justify !important; }
 
 /* Móvil: el "+" y el "⋮" de cada bloque viven a la izquierda del texto,
    corridos -2rem — en una pantalla angosta eso los saca del área visible
