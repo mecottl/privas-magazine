@@ -46,8 +46,11 @@ export class AlineacionTune implements BlockTune {
     },
   ];
 
-  constructor({ data }: { api: API; data?: { alineacion?: Alineacion }; block: BlockAPI }) {
+  private readonly block: BlockAPI;
+
+  constructor({ data, block }: { api: API; data?: { alineacion?: Alineacion }; block: BlockAPI }) {
     this.data = { alineacion: data?.alineacion ?? 'izquierda' };
+    this.block = block;
   }
 
   private wrapper?: HTMLElement;
@@ -75,6 +78,12 @@ export class AlineacionTune implements BlockTune {
       onActivate: () => {
         this.data = { alineacion: o.valor };
         this.aplicarClase();
+        // Sin esto, Editor.js nunca se entera de que el bloque cambió —
+        // "Guardar cambios" seguía guardando los datos de ANTES del clic,
+        // sin ningún error (issue reportada en vivo: la alineación se
+        // perdía al refrescar). @editorjs/quote hace lo mismo en su propia
+        // Tune de alineación (this.block.dispatchChange()).
+        this.block.dispatchChange();
       },
     }));
   }

@@ -312,6 +312,15 @@
 .art-cuerpo .align-centro { text-align: center; }
 .art-cuerpo .align-derecha { text-align: right; }
 .art-cuerpo .align-justificado { text-align: justify; text-wrap: pretty; }
+/* figure img es width:100% por default (línea arriba) — sin espacio libre,
+   margin-inline no tiene nada que mover, así que centro/derecha se veían
+   idénticos a izquierda (issue reportada en vivo). Solo estas dos
+   necesitan volver a su tamaño natural para que el corrimiento se note. */
+.art-cuerpo figure.align-centro img,
+.art-cuerpo figure.align-derecha img {
+  width: auto;
+  max-width: 100%;
+}
 .art-cuerpo figure.align-centro img { margin-inline: auto; }
 .art-cuerpo figure.align-derecha img { margin-inline: 0 0 0 auto; }
 

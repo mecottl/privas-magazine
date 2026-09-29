@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { AlineacionTune } from './alineacion.tune';
 
 /**
@@ -6,7 +7,7 @@ import { AlineacionTune } from './alineacion.tune';
  */
 describe('AlineacionTune', () => {
   const api = {} as never;
-  const block = {} as never;
+  const block = { dispatchChange: () => {} } as never;
 
   it('por defecto queda en izquierda si no hay dato previo', () => {
     const tune = new AlineacionTune({ api, data: undefined, block });
@@ -28,7 +29,8 @@ describe('AlineacionTune', () => {
   });
 
   it('render() da las 4 opciones y activar una cambia lo que guarda save()', () => {
-    const tune = new AlineacionTune({ api, data: undefined, block });
+    const dispatchChange = vi.fn();
+    const tune = new AlineacionTune({ api, data: undefined, block: { dispatchChange } as never });
     tune.wrap(document.createElement('p'));
     const items = tune.render() as { title?: string; isActive?: boolean; onActivate: () => void }[];
     expect(items.map((i) => i.title)).toEqual([
@@ -41,5 +43,8 @@ describe('AlineacionTune', () => {
 
     items[3].onActivate();
     expect(tune.save()).toEqual({ alineacion: 'justificado' });
+    // Sin esto Editor.js nunca sabe que el bloque cambió y "Guardar cambios"
+    // guarda los datos de ANTES del clic — bug real reportado en vivo.
+    expect(dispatchChange).toHaveBeenCalled();
   });
 });

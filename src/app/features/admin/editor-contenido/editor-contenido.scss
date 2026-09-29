@@ -98,7 +98,19 @@
   max-width: 100%;
   width: auto;
   object-fit: contain;
+  /* Centrada por default — pero la Tune de alineación (izquierda/derecha)
+     necesita poder MOVERLA, no solo el texto. `margin-inline: auto` fijo
+     aquí ganaba siempre (issue reportada en vivo: la alineación no hacía
+     nada en imágenes, se veían siempre centradas). Las reglas de abajo
+     (.ce-align-*) pisan este valor según lo que el usuario elija. */
   margin-inline: auto;
+}
+
+:host ::ng-deep .editorjs-holder .ce-align-izquierda .image-tool__image-picture {
+  margin-inline: 0 auto;
+}
+:host ::ng-deep .editorjs-holder .ce-align-derecha .image-tool__image-picture {
+  margin-inline: auto 0;
 }
 
 :host ::ng-deep .editorjs-holder .image-tool--withBackground .image-tool__image-picture {
