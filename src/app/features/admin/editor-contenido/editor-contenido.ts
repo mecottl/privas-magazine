@@ -4,6 +4,7 @@ import {
   ElementRef,
   NgZone,
   OnDestroy,
+  ViewEncapsulation,
   effect,
   inject,
   model,
@@ -58,6 +59,16 @@ import { AlineacionTuneClass } from './herramientas/alineacion.tune';
   host: { class: 'editorjs-host' },
   templateUrl: './editor-contenido.html',
   styleUrl: './editor-contenido.scss',
+  // Editor.js crea todo su DOM con document.createElement, fuera de
+  // Angular — ninguno de esos nodos lleva el atributo de encapsulado, así
+  // que con Emulated (el default) NINGUNA regla de editor-contenido.scss
+  // aplicaba de verdad (ni las de antes — fuente de encabezados, tamaño de
+  // imágenes — ni la de alineación nueva). Confirmado viendo el CSS ya
+  // compilado: todo salía como `.editorjs-holder[_ngcontent-x] .ce-header
+  // [_ngcontent-x]`, que nunca matchea porque .ce-header no tiene ese
+  // atributo. Esta hoja SOLO estiliza el DOM que Editor.js inyecta dentro
+  // de `.editorjs-holder`, así que None es lo correcto aquí, no un parche.
+  encapsulation: ViewEncapsulation.None,
 })
 export class EditorContenido implements AfterViewInit, OnDestroy {
   private readonly uploads = inject(UploadsService);
@@ -96,15 +107,55 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
       data: { blocks: this.normalizar(this.contenido() ?? []) },
       // Alineación disponible en todos los bloques que no digan lo contrario.
       tunes: ['alineacion'],
+      // Traduce lo que trae Editor.js de fábrica en inglés (menú del bloque,
+      // buscador de herramientas, etc.) — issue reportada en vivo. `toolNames`
+      // traduce Negrita/Cursiva/Link (no tienen tools.<x>.config propio, son
+      // internos); cada bloque de abajo ya trae su `toolbox.title` en español,
+      // así que no dependen de este diccionario para su nombre.
+      i18n: {
+        messages: {
+          ui: {
+            blockTunes: { toggler: { 'Click to tune': 'Más opciones', 'or drag to move': 'o arrastra para mover' } },
+            inlineToolbar: { converter: { 'Convert to': 'Convertir a' } },
+            toolbar: { toolbox: { Add: 'Agregar' } },
+            popover: { Filter: 'Buscar', 'Nothing found': 'Sin resultados', 'Convert to': 'Convertir a' },
+          },
+          toolNames: {
+            Text: 'Texto',
+            Heading: 'Encabezado',
+            List: 'Lista',
+            Warning: 'Aviso',
+            Checklist: 'Lista de tareas',
+            Quote: 'Cita',
+            Delimiter: 'Separador',
+            Table: 'Tabla',
+            Link: 'Link',
+            Image: 'Imagen',
+            Bold: 'Negrita',
+            Italic: 'Cursiva',
+          },
+          tools: {
+            link: { 'Add a link': 'Pega un link…' },
+            stub: { 'The block can not be displayed correctly.': 'Este bloque no se puede mostrar.' },
+          },
+          blockTunes: {
+            delete: { Delete: 'Eliminar', 'Click to delete': 'Confirmar borrado' },
+            moveUp: { 'Move up': 'Subir' },
+            moveDown: { 'Move down': 'Bajar' },
+          },
+        },
+      },
       tools: {
         alineacion: { class: AlineacionTuneClass },
         paragraph: {
           class: Paragraph as never,
           inlineToolbar: true,
+          toolbox: { title: 'Texto' },
         },
         header: {
           class: Header as never,
           inlineToolbar: true,
+          toolbox: { title: 'Encabezado' },
           config: {
             levels: [2, 3, 4],
             defaultLevel: 2,
@@ -114,6 +165,7 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
         quote: {
           class: Quote as never,
           inlineToolbar: true,
+          toolbox: { title: 'Cita' },
           config: {
             quotePlaceholder: 'Escribe la cita',
             captionPlaceholder: 'Autor o fuente',
@@ -122,35 +174,41 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
         list: {
           class: List as never,
           inlineToolbar: true,
+          toolbox: { title: 'Lista' },
           config: { defaultStyle: 'unordered' },
         },
         checklist: {
           class: Checklist as never,
           inlineToolbar: true,
+          toolbox: { title: 'Lista de tareas' },
         },
         table: {
           class: Table as never,
           inlineToolbar: true,
+          toolbox: { title: 'Tabla' },
           config: { rows: 2, cols: 3 },
         },
         warning: {
           class: Warning as never,
           inlineToolbar: true,
+          toolbox: { title: 'Aviso' },
           config: {
             titlePlaceholder: 'Título del aviso',
             messagePlaceholder: 'Mensaje',
           },
         },
-        delimiter: { class: Delimiter as never },
-        embed: { class: Embed as never },
+        delimiter: { class: Delimiter as never, toolbox: { title: 'Separador' } },
+        embed: { class: Embed as never, toolbox: { title: 'Video / embed' } },
         linkTool: {
           class: LinkTool as never,
+          toolbox: { title: 'Link con vista previa' },
           config: {
             endpoint: `${environment.supabaseUrl}/functions/v1/obtener-vista-previa-link`,
           },
         },
         image: {
           class: ImageTool as never,
+          toolbox: { title: 'Imagen' },
           config: {
             captionPlaceholder: 'Pie de foto',
             buttonContent: 'Seleccionar imagen',
@@ -167,8 +225,8 @@ export class EditorContenido implements AfterViewInit, OnDestroy {
         // --- herramientas en línea (seleccionar texto) ---
         // negritas, cursivas y link ("URL con sobrenombre") ya vienen de
         // fábrica con Editor.js — no hace falta registrarlas.
-        marker: { class: Marker as never },
-        underline: { class: Underline as never },
+        marker: { class: Marker as never, toolbox: { title: 'Marcador' } },
+        underline: { class: Underline as never, toolbox: { title: 'Subrayado' } },
       },
       onChange: async () => {
         if (!this.editor) return;
