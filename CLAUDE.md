@@ -160,11 +160,20 @@ Detalle completo de lógica en `EDGE_FUNCTIONS_BRIEF.md` — aquí solo el mapa.
 | `obtener-articulo-preview` | público (link de vista previa) | Issue #75: devuelve un artículo de cualquier `estado` por `articulos.token_preview`, para que la clienta lo revise antes de publicar sin sesión de admin. Sin policy de RLS pública nueva — el token se valida en código con `service_role`. |
 
 ### Editor de contenido de artículos
-Constructor de bloques libre: texto, imágenes, video embebido, layout libre
-dentro del artículo (la clienta pidió libertad total tipo "arma tu página
-como quieras"). Evaluar una librería existente (TipTap, Editor.js,
-ngx-editor) antes de construir un editor propio. El contenido se guarda como
-JSON en `articulos.contenido_json`.
+Constructor de bloques con Editor.js (`editor-contenido/`) — se evaluó una
+librería existente antes de construir un editor propio, como pedía la idea
+original de la clienta de libertad tipo "arma tu página como quieras".
+Herramientas ya construidas: encabezado (h2–h4), párrafo, cita, lista
+(viñetas/numerada) e imagen (sube por `UploadsService` → `subir-archivo`).
+El contenido se guarda como JSON en `articulos.contenido_json` y
+`articulo-detalle.ts` lo pinta con `[innerHTML]` **sin** `bypassSecurityTrustHtml`
+— Angular sanitiza automáticamente, no cambiar eso al tocar el renderer.
+
+**Pendiente de negocio, no construido todavía** (issue #95): video embebido
+(YouTube/Vimeo) y layout más libre que la secuencia vertical de bloques.
+Nadie lo ha pedido como necesidad activa — si se retoma, definir primero qué
+proveedores de video se aceptan y cómo se sanitiza el embed antes de tocar
+el renderer público.
 
 El `extracto` se genera automáticamente a partir del contenido (no lo llena
 el usuario a mano) — resuélvelo en el momento de guardar (frontend o Edge
