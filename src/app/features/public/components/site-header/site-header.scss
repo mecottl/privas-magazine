@@ -96,7 +96,7 @@
 }
 .brand__logo {
   display: block;
-  height: clamp(1.9rem, 1.4rem + 1.5vw, 2.7rem);
+  height: clamp(2.3rem, 1.7rem + 1.8vw, 3.2rem);
   width: auto;
   /* El logo es blanco: una sombra tenue lo mantiene legible sobre foto y cristal. */
   filter: drop-shadow(0 1px 10px rgba(11, 37, 48, 0.5));
@@ -120,9 +120,9 @@
 .site-nav__link {
   position: relative;
   font-family: var(--sans);
-  font-size: 0.8rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--on-brand);
   padding: 0.5rem 0;
@@ -145,8 +145,8 @@
 .site-nav__buscar {
   display: grid;
   place-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2.6rem;
+  height: 2.6rem;
   border-radius: var(--r-pill);
   color: var(--on-brand);
   transition: background var(--t), transform var(--t);
@@ -155,20 +155,20 @@
   background: rgba(251, 247, 238, 0.12);
   transform: scale(1.06);
 }
-.site-nav__buscar svg { width: 1.05rem; height: 1.05rem; }
+.site-nav__buscar svg { width: 1.25rem; height: 1.25rem; }
 
 .site-nav__revista {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.5rem 1.15rem;
+  padding: 0.65rem 1.4rem;
   border-radius: var(--r-pill);
   background: var(--cream);
   color: var(--brand);
   font-family: var(--sans);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: transform var(--t), box-shadow var(--t), background var(--t);
 }
@@ -181,8 +181,8 @@
 .nav-toggle {
   display: none;
   margin-left: auto;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   align-items: center;
   justify-content: center;
   border: 1.5px solid var(--line-brand);
@@ -191,7 +191,7 @@
   color: var(--on-brand);
   cursor: pointer;
 }
-.nav-toggle svg { width: 1.3rem; height: 1.3rem; }
+.nav-toggle svg { width: 1.45rem; height: 1.45rem; }
 
 /* --- Menú móvil a pantalla completa --- */
 .nav-sheet {
