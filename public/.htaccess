@@ -15,3 +15,15 @@
   # Todo lo demás -> index.html (rutas de Angular).
   RewriteRule ^ index.html [L]
 </IfModule>
+
+# Cabeceras básicas de seguridad (issue #87). CSP se deja fuera a propósito:
+# necesita probarse con cuidado (Google Fonts, Supabase, imágenes de Akky)
+# para no romper nada — queda para una iteración aparte.
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Sin listado de directorios si falta un index.
+Options -Indexes
