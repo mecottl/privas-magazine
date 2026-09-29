@@ -2,51 +2,26 @@
   <app-hero-media class="hero__media" nombre="cat-entretenimiento" alt="" [prioridad]="true" />
 
   <div class="hero__inner">
-    <span class="hero__eyebrow">El grupo</span>
-    <h1 class="hero__title">Directorio y sobre nosotros</h1>
-    <p class="hero__texto">
-      PRIVAS Magazine forma parte de Grupo Privas, un conjunto de marcas
-      dedicadas a los viajes y las experiencias en el sureste mexicano.
-    </p>
+    <span class="hero__eyebrow">El equipo</span>
+    <h1 class="hero__title">Directorio</h1>
+    <p class="hero__texto">Quiénes hacemos PRIVAS Magazine y cómo escribirle a cada área.</p>
   </div>
 </section>
 
 <section class="franja franja--fin">
-  <div class="franja__wrap directorio-wrap">
-    <!-- TODO (issue #71): texto de relleno (lorem ipsum), pendiente del texto
-         real de "sobre nosotros" de la clienta. -->
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat.
-    </p>
-    <p>
-      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-      dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    </p>
-
-    @if (marcas().length) {
-      <h2>Nuestras marcas</h2>
-      <ul class="directorio-lista">
-        @for (m of marcas(); track m.id) {
-          <li class="directorio-item">
-            @if (m.logo_url) {
-              <img [src]="m.logo_url" [alt]="m.nombre" loading="lazy" />
-            }
-            <div>
-              <strong>{{ m.nombre }}</strong>
-              @if (m.descripcion) { <p>{{ m.descripcion }}</p> }
-              @if (m.sitio_web_url) {
-                <a [href]="m.sitio_web_url" target="_blank" rel="noopener">Visitar sitio →</a>
-              }
-            </div>
-          </li>
-        }
-      </ul>
-    }
+  <div class="franja__wrap">
+    <ul class="dir-lista">
+      @for (m of directorio; track m.correo) {
+        <li class="dir-item">
+          <span class="dir-item__rol">{{ m.rol }}</span>
+          @if (m.url) {
+            <a class="dir-item__nombre" [href]="m.url" target="_blank" rel="noopener">{{ m.nombre }}</a>
+          } @else {
+            <span class="dir-item__nombre">{{ m.nombre }}</span>
+          }
+          <a class="dir-item__correo" [href]="'mailto:' + m.correo">{{ m.correo }}</a>
+        </li>
+      }
+    </ul>
   </div>
 </section>
-
-<app-colaboradores />

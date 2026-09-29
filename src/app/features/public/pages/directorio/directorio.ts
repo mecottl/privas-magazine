@@ -1,31 +1,35 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { MarcasService } from '../../../../core/services/marcas.service';
+import { Component } from '@angular/core';
 import { HeroMedia } from '../../components/hero-media/hero-media';
-import { Colaboradores } from '../../components/colaboradores/colaboradores';
-import type { Marca } from '../../../../core/models';
 
-/**
- * "Directorio y sobre nosotros" (issue #34). El directorio de marcas usa
- * datos reales de `marcas` (misma tabla que el teaser de la portada); el
- * texto de "sobre nosotros" es contenido pendiente de que la clienta lo
- * confirme (ver issue #34).
- */
+interface MiembroDirectorio {
+  rol: string;
+  nombre: string;
+  correo: string;
+  /** Sitio propio (ej. portafolio) al que apunta el nombre, si tiene. */
+  url?: string;
+}
+
+/** Directorio del equipo (antes vivía junto a "Sobre nosotros" y Colaboradores en una sola página). */
+const DIRECTORIO: MiembroDirectorio[] = [
+  { rol: 'Dirección editorial', nombre: 'Roxana Rivas', correo: 'contacto@privasmagazine.com' },
+  { rol: 'Dirección de ventas y publicidad', nombre: 'Moisés Prieto', correo: 'ventas@privasmagazine.com' },
+  { rol: 'Diseño gráfico', nombre: 'Majo Prieto', correo: 'grafico@privasmagazine.com' },
+  { rol: 'Social media / marketing', nombre: 'Majo Prieto', correo: 'smmarketing@privasmagazine.com' },
+  {
+    rol: 'Diseñador web',
+    nombre: 'Ing. Gerardo Mecott',
+    correo: 'gerardomecott@outlook.com',
+    url: 'https://gerardomecott.dev',
+  },
+];
+
 @Component({
   selector: 'app-directorio',
   standalone: true,
-  imports: [HeroMedia, Colaboradores],
+  imports: [HeroMedia],
   templateUrl: './directorio.html',
   styleUrl: './directorio.scss',
 })
-export class Directorio implements OnInit {
-  private readonly srv = inject(MarcasService);
-  readonly marcas = signal<Marca[]>([]);
-
-  async ngOnInit() {
-    try {
-      this.marcas.set(await this.srv.listar());
-    } catch {
-      /* el directorio es un extra sobre la página de texto, no bloquea nada */
-    }
-  }
+export class Directorio {
+  readonly directorio = DIRECTORIO;
 }

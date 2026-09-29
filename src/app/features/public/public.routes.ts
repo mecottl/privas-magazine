@@ -80,11 +80,25 @@ export const PUBLIC_ROUTES: Routes = [
           ),
       },
       {
-        path: 'directorio-y-sobre-nosotros',
-        title: 'Directorio y sobre nosotros',
+        path: 'directorio',
+        title: 'Directorio',
         data: { hero: true },
         loadComponent: () =>
           import('./pages/directorio/directorio').then((m) => m.Directorio),
+      },
+      {
+        path: 'sobre-nosotros',
+        title: 'Sobre nosotros',
+        data: { hero: true },
+        loadComponent: () =>
+          import('./pages/sobre-nosotros/sobre-nosotros').then((m) => m.SobreNosotros),
+      },
+      {
+        path: 'colaboradores',
+        title: 'Colaboradores',
+        data: { hero: true },
+        loadComponent: () =>
+          import('./pages/colaboradores/colaboradores').then((m) => m.Colaboradores),
       },
       {
         path: '**',
