@@ -29,6 +29,22 @@
   min-height: 100%;
 }
 
+/* El panel de administración tiene una regla global `.admin-main button`
+ * (círculo teal sólido, padding grande — para los botones DEL panel) que,
+ * sin querer, también le cae a los botones que Editor.js dibuja por su
+ * cuenta (barra de negritas/cursiva, menú "⋮" del bloque, buscador de
+ * herramientas): quedaban como círculos teal sin ícono visible, y el
+ * relleno extra hacía que el menú necesitara más scroll del que Editor.js
+ * había calculado. `all: revert` deshace SOLO esa regla global dentro del
+ * editor, dejando que el <style> que Editor.js inyecta solo (con sus
+ * propias clases, ej. .ce-inline-tool) mande otra vez, como debía ser.
+ */
+:host ::ng-deep .editorjs-holder button {
+  all: revert;
+  font: inherit;
+  cursor: pointer;
+}
+
 :host ::ng-deep .editorjs-holder .ce-toolbar__plus {
   left: -2rem;
 }
