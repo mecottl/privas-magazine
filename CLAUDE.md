@@ -208,6 +208,11 @@ estática sin servidor Node en producción.
   ni concede permisos. Distinto de la vista previa de borradores por token (#75).
 - Meta tags dinámicos (Open Graph) por artículo — depende de la estrategia de
   recompilación descrita arriba.
+- **PWA / service worker** (`@angular/service-worker`, `ngsw-config.json`):
+  se registra en `app.config.ts` 30s después de que la app termina de
+  cargar, para cachear los assets ya descargados sin competir con la carga
+  inicial. Es solo cacheo de estáticos — no hay notificaciones push ni modo
+  offline construido a propósito.
 
 ## Variables de entorno / secretos (nunca hardcodear)
 
@@ -250,6 +255,12 @@ Documentación de arquitectura que SÍ vive fuera de este archivo:
   archivo.
 - `docs/CHECKLIST_QA.md` — checklist de "camino feliz" a correr antes de
   cerrar una issue con flujo de usuario (issue #74).
+- `docs/RUNBOOK.md` — qué hacer en los incidentes típicos (sitio caído,
+  Supabase pausado, cron sin correr, límite de correo) — para consultar
+  rápido bajo estrés, no para leer con calma.
+- `docs/DISENO_LANDING.MD` — tokens de diseño (color, tipografía) tal como
+  están implementados en `src/styles/_tokens.scss`, con el moodboard de
+  referencia.
 - `src/app/features/docs/` — documentación in-app solo para el dueño
   (issue #81, ruta `/documentacion`, FUERA del panel y con su propio layout;
   los guards viven en `docs.routes.ts`, no en `app.routes.ts`, para no meter

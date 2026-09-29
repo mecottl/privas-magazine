@@ -9,8 +9,9 @@ encontrar el siguiente paso en 10 segundos.
 
 1. **¿Es el sitio o es tu internet?** Prueba desde el celular con datos
    móviles (no wifi) antes de asumir que es el servidor.
-2. Revisa el estado de Vercel: https://www.vercel-status.com/
-   (o el de Akky si ya migramos — pendiente actualizar este link).
+2. El sitio vive en Akky (cPanel + FTP) desde el 20 sep 2026 (issue #19) —
+   Akky no publica un status page público conocido; si sospechas una caída
+   de su lado, entra a tu cPanel o contacta soporte de Akky directamente.
 3. Revisa el último deploy en GitHub → pestaña Actions del repo:
    https://github.com/mecottl/privas-magazine/actions
    - Si el último run tiene ❌ rojo, el sitio puede estar sirviendo una

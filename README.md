@@ -12,49 +12,32 @@ para la arquitectura completa y las decisiones ya tomadas.
 
 ## Estructura
 
+Deliberadamente sin árbol de carpetas detallado aquí — con features y páginas
+agregándose seguido, un árbol línea por línea queda desactualizado rápido
+(pasó con la versión anterior de este README). Panorama de alto nivel:
+
 ```
-src/
-  environments/            environment.ts (prod) · environment.development.ts (local)
-  app/
-    core/                  singletons: supabase client, auth, guard, modelos
-      supabase/            SupabaseService (anon key)
-      auth/                AuthService + adminGuard
-      models/              tipos de dominio + database.types.ts (generado)
-    shared/                componentes/pipes/directivas reutilizables
-    features/
-      public/              SITIO PÚBLICO
-        layout/            PublicLayout (navbar + footer con aviso de privacidad)
-        pages/             inicio, articulos, articulo-detalle, revistas,
-                           marcas, aviso-privacidad, newsletter/
-        public.routes.ts
-      admin/               PANEL DE ADMINISTRACIÓN (ruta oculta /gestion-privas)
-        layout/            AdminLayout (sidebar)
-        pages/             login, dashboard, articulos, ediciones, marcas,
-                           administradores
-        editor-contenido/  editor de bloques (CLAUDE.md → sección "Editor de contenido de artículos")
-        admin.routes.ts
+src/app/
+  core/        singletons: cliente de Supabase, auth + guards, modelos de dominio
+  shared/      componentes/pipes/directivas realmente reutilizados entre features
+  features/
+    public/    SITIO PÚBLICO — layout, páginas y componentes bajo public.routes.ts
+    admin/     PANEL DE ADMINISTRACIÓN (ruta oculta /gestion-privas) — bajo admin.routes.ts,
+               incluye editor-contenido/ (editor de bloques)
+    docs/      documentación in-app solo para el dueño (/documentacion)
 
 supabase/
   config.toml
-  functions/
-    _shared/               cors.ts · clients.ts (admin/user/requireAdmin)
-    subir-archivo/         panel → FTP (Akky) / Storage → URL pública
-    eliminar-archivo/      limpieza de archivos huérfanos (triggers de BD)
-    programar-publicacion/ pg_cron cada 15 min + rebuild + newsletter
-    invitar-admin/         única alta de admins con service_role
-    set-admin-activo/      activar/desactivar OTRO admin
-    suscribirse/           alta al newsletter con rate limiting (reemplaza el insert directo)
-    confirmar-suscripcion/ doble opt-in newsletter, con rate limiting
-    cancelar-suscripcion/  baja por token, con rate limiting
-  migrations/              ver EDGE_FUNCTIONS_BRIEF.md y CLAUDE.md para el
-                           detalle de cada una
+  functions/   12 Edge Functions + _shared/ (cors, clientes, rate limit, publicación) —
+               ver EDGE_FUNCTIONS_BRIEF.md para el detalle de cada una
+  migrations/  cambios incrementales al esquema — ver CLAUDE.md
 
-.github/workflows/
-  deploy.yml               build Angular estático + deploy
-  supabase-functions.yml   deploy de Edge Functions
-
-docs/SECRETS.md            secretos a configurar a mano en los dashboards
+.github/workflows/   deploy.yml · supabase-functions.yml · backup-db.yml
+docs/                SECRETS.md, RUNBOOK.md, RESTORE_BACKUP.md, CHECKLIST_QA.md, DISENO_LANDING.MD
 ```
+
+Para la lista real y vigente de páginas/rutas, lee `public.routes.ts` /
+`admin.routes.ts` directo — son la fuente de verdad, no este README.
 
 ## Desarrollo
 
