@@ -28,3 +28,9 @@ verify_jwt = false
 
 [functions.cancelar-suscripcion]
 verify_jwt = false
+
+[functions.obtener-vista-previa-link]
+# Pública por diseño (issue #95) — @editorjs/link la llama con un GET plano
+# del navegador, sin adjuntar el JWT del admin. Ver _shared/link_preview.ts
+# para las validaciones contra usarla como proxy hacia direcciones internas.
+verify_jwt = false
