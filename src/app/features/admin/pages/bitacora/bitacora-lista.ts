@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { BitacoraService } from '../../../../core/services/bitacora.service';
 import { mensajeError } from '../../../../core/services/errores';
 import { InfoTip } from '../../shared/info-tip/info-tip';
+import { ConfirmService } from '../../shared/confirm-dialog/confirm-dialog';
 import type { BitacoraEntrada } from '../../../../core/models';
 
 const NOMBRE_ACCION: Record<string, string> = {
@@ -31,6 +32,7 @@ const NOMBRE_TABLA: Record<string, string> = {
 })
 export class BitacoraLista implements OnInit {
   private readonly srv = inject(BitacoraService);
+  private readonly confirmar = inject(ConfirmService);
   readonly entradas = signal<BitacoraEntrada[]>([]);
   readonly error = signal('');
   readonly cargando = signal(true);
@@ -49,6 +51,22 @@ export class BitacoraLista implements OnInit {
       this.error.set(mensajeError(e));
     } finally {
       this.cargando.set(false);
+    }
+  }
+
+  async eliminar(e: BitacoraEntrada) {
+    const ok = await this.confirmar.confirm({
+      titulo: '¿Eliminar esta fila de la bitácora?',
+      mensaje: 'No se puede deshacer.',
+      cta: 'Eliminar',
+      peligro: true,
+    });
+    if (!ok) return;
+    try {
+      await this.srv.eliminar(e.id);
+      this.entradas.update((lista) => lista.filter((x) => x.id !== e.id));
+    } catch (err) {
+      this.error.set(mensajeError(err));
     }
   }
 

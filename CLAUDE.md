@@ -139,15 +139,19 @@ Tablas: `articulos`, `categorias`, `articulos_categorias` (m2m),
   (DELETE real) lo que lleve más de 30 días aquí, en cada corrida del cron
   — no hay un cron nuevo para esto.
 - `bitacora_admin` (issue #76): quién publicó/despublicó/programó/eliminó
-  qué y cuándo, y quién invitó/gestionó/eliminó qué cuenta de admin. Solo
-  `dueno`/`admin_total` la leen (policy con `es_admin_total()`/`es_dueno()`).
-  Se llena de dos formas: (1) trigger `registrar_bitacora_estado()`
-  (`security definer`) en `articulos`/`ediciones_revista`, disparado en
-  UPDATE de `estado` y en DELETE — solo si hay un admin real detrás
-  (`auth.uid()` no nulo; los cambios de `programar-publicacion` vía cron no
-  se registran aquí); (2) `invitar-admin`/`set-admin-activo` insertan
-  directo con `service_role` (`_shared/bitacora.ts`). Guarda `admin_nombre`
-  como snapshot para no perder el rastro si esa cuenta se elimina después.
+  qué y cuándo, y quién invitó/gestionó/eliminó qué cuenta de admin —
+  cualquier nivel (`dueno`/`admin_total`/`editor`), el trigger no distingue.
+  Solo `dueno`/`admin_total` la LEEN (policy con
+  `es_admin_total()`/`es_dueno()`), y desde el 29 sep 2026 también pueden
+  BORRAR filas (migración `20260929230000_bitacora_admin_delete.sql`,
+  mismo criterio) — un editor no la ve ni la toca. Se llena de dos formas:
+  (1) trigger `registrar_bitacora_estado()` (`security definer`) en
+  `articulos`/`ediciones_revista`, disparado en UPDATE de `estado` y en
+  DELETE — solo si hay un admin real detrás (`auth.uid()` no nulo; los
+  cambios de `programar-publicacion` vía cron no se registran aquí); (2)
+  `invitar-admin`/`set-admin-activo` insertan directo con `service_role`
+  (`_shared/bitacora.ts`). Guarda `admin_nombre` como snapshot para no
+  perder el rastro si esa cuenta se elimina después.
 
 ## Piezas de arquitectura — Edge Functions (13 en total)
 

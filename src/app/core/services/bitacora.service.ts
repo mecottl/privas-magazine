@@ -16,4 +16,10 @@ export class BitacoraService {
     if (error) throw error;
     return data as unknown as BitacoraEntrada[];
   }
+
+  /** Borrar una fila (issue reportada en vivo). RLS: dueño/admin_total. */
+  async eliminar(id: string): Promise<void> {
+    const { error } = await this.sb.from('bitacora_admin').delete().eq('id', id);
+    if (error) throw error;
+  }
 }
