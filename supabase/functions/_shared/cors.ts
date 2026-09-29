@@ -34,9 +34,14 @@ export const corsHeaders = {
   get 'Access-Control-Allow-Origin'() {
     return origenActual;
   },
+  // x-requested-with: @editorjs/link la manda sola en su GET (issue #95) —
+  // sin esto, la preflight fallaba y el editor mostraba "Couldn't fetch the
+  // link data" aunque el artículo publicado sí trajera el dato bien (esa
+  // parte va por otra llamada, server-side, sin CORS de por medio).
   'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'authorization, x-client-info, apikey, content-type, x-requested-with',
+  // GET: la misma función de arriba. El resto sigue siendo solo POST.
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   Vary: 'Origin',
 };
 

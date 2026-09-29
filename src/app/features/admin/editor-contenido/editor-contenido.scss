@@ -55,3 +55,12 @@
 .editorjs-holder .image-tool__caption:empty::before {
   color: var(--ink-35);
 }
+
+/* Tune de alineación (herramientas/alineacion.tune.ts): sin esto, elegir
+   centro/derecha/justificado guardaba bien el dato (se ve correcto en el
+   artículo publicado, que usa sus propias clases align-*) pero no se veía
+   reflejado aquí dentro del editor — las clases que pone la Tune (ce-align-*)
+   no tenían ningún estilo propio en esta hoja. */
+.editorjs-holder .ce-align-centro { text-align: center; }
+.editorjs-holder .ce-align-derecha { text-align: right; }
+.editorjs-holder .ce-align-justificado { text-align: justify; }
