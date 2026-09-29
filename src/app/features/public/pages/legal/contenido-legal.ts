@@ -22,7 +22,7 @@ export interface DocumentoLegal {
  * strings fijos escritos a mano, no algo que meta un usuario — no hay riesgo
  * de que esto reciba HTML de fuera.
  */
-export const AVISO_PRIVACIDAD: DocumentoLegal = {
+const AVISO_PRIVACIDAD: DocumentoLegal = {
   eyebrow: 'Legal',
   titulo: 'Aviso de Privacidad',
   intro:
@@ -76,7 +76,7 @@ export const AVISO_PRIVACIDAD: DocumentoLegal = {
   ],
 };
 
-export const TERMINOS_Y_CONDICIONES: DocumentoLegal = {
+const TERMINOS_Y_CONDICIONES: DocumentoLegal = {
   eyebrow: 'Legal',
   titulo: 'Términos y Condiciones',
   intro:

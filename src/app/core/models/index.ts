@@ -230,14 +230,6 @@ export interface PerfilAdmin {
   created_at?: string;
 }
 
-export interface SuscriptorNewsletter {
-  id: string;
-  email: string;
-  activo: boolean;
-  token_confirmacion: string;
-  fecha_alta: string;
-}
-
 /** Registro de bitácora (issue #76) — quién hizo qué y cuándo. */
 export interface BitacoraEntrada {
   id: string;

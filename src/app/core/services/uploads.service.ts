@@ -1,13 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.client';
+import type { DestinoArchivo } from '../models';
 
 export type TipoArchivo =
   | 'articulo-portada'
   | 'revista-pdf'
   | 'revista-portada'
   | 'marca-logo';
-
-export type DestinoArchivo = 'supabase' | 'ftp';
 
 /**
  * Resultado de subir un archivo. Se guardan los 3 valores juntos en la fila:
