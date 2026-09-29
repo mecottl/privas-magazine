@@ -2,9 +2,17 @@
 
 /* La franja ya pone color: var(--on-brand); aquí solo el ancho de lectura y
    el tono de los párrafos (mismo criterio que el Directorio). */
-.legal-wrap { max-width: 78ch; }
+.legal-wrap { max-width: 85ch; }
 .legal-wrap p { color: var(--on-brand-dim); }
-.legal-wrap a { color: var(--on-brand); text-decoration: underline; text-underline-offset: 0.2em; }
+/* Los párrafos se pintan con [innerHTML] (ver .html): esos <a> no llevan el
+   atributo de encapsulado de Angular, así que ".legal-wrap a" normal no los
+   alcanza y ganaba el estilo global "p a" (teal sobre teal → invisible,
+   issue reportado). ::ng-deep quita el encapsulado solo de este selector. */
+.legal-wrap ::ng-deep a {
+  color: var(--on-brand);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 .legal-wrap .legal-intro {
   color: var(--on-brand);
   font-size: var(--fs-md);
