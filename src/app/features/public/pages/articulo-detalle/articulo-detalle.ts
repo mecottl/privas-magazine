@@ -177,7 +177,7 @@ export class ArticuloDetalle implements OnInit {
         } else {
           this.seo.actualizar({
             titulo: a.titulo,
-            descripcion: a.extracto || 'Una revista para los amantes de los viajes.',
+            descripcion: a.extracto || 'Una revista para los apasionados por el turismo.',
             imagenUrl: a.imagen_portada_url,
             tipo: 'article',
           });

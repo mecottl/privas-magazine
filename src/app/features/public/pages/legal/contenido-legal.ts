@@ -8,20 +8,9 @@ export interface DocumentoLegal {
   titulo: string;
   intro: string;
   secciones: SeccionLegal[];
-  /** Texto tal cual, ej. "01 de octubre de 2026". */
   ultimaActualizacion: string;
 }
 
-/**
- * Texto real entregado por la clienta (issues #8 y #70), tomado de los PDF
- * "AVISO DE PRIVACIDAD MAGAZINE" y "TÉRMINOS Y CONDICIONES MAGAZINE".
- * Si vuelve a cambiar, se actualiza aquí — no hace falta tocar nada más.
- *
- * Los párrafos se pintan con [innerHTML] (ver pagina-legal.html), así que
- * aquí sí pueden llevar <b>, <a href="mailto:…"> y <a href="tel:…">. Son
- * strings fijos escritos a mano, no algo que meta un usuario — no hay riesgo
- * de que esto reciba HTML de fuera.
- */
 const AVISO_PRIVACIDAD: DocumentoLegal = {
   eyebrow: 'Legal',
   titulo: 'Aviso de Privacidad',

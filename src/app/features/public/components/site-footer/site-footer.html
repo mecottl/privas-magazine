@@ -2,7 +2,7 @@
   <div class="site-foot__grid">
     <div class="site-foot__brand">
       <img class="site-foot__logo" src="/logo-privas.png" alt="PRIVAS Magazine" width="441" height="180" />
-      <p class="site-foot__tag">Una revista para los amantes de los viajes.</p>
+      <p class="site-foot__tag">Una revista para los apasionados por el turismo.</p>
       <div class="site-foot__redes-list">
         @for (r of redes; track r.nombre) {
           <a [href]="r.url" target="_blank" rel="noopener" [attr.aria-label]="r.nombre">
@@ -33,7 +33,7 @@
 
     <div class="foot-col foot-col--news">
       <span class="foot-col__label">Boletín</span>
-      <p class="foot-col__news-copy">Un aviso cuando publicamos algo nuevo.</p>
+      <p class="foot-col__news-copy">Suscríbete y entérate de nuestro nuevos artículos.</p>
       <app-newsletter-form />
     </div>
   </div>
